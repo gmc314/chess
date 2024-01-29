@@ -33,7 +33,7 @@ Bishop
   - Can move any number of squares
 
 Knight 
-  - Can move in L-shape (3 squres in a vertical or horizonal direction, and 1 square in the other direction)
+  - Can move in an L-shape (2 squres in a vertical or horizonal direction, and 1 square in the other direction)
   - Can jump over pieces
 
 Rook 
