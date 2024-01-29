@@ -1,12 +1,11 @@
 # Full Stack Chess
 
-# Summary
+## Summary
 Local 2-player chess featuring back and front ends
 
-# Plan:
 ## Back-end:
 ### Pieces and Board 
-The board is an 8x8 list of lists.
+The board is an 8x8 matrix.
 
 #### Pieces Overview
 King
@@ -74,8 +73,22 @@ Class Methods for all pieces:
     1. Pawn reaches the opposite end of the board 
     2. On the same turn, change to one of: queen, rook, knight, bishop
 
+### Playing the Game
+The rules are standard chess. 
+  - White goes first
+  - Then black and white again until a checkmate is reached 
+  - On a turn: 
+    - Check if the king is in check or mate
+    If the king is in check:
+      - Turn is passed if and only if the king is not in check after the player moves
+      - If there are no valid moves to get the king out of check, checkmate is reached
+    - Check if selected piece can move 
+    - Check if targetted square is a valid move
+    - Move to targetted square and/or capture
+  - Repeat until checkmate is reached
+
 ## Server-side:
-Login 
+Login authentication tokens 
 Saving game state
 Logging moves
 
