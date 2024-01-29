@@ -8,13 +8,6 @@ Local 2-player chess featuring back and front ends
 ### Pieces and Board 
 The board is an 8x8 list of lists.
 
-Pieces are classes with properties:
-  1. Colour 
-  2. Type
-  3. Location
-  4. ID
-  5. Points
-
 #### Pieces Overview
 King
   - Check and Checkmate conditions 
@@ -46,13 +39,37 @@ Pawn
   - Captures pieces diagonally 
   - Can capture en passant 
 
+Pieces are classes with properties:
+  1. Colour 
+  2. Type
+  3. Location
+  4. ID
+  5. Points
+
+Class Methods for all pieces:
+  1. `moveFromCurrentSquare(self, squre)`
+  2. `isThreatened(self)`
+  3. `isMoveValid(self, square)`
+  4. `getAllValidMoves(self, square)`
+  5. `getCurrentSquare(self)`
+
 #### Coding Details
-  - Orientation of the board 
-  - Colour of the pawn determines valid move direction
+  - Orientation of the board will be in the usual chess standard. 
+  - Rank and file will be standard.
+  - Colour of the pawn determines valid move direction.
   - What is a valid move? 
-  - Castling conditions
-  - Capturing
-  - Pawn promotion
+    - Determined by type, path, and obstructions 
+  - Castling conditions:
+    1. King and rook are in their starting positions
+    2. No pieces in the way 
+    3. - Short castle: non-queen side castling 
+       - Long castle: queen side castling   
+  - Capturing conditions:
+    1. Piece of opposite colour is in the valid path of a piece 
+    2. Pawn begins with a 2-square move for en passant
+  - Pawn promotion conditions:
+    1. Pawn reaches the opposite end of the board 
+    2. On the same turn, change to one of: queen, rook, knight, bishop
 
 ## Server-side:
 Login 
