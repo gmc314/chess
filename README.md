@@ -16,6 +16,7 @@ King
     - Indirect check
     If the king moves to the square, it would be captured next turn
   - Can move one square in all directions
+  - Can castle with rook
 
 Queen
   - Can move horizontally, vertically, and diagonally
@@ -32,6 +33,7 @@ Knight
 Rook 
   - Can move veritically or horizontally
   - Can move any number of squares 
+  - Can castle with king
 
 Pawn
   - Can only move forward depending on colour
@@ -45,6 +47,7 @@ Pieces are classes with properties:
   3. Location
   4. ID
   5. Points
+  6. canCastle
 
 Class Methods for all pieces:
   1. `moveFromCurrentSquare(self, squre)`
