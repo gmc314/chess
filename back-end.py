@@ -18,6 +18,30 @@ class Piece:
         self.canCastle = False
         self.points = points
 
+    @classmethod
+    def moveFromCurrentSquare(self, square):
+        pass
+
+    @classmethod
+    def isThreatened(self):
+        pass
+    
+    @classmethod
+    def isMoveValid(self, square):
+        pass
+
+    @classmethod
+    def getAllValidMoves(self):
+        pass
+    
+    @classmethod
+    def getCurrentSquare(self):
+        pass
+
+    @classmethod
+    def castle(self):
+        pass
+
 # inheriting from Piece class
 class King(Piece):
     def __init__(self, color: str, id, location: tuple) -> None:
