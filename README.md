@@ -52,8 +52,9 @@ Class Methods for all pieces:
   1. `moveFromCurrentSquare(self, squre)`
   2. `isThreatened(self)`
   3. `isMoveValid(self, square)`
-  4. `getAllValidMoves(self, square)`
+  4. `getAllValidMoves(self)`
   5. `getCurrentSquare(self)`
+  6. `castle(self)` only for Kings
 
 #### Coding Details
   - Orientation of the board will be in the usual chess standard. 
