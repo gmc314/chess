@@ -9,6 +9,8 @@ BOARD = [
     [None, None, None, None, None, None, None, None],
 ]
 
+fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+
 class Piece:
     def __init__(self, color: str, name: str, id: str, location: tuple, canCastle: bool, points: int) -> None:
         self.id = id
@@ -18,9 +20,20 @@ class Piece:
         self.canCastle = False
         self.points = points
 
+    # move piece from current square to new `square`
     @classmethod
-    def moveFromCurrentSquare(self, square):
-        pass
+    def moveFromCurrentSquare(self, square: tuple):
+        currentSquare = self.location
+        currentFile = currentSquare[0]
+        currentRank = currentSquare[1]
+        newSquare = (square[0], square[1])
+        if not self.isMoveValid(newSquare):
+            return "invalid move"
+        
+        currentCol = int(currentRank) - 1
+        currentRow = fileIndex[currentFile]
+        
+
 
     @classmethod
     def isThreatened(self):
