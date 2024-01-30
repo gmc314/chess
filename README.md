@@ -42,7 +42,7 @@ Pawn
 
 Pieces are classes with properties:
   1. Colour 
-  2. Type
+  2. Name
   3. Location
   4. ID
   5. Points
@@ -60,7 +60,7 @@ Class Methods for all pieces:
   - Rank and file will be standard.
   - Colour of the pawn determines valid move direction.
   - What is a valid move? 
-    - Determined by type, path, and obstructions 
+    - Determined by name, path, and obstructions 
   - Castling conditions:
     1. King and rook are in their starting positions
     2. No pieces in the way 
