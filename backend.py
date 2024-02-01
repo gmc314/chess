@@ -33,7 +33,6 @@ def stringifyRankFile(square: tuple):
     return f"{square[0]}{square[1]}"
 
 
-
 class Piece:
     def __init__(self, color: str, name: str, ID: str, location: tuple, canCastle: bool, points: int):
         self.ID = ID
@@ -46,98 +45,116 @@ class Piece:
     def __repr__(self) -> str:
         return f"{self.color} {self.name}"
 
-    # move piece from current square to new `square`
-    @classmethod
-    def moveFromCurrentSquare(self, newSquare: tuple):
-        if not self.isMoveValid(newSquare):
-            return "invalid move"
-        
-        # getting current location of piece
-        currentSquare = self.location 
-        currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
- 
-        # getting location of move
-        newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
-        newRank, newFile = getRankAndFileFromBoardIndex((newRow, newCol))
-
-        # move piece from the current square
-
-        # from current 
-        BOARD[currentRow][currentCol] = None
-
-        # to new
-        self.location = (newFile, newRank)
-
-        BOARD[newRow][newCol] = self
-        # print out the move 
-        return f"{self.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}"
-
-
-    @classmethod
-    def isThreatened(self):
-        pass
-    
-    @classmethod
-    def isMoveValid(self, square):
-        return True
-
-    @classmethod
-    def getAllValidMoves(self):
-        pass
-    
-    @classmethod
-    def getCurrentSquare(self):
-        pass
 
     @classmethod
     def castle(self):
         pass
 
+
 # inheriting from Piece class
-class King(Piece):
-    def __init__(self, color, name,ID, location, canCastle, points):
-        super().__init__(self, color, name, ID, location, canCastle, points)
-        self.name = "King" 
-        self.canCastle = True
-        self.points = 0
+class King(Piece):    
+    def __init__(self, color, ID, location):
+        super().__init__(color, "King", ID, location, True, 0) 
+        self.ID = ID
+        self.location = location
+        self.color = color
+
+    @classmethod
+    def isMoveValid(self, newSquare):
+        return True
+
 
 class Queen(Piece):
-    def __init__(self, color, name, ID, location, canCastle, points):
-        super().__init__(self, color, name, ID, location, canCastle, points) 
-        self.name = "Queen"
-        self.points = 9
+    def __init__(self, color, ID, location):
+        super().__init__(color, "Queen", ID, location, False, 9) 
+        self.ID = ID
+        self.location = location
+        self.color = color
+   
+    @classmethod
+    def isMoveValid(self, newSquare):
+        return True
+    
 
 class Rook(Piece):
-    def __init__(self, color, name, ID, location, canCastle, points):
-        super().__init__(color, name, ID, location, canCastle, points) 
-        self.name = "Rook"
-        self.canCastle = True
-        self.points = 5
+    def __init__(self, color, ID, location):
+        super().__init__(color, "Rook", ID, location, True, 5) 
+        self.ID = ID
+        self.location = location
+        self.color = color
+
+    @classmethod
+    def isMoveValid(self, newSquare):
+        return True
+        
 
 class Bishop(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Bishop", ID, location, False, 3) 
         self.ID = ID
-        self.location = location
+        #self.location = location
         self.color = color
+
+    @classmethod
+    def isMoveValid(self, newSquare):
+        if newSquare != None:
+            return True
         
 
 
 class Knight(Piece):
-    def __init__(self, color, name, ID, location, canCastle, points):
-        super().__init__(self, color, name, ID, location, canCastle, points) 
-        self.name = "Knight"
-        self.points = 3
+    def __init__(self, color, ID, location):
+        super().__init__(color, "Knight", ID, location, False, 3) 
+        self.ID = ID
+        self.location = location
+        self.color = color
+    
+    @classmethod
+    def isMoveValid(self, newSquare):
+        return True    
 
 class Pawn(Piece):
-    def __init__(self, color, name, ID, location, canCastle, points):
-        super().__init__(self, color, name, ID, location, canCastle, points) 
-        self.name = "Pawn"
-        self.points = 1
+    def __init__(self, color, ID, location):
+        super().__init__(color, "Pawn", ID, location, False, 1) 
+        self.ID = ID
+        self.location = location
+        self.color = color
+        
+    @classmethod
+    def isMoveValid(self, newSquare):
+        return True
 
 
+# place a piece on the board at its initial square
 def placePiece(piece: Piece):
     currentSquare = piece.location
     row, col = getBoardIndexFromRankAndFile(currentSquare)
     BOARD[row][col] = piece
     return f"{piece} placed"
+
+
+# move piece from current square to new `square`
+def moveFromCurrentSquare(piece: Piece, newSquare: tuple):
+    if not piece.isMoveValid(newSquare):
+        return "invalid move"
+    
+    # getting current location of piece
+    currentSquare = piece.location
+    currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
+
+    # getting location of move
+    newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
+    newRank, newFile = getRankAndFileFromBoardIndex((newRow, newCol))
+
+    # move piece from the current square
+
+    # from current 
+    BOARD[currentRow][currentCol] = None
+
+    # to new
+    piece.location = (newFile, newRank)
+
+    BOARD[newRow][newCol] = piece
+    # print out the move 
+    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}"
+
