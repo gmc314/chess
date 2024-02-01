@@ -87,10 +87,8 @@ class Bishop(Piece):
     
     @classmethod
     def isMoveValid(self, newSquare):
-        if newSquare != None:
-            return True
+        return True
         
-
 
 class Knight(Piece):
     def __init__(self, color, ID, location):
