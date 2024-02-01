@@ -16,7 +16,7 @@ fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 def getBoardIndexFromRankAndFile(square: tuple):
     file, rank = square
     col = fileIndex[file]
-    row = int(rank) - 1
+    row = 8 - int(rank)
     return (row, col)
 
 
