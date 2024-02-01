@@ -48,13 +48,12 @@ Pieces are classes with properties:
   5. Points
   6. canCastle
 
-Class Methods for all pieces:
-  1. `moveFromCurrentSquare(self, squre)`
-  2. `isThreatened(self)`
-  3. `isMoveValid(self, square)`
-  4. `getAllValidMoves(self)`
-  5. `getCurrentSquare(self)`
-  6. `castle(self)` only for Kings
+Functions for all pieces:
+  1. `moveFromCurrentSquare(piece, newSquare)`
+  2. `placePiece(piece)`
+
+Class Methods for all pieces: 
+  1. `isMoveValid(self, newSquare)`
 
 #### Coding Details
   - Orientation of the board will be in the usual chess standard. 
