@@ -1,3 +1,5 @@
+from typing import Union
+
 BOARD = [
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
@@ -134,7 +136,7 @@ def placePiece(piece: Piece):
 
 
 # move piece from current square to new `square`
-def moveFromCurrentSquare(piece: Piece, newSquare: tuple):
+def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple):
     if not piece.isMoveValid(newSquare):
         return "invalid move"
     
