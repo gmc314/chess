@@ -18,7 +18,7 @@ fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 def getBoardIndexFromRankAndFile(square: tuple):
     file, rank = square
     col = fileIndex[file]
-    row = 8 - int(rank)
+    row = len(BOARD) - int(rank)
     return (row, col)
 
 
@@ -99,12 +99,30 @@ class Knight(Piece):
         return True    
 
 class Pawn(Piece):
-    def __init__(self, color, ID, location):
+    def __init__(self, color, ID, location, firstTurn):
         super().__init__(color, "Pawn", ID, location, False, 1) 
-        
+        self.firstTurn = firstTurn
+    
     @classmethod
     def isMoveValid(self, newSquare):
-        return True
+        currentFile, currentRank = self.location
+        newFile, newRank = newSquare
+
+        if self.color == "White":
+            if self.firstTurn == True:
+                return (currentFile == newFile) and (1 <= newRank - currentRank <= 2)
+        
+            else:
+                return (currentFile == newFile) and (newRank - currentRank == 1)
+        
+        if self.color == "Black":
+            if self.firstTurn == True:
+                return (currentFile == newFile) and (1 <= currentRank - newRank <= 2)
+        
+            else:
+                return (currentFile == newFile) and (currentRank - newRank == 1)
+        
+
 
 
 # place a piece on the board at its initial square
@@ -120,6 +138,10 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     if not piece.isMoveValid(newSquare):
         return "invalid move"
     
+    # condition for en passant and first turn two-square forward move
+    if type(piece) == Pawn:
+        piece.firstTurn = False
+
     # getting current location of piece
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
