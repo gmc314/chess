@@ -57,9 +57,6 @@ class Piece:
 class King(Piece):    
     def __init__(self, color, ID, location):
         super().__init__(color, "King", ID, location, True, 0) 
-        self.ID = ID
-        self.location = location
-        self.color = color
 
     @classmethod
     def isMoveValid(self, newSquare):
@@ -69,9 +66,6 @@ class King(Piece):
 class Queen(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Queen", ID, location, False, 9) 
-        self.ID = ID
-        self.location = location
-        self.color = color
    
     @classmethod
     def isMoveValid(self, newSquare):
@@ -80,10 +74,7 @@ class Queen(Piece):
 
 class Rook(Piece):
     def __init__(self, color, ID, location):
-        super().__init__(color, "Rook", ID, location, True, 5) 
-        self.ID = ID
-        self.location = location
-        self.color = color
+        super().__init__(color, "Rook", ID, location, True, 5)
 
     @classmethod
     def isMoveValid(self, newSquare):
@@ -93,10 +84,7 @@ class Rook(Piece):
 class Bishop(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Bishop", ID, location, False, 3) 
-        self.ID = ID
-        #self.location = location
-        self.color = color
-
+    
     @classmethod
     def isMoveValid(self, newSquare):
         if newSquare != None:
@@ -107,9 +95,6 @@ class Bishop(Piece):
 class Knight(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Knight", ID, location, False, 3) 
-        self.ID = ID
-        self.location = location
-        self.color = color
     
     @classmethod
     def isMoveValid(self, newSquare):
@@ -118,9 +103,6 @@ class Knight(Piece):
 class Pawn(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Pawn", ID, location, False, 1) 
-        self.ID = ID
-        self.location = location
-        self.color = color
         
     @classmethod
     def isMoveValid(self, newSquare):
@@ -149,8 +131,6 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     newRank, newFile = getRankAndFileFromBoardIndex((newRow, newCol))
 
     # move piece from the current square
-
-    # from current 
     BOARD[currentRow][currentCol] = None
 
     # to new
