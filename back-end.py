@@ -1,3 +1,5 @@
+from pprint import pprint
+
 BOARD = [
     [None, None, None, None, None, None, None, None],
     [None, None, None, None, None, None, None, None],
@@ -11,6 +13,28 @@ BOARD = [
 
 fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 
+
+# gets the indices of the Board from rank and file 
+def getBoardIndexFromRankAndFile(square: tuple):
+    file, rank = square
+    col = int(rank) - 1
+    row = fileIndex[file]
+    return (row, col)
+
+
+# gets the rank and file from indices of the Board
+def getRankAndFileFromBoardIndex(indices: tuple):
+    row, col = indices
+    file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
+    rank = row + 1
+    return (file, rank)
+
+
+# convert rank and file tuple to string
+def stringifyRankFile(square: tuple):
+    return f"{square[0]}{square[1]}"
+
+
 class Piece:
     def __init__(self, color: str, name: str, id: str, location: tuple, canCastle: bool, points: int) -> None:
         self.id = id
@@ -20,19 +44,34 @@ class Piece:
         self.canCastle = False
         self.points = points
 
+    def __repr__(self) -> str:
+        return f"{self.color} {self.name} at {stringifyRankFile(self.location)}"
+
     # move piece from current square to new `square`
     @classmethod
-    def moveFromCurrentSquare(self, square: tuple):
-        currentSquare = self.location
-        currentFile = currentSquare[0]
-        currentRank = currentSquare[1]
-        newSquare = (square[0], square[1])
+    def moveFromCurrentSquare(self, newSquare: tuple):
         if not self.isMoveValid(newSquare):
             return "invalid move"
         
-        currentCol = int(currentRank) - 1
-        currentRow = fileIndex[currentFile]
-        
+        # getting current location of piece
+        currentSquare = self.location 
+        currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
+ 
+        # getting location of move
+        newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
+        newRank, newFile = getRankAndFileFromBoardIndex((newRow, newCol))
+
+        # move piece from the current square
+
+        # from current 
+        BOARD[currentRow][currentCol] = None
+
+        # to new
+        self.location = (newFile, newRank)
+
+        BOARD[newRow][newCol] = self
+        # print out the move 
+        return f"{self.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}"
 
 
     @classmethod
@@ -108,4 +147,5 @@ class Pawn(Piece):
         self.location = location
         self.canCastle = True
         self.points = 1
+
 
