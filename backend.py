@@ -46,15 +46,7 @@ class Piece:
     def __repr__(self) -> str:
         return f"{self.color} {self.name}"
 
-    def __str__(self) -> str:
-        return f"{self.color} {self.name}"
-
-
-    @classmethod
-    def castle(self):
-        pass
-
-
+    
 # inheriting from Piece class
 class King(Piece):    
     def __init__(self, color, ID, location):
@@ -165,3 +157,9 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # print out the move 
     return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}"
 
+def capture(capturer: Piece, capturee: Piece):
+    captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
+    BOARD[captureeRow][captureeCol] = None
+    capturer.location = capturee.location
+    BOARD[captureeRow][captureeCol] = capturer
+    return f"{capturee} captured"
