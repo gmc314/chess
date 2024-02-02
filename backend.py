@@ -150,14 +150,12 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
 
     newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
-    print(newRank, newFile)
+
     # move piece from the current square
     BOARD[currentRow][currentCol] = None
 
     # to new
     piece.location = (newRank, newFile)
-    print(piece.location)
-
     BOARD[newRow][newCol] = piece
 
     # condition for en passant and first turn two-square forward move
