@@ -1,4 +1,5 @@
 from classes import *
+from functions import *
 from pprint import pprint
 
 # testing placing a piece on the board
