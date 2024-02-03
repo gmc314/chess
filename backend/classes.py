@@ -1,5 +1,3 @@
-from typing import Union
-
 class Piece:
     def __init__(self, color: str, name: str, ID: str, location: tuple, canCastle: bool, points: int):
         self.color = color 
