@@ -1,4 +1,4 @@
-from backend import *
+from classes import *
 from pprint import pprint
 
 # testing placing a piece on the board
