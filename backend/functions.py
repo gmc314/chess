@@ -34,6 +34,7 @@ def getRankAndFileFromBoardIndex(row, col):
 def stringifyRankFile(square: tuple):
     return f"{square[0]}{square[1]}"
 
+
 # place a piece on the board at its initial square
 def placePiece(piece: Piece):
     currentSquare = piece.location
@@ -53,7 +54,6 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
 
     # getting location of move
     newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
-
     newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
 
     # move piece from the current square
@@ -76,3 +76,178 @@ def capture(capturer: Piece, capturee: Piece):
     capturer.location = capturee.location
     BOARD[captureeRow][captureeCol] = capturer
     return f"{capturee} captured"
+
+
+# the oneSquareLeft function returns the left adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareLeft(piece: Piece):
+    file, rank = piece.location
+    if file == "a":
+        return False
+
+    newFile = chr(ord(file) - 1)
+    r, c = getBoardIndexFromRankAndFile(newFile, rank)
+
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+
+        else:
+            return "can capture"
+        
+    return (newFile, rank)
+
+
+# the oneSquareRight function returns the right adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareRight(piece: Piece):
+    file, rank = piece.location
+    if file == "h":
+        return False
+
+    newFile = chr(ord(file) + 1)
+    r, c = getBoardIndexFromRankAndFile(newFile, rank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (newFile, rank)
+
+
+# the oneSquareUp function returns the up adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareUp(piece: Piece):
+    file, rank = piece.location
+    if rank == len(BOARD):
+        return False
+
+    newRank = rank + 1
+    r, c = getBoardIndexFromRankAndFile(file, newRank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (file, newRank)
+
+# the oneSquareDown function returns the down adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareDown(piece: Piece):
+    file, rank = piece.location
+    if rank == 1:
+        return False
+
+    newRank = rank - 1
+    r, c = getBoardIndexFromRankAndFile(file, newRank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (file, newRank)
+
+
+# diag1 means the diagonal from top left to bottom right
+# the oneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareDiag1(piece: Piece):
+    file, rank = piece.location
+    if file == "h":
+        return False
+    
+    newFile = chr(ord(file) + 1)
+    newRank = rank - 1
+    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (file, newRank)
+
+
+# diag2 means the diagonal from bottom right to top left
+# the oneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareDiag2(piece: Piece):
+    file, rank = piece.location
+    if file == "a":
+        return False
+    
+    newFile = chr(ord(file) - 1)
+    newRank = rank + 1
+    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (file, newRank)
+
+
+# diag3 means the diagonal from top right to bottom left
+# the oneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareDiag3(piece: Piece):
+    file, rank = piece.location
+    if file == "a":
+        return False
+    
+    newFile = chr(ord(file) - 1)
+    newRank = rank - 1
+    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (file, newRank)
+
+
+# diag4 means the diagonal from bottom left to top right 
+# the oneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def oneSquareDiag4(piece: Piece):
+    file, rank = piece.location
+    if file == "h":
+        return False
+    
+    newFile = chr(ord(file) + 1)
+    newRank = rank + 1
+    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    
+    occupant = BOARD[r][c]
+    if type(occupant) == Piece:
+        if occupant.color == piece.color:
+            return False
+        
+        else:
+            return "can capture"
+
+    return (file, newRank)
