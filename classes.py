@@ -1,39 +1,5 @@
 from typing import Union
 
-BOARD = [
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-]
-
-fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
-
-
-# gets the indices of the Board from rank and file 
-def getBoardIndexFromRankAndFile(square: tuple[str, int]):
-    file, rank = square
-    col = fileIndex[file]
-    row = len(BOARD) - rank
-    return (row, col)
-
-
-# gets the rank and file from indices of the Board
-def getRankAndFileFromBoardIndex(row, col):
-    file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
-    rank = len(BOARD) - row 
-    return (file, rank)
-
-
-# convert rank and file tuple to string
-def stringifyRankFile(square: tuple):
-    return f"{square[0]}{square[1]}"
-
-
 class Piece:
     def __init__(self, color: str, name: str, ID: str, location: tuple, canCastle: bool, points: int):
         self.color = color 
@@ -120,6 +86,39 @@ class Pawn(Piece):
                 # returns a boolean 
                 return (currentFile == newFile) and (currentRank - newRank == 1)
         
+
+BOARD = [
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+    [None, None, None, None, None, None, None, None],
+]
+
+fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+
+
+# gets the indices of the Board from rank and file 
+def getBoardIndexFromRankAndFile(square: tuple[str, int]):
+    file, rank = square
+    col = fileIndex[file]
+    row = len(BOARD) - rank
+    return (row, col)
+
+
+# gets the rank and file from indices of the Board
+def getRankAndFileFromBoardIndex(row, col):
+    file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
+    rank = len(BOARD) - row 
+    return (file, rank)
+
+
+# convert rank and file tuple to string
+def stringifyRankFile(square: tuple):
+    return f"{square[0]}{square[1]}"
 
 # place a piece on the board at its initial square
 def placePiece(piece: Piece):
