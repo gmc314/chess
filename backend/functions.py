@@ -1,4 +1,5 @@
 from classes import *
+from typing import Union
 
 BOARD = [
     [None, None, None, None, None, None, None, None],
