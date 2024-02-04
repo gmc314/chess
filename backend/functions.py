@@ -86,7 +86,7 @@ def oneSquareLeft(piece: Piece):
         return False
 
     newFile = chr(ord(file) - 1)
-    r, c = getBoardIndexFromRankAndFile(newFile, rank)
+    r, c = getBoardIndexFromRankAndFile((newFile, rank))
 
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -107,7 +107,7 @@ def oneSquareRight(piece: Piece):
         return False
 
     newFile = chr(ord(file) + 1)
-    r, c = getBoardIndexFromRankAndFile(newFile, rank)
+    r, c = getBoardIndexFromRankAndFile((newFile, rank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -128,7 +128,7 @@ def oneSquareUp(piece: Piece):
         return False
 
     newRank = rank + 1
-    r, c = getBoardIndexFromRankAndFile(file, newRank)
+    r, c = getBoardIndexFromRankAndFile((file, newRank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -148,7 +148,7 @@ def oneSquareDown(piece: Piece):
         return False
 
     newRank = rank - 1
-    r, c = getBoardIndexFromRankAndFile(file, newRank)
+    r, c = getBoardIndexFromRankAndFile((file, newRank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -166,12 +166,12 @@ def oneSquareDown(piece: Piece):
 # false if the square is occupied by the same color or if the square is off the board
 def oneSquareDiag1(piece: Piece):
     file, rank = piece.location
-    if file == "h":
+    if file == "h" or rank == 1:
         return False
     
     newFile = chr(ord(file) + 1)
     newRank = rank - 1
-    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -189,12 +189,12 @@ def oneSquareDiag1(piece: Piece):
 # false if the square is occupied by the same color or if the square is off the board
 def oneSquareDiag2(piece: Piece):
     file, rank = piece.location
-    if file == "a":
+    if file == "a" or rank == len(BOARD):
         return False
     
     newFile = chr(ord(file) - 1)
     newRank = rank + 1
-    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -212,12 +212,12 @@ def oneSquareDiag2(piece: Piece):
 # false if the square is occupied by the same color or if the square is off the board
 def oneSquareDiag3(piece: Piece):
     file, rank = piece.location
-    if file == "a":
+    if file == "a" or rank == 1:
         return False
     
     newFile = chr(ord(file) - 1)
     newRank = rank - 1
-    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -235,12 +235,12 @@ def oneSquareDiag3(piece: Piece):
 # false if the square is occupied by the same color or if the square is off the board
 def oneSquareDiag4(piece: Piece):
     file, rank = piece.location
-    if file == "h":
+    if file == "h" or rank == len(BOARD):
         return False
     
     newFile = chr(ord(file) + 1)
     newRank = rank + 1
-    r, c = getBoardIndexFromRankAndFile(newFile, newRank)
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
     
     occupant = BOARD[r][c]
     if type(occupant) == Piece:
@@ -250,4 +250,4 @@ def oneSquareDiag4(piece: Piece):
         else:
             return "can capture"
 
-    return (file, newRank)
+    return (newFile, newRank)

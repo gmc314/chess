@@ -31,3 +31,16 @@ bp = Pawn("Black", "1", ("h", 7))
 placePiece(bp)
 print(type(BOARD[1][7])==Pawn)
 print(moveFromCurrentSquare(bp, ("h", 4)) == "invalid move")
+
+# testing one square diagonals
+print(oneSquareDiag1(wb)==False)
+print(oneSquareDiag2(wb)==False)
+print(oneSquareDiag3(wb)==False)
+print(oneSquareDiag4(wb)==('b', 2))
+
+# testing one square cardinals
+print(oneSquareDown(wb)==False)
+print(oneSquareDown(wp)==('d', 3)) 
+print(oneSquareUp(bp)==('h', 8))
+print(oneSquareLeft(wb)==False)
+print(oneSquareRight(wp)==('e', 4))
