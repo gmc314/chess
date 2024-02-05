@@ -30,8 +30,8 @@ def getRankAndFileFromBoardIndex(row, col):
 
 
 # convert rank and file tuple to string
-def stringifyRankFile(square: tuple):
-    return f"{square[0]}{square[1]}"
+def stringifyRankFile(square: tuple[str, int]):
+    return f"{square[0].upper()}{square[1]}"
 
 
 class Piece:
