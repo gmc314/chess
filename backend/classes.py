@@ -90,7 +90,8 @@ class Queen(Piece):
         if newSquare not in validMoves:
             return False
         
-        return True
+        else:
+            return True
     
 
 class Rook(Piece):
@@ -98,16 +99,37 @@ class Rook(Piece):
         super().__init__(color, "Rook", ID, location, True, 5)
 
     def isMoveValid(self, newSquare):
-        return True
+        upMoves = getValidMovesInStraightDir(self, getOneSquareUp, self.location)
+        downMoves = getValidMovesInStraightDir(self, getOneSquareDown, self.location)
+        leftMoves = getValidMovesInStraightDir(self, getOneSquareLeft, self.location)
+        rightMoves = getValidMovesInStraightDir(self, getOneSquareRight, self.location)
         
-
+        validMoves = upMoves + downMoves + leftMoves + rightMoves
+        
+        if newSquare not in validMoves:
+            return False
+        
+        else:
+            return True
+    
 class Bishop(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Bishop", ID, location, False, 3) 
     
     def isMoveValid(self, newSquare):
-        return True
+        diag1Moves = getValidMovesInStraightDir(self, getOneSquareDiag1, self.location)
+        diag2Moves = getValidMovesInStraightDir(self, getOneSquareDiag2, self.location)
+        diag3Moves = getValidMovesInStraightDir(self, getOneSquareDiag3, self.location)
+        diag4Moves = getValidMovesInStraightDir(self, getOneSquareDiag4, self.location)
         
+        validMoves = diag1Moves + diag2Moves + diag3Moves + diag4Moves
+        
+        if newSquare not in validMoves:
+            return False
+        
+        else:
+            return True
+    
 
 class Knight(Piece):
     def __init__(self, color, ID, location):
@@ -115,6 +137,8 @@ class Knight(Piece):
     
     def isMoveValid(self, newSquare):
         return True    
+
+
 
 class Pawn(Piece):
     def __init__(self, color, ID, location):
