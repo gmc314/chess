@@ -58,3 +58,8 @@ print(wk.isMoveValid(("d", 5))==True)
 print(wk.isMoveValid(("b", 7))==True)
 print(wk.isMoveValid(("b", 5))==True)
 print(wk.isMoveValid(("a", 5))==False)
+
+# moving white king
+print(moveFromCurrentSquare(wk, ("b", 5))=="King C6 to B5")
+print(moveFromCurrentSquare(wk, ("d", 7))=="invalid move")
+print(wk.location==("b", 5))
