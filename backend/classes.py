@@ -47,9 +47,9 @@ class Piece:
         return f"{self.color} {self.name}"
 
 
-    # the oneSquareLeft function returns the left adjacent square of the piece. returns 
+    # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareLeft(self, currentSquare):
+    def getOneSquareLeft(self, currentSquare):
         file, rank = currentSquare
         if file == "a":
             return False
@@ -67,9 +67,9 @@ class Piece:
             
         return (newFile, rank)
 
-    # the oneSquareRight function returns the right adjacent square of the piece. returns 
+    # the getOneSquareRight function returns the right adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareRight(self, currentSquare):
+    def getOneSquareRight(self, currentSquare):
         file, rank = currentSquare
         if file == "h":
             return False
@@ -88,9 +88,9 @@ class Piece:
         return (newFile, rank)
 
 
-    # the oneSquareUp function returns the up adjacent square of the piece. returns 
+    # the getOneSquareUp function returns the up adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareUp(self, currentSquare):
+    def getOneSquareUp(self, currentSquare):
         file, rank = currentSquare
         if rank == len(BOARD):
             return False
@@ -108,9 +108,9 @@ class Piece:
 
         return (file, newRank)
 
-    # the oneSquareDown function returns the down adjacent square of the piece. returns 
+    # the getOneSquareDown function returns the down adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareDown(self, currentSquare):
+    def getOneSquareDown(self, currentSquare):
         file, rank = currentSquare
         if rank == 1:
             return False
@@ -130,9 +130,9 @@ class Piece:
 
 
     # diag1 means the diagonal from top left to bottom right
-    # the oneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
+    # the getOneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareDiag1(self, currentSquare):
+    def getOneSquareDiag1(self, currentSquare):
         file, rank = currentSquare
         if file == "h" or rank == 1:
             return False
@@ -153,9 +153,9 @@ class Piece:
 
 
     # diag2 means the diagonal from bottom right to top left
-    # the oneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
+    # the getOneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareDiag2(self, currentSquare):
+    def getOneSquareDiag2(self, currentSquare):
         file, rank = currentSquare
         if file == "a" or rank == len(BOARD):
             return False
@@ -176,9 +176,9 @@ class Piece:
 
 
     # diag3 means the diagonal from top right to bottom left
-    # the oneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
+    # the getOneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareDiag3(self, currentSquare):
+    def getOneSquareDiag3(self, currentSquare):
         file, rank = currentSquare
         if file == "a" or rank == 1:
             return False
@@ -199,9 +199,9 @@ class Piece:
 
 
     # diag4 means the diagonal from bottom left to top right 
-    # the oneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
+    # the getOneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    def oneSquareDiag4(self, currentSquare):
+    def getOneSquareDiag4(self, currentSquare):
         file, rank = currentSquare
         if file == "h" or rank == len(BOARD):
             return False
@@ -221,20 +221,30 @@ class Piece:
         return (newFile, newRank)
 
 
+    # this function keeps checking the squares above the currentSquare for checking if the move is valid
+    def checkSquaresUp(self, currentSquare):
+        upOneSquare = self.getOneSquareUp(currentSquare)
+        while type(upOneSquare) == tuple:
+            upOneSquare = self.getOneSquareUp(upOneSquare)
+            
+        return upOneSquare
+
+
+
 # inheriting from Piece class
 class King(Piece):    
     def __init__(self, color, ID, location):
         super().__init__(color, "King", ID, location, True, 0) 
 
     def isMoveValid(self, newSquare):
-        up = self.oneSquareUp(self.location) 
-        down = self.oneSquareDown(self.location)
-        left = self.oneSquareLeft(self.location)
-        right = self.oneSquareRight(self.location)
-        d1 = self.oneSquareDiag1(self.location)
-        d2 = self.oneSquareDiag2(self.location)
-        d3 = self.oneSquareDiag3(self.location)
-        d4 = self.oneSquareDiag4(self.location)
+        up = self.getOneSquareUp(self.location) 
+        down = self.getOneSquareDown(self.location)
+        left = self.getOneSquareLeft(self.location)
+        right = self.getOneSquareRight(self.location)
+        d1 = self.getOneSquareDiag1(self.location)
+        d2 = self.getOneSquareDiag2(self.location)
+        d3 = self.getOneSquareDiag3(self.location)
+        d4 = self.getOneSquareDiag4(self.location)
         
         if up == newSquare:
             return True
