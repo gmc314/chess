@@ -49,7 +49,6 @@ class Piece:
 
     # the oneSquareLeft function returns the left adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareLeft(self, currentSquare):
         file, rank = currentSquare
         if file == "a":
@@ -70,7 +69,6 @@ class Piece:
 
     # the oneSquareRight function returns the right adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareRight(self, currentSquare):
         file, rank = currentSquare
         if file == "h":
@@ -92,7 +90,6 @@ class Piece:
 
     # the oneSquareUp function returns the up adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareUp(self, currentSquare):
         file, rank = currentSquare
         if rank == len(BOARD):
@@ -113,7 +110,6 @@ class Piece:
 
     # the oneSquareDown function returns the down adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareDown(self, currentSquare):
         file, rank = currentSquare
         if rank == 1:
@@ -136,7 +132,6 @@ class Piece:
     # diag1 means the diagonal from top left to bottom right
     # the oneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareDiag1(self, currentSquare):
         file, rank = currentSquare
         if file == "h" or rank == 1:
@@ -148,19 +143,18 @@ class Piece:
         
         occupant = BOARD[r][c]
         if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
+            if occupant.color != self.color:
+                return "can capture"
             
             else:
-                return "can capture"
+                return False
 
-        return (file, newRank)
+        return (newFile, newRank)
 
 
     # diag2 means the diagonal from bottom right to top left
     # the oneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareDiag2(self, currentSquare):
         file, rank = currentSquare
         if file == "a" or rank == len(BOARD):
@@ -178,13 +172,12 @@ class Piece:
             else:
                 return "can capture"
 
-        return (file, newRank)
+        return (newFile, newRank)
 
 
     # diag3 means the diagonal from top right to bottom left
     # the oneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareDiag3(self, currentSquare):
         file, rank = currentSquare
         if file == "a" or rank == 1:
@@ -202,13 +195,12 @@ class Piece:
             else:
                 return "can capture"
 
-        return (file, newRank)
+        return (newFile, newRank)
 
 
     # diag4 means the diagonal from bottom left to top right 
     # the oneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
     # false if the square is occupied by the same color or if the square is off the board
-    @classmethod
     def oneSquareDiag4(self, currentSquare):
         file, rank = currentSquare
         if file == "h" or rank == len(BOARD):
@@ -234,22 +226,43 @@ class King(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "King", ID, location, True, 0) 
 
-    @classmethod
     def isMoveValid(self, newSquare):
-        up = self.oneSquareUp(newSquare) 
-        down = self.oneSquareDown(newSquare)
-        left = self.oneSquareLeft(newSquare)
-        right = self.oneSquareRight(newSquare)
-        d1 = self.oneSquareDiag1(newSquare)
-        d2 = self.oneSquareDiag2(newSquare)
-        d3 = self.oneSquareDiag3(newSquare)
-        d4 = self.oneSquareDiag4(newSquare)
-
-        for dir in [up, down, left, right, d1, d2, d3, d4]:
-            if type(dir) != tuple:
-                return False
+        up = self.oneSquareUp(self.location) 
+        down = self.oneSquareDown(self.location)
+        left = self.oneSquareLeft(self.location)
+        right = self.oneSquareRight(self.location)
+        d1 = self.oneSquareDiag1(self.location)
+        d2 = self.oneSquareDiag2(self.location)
+        d3 = self.oneSquareDiag3(self.location)
+        d4 = self.oneSquareDiag4(self.location)
         
-        return True
+        if up == newSquare:
+            return True
+        
+        elif down == newSquare:
+            return True
+        
+        elif left == newSquare:
+            return True
+        
+        elif right == newSquare:
+            return True
+        
+        elif d1 == newSquare:
+            return True
+        
+        elif d2 == newSquare:
+            return True
+        
+        elif d3 == newSquare:
+            return True
+        
+        elif d4 == newSquare:
+            return True
+        
+        else:
+            return False
+        
 
 class Queen(Piece):
     def __init__(self, color, ID, location):
