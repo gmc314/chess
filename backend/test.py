@@ -43,3 +43,18 @@ print(wp.oneSquareDown(wp.location)==('d', 3))
 print(bp.oneSquareUp(bp.location)==('h', 8))
 print(wb.oneSquareLeft(wb.location)==False)
 print(wp.oneSquareRight(wp.location)==('e', 4))
+
+# testing king valid move
+wk = King("White", "4", ("c", 6))
+placePiece(wk)
+print(type(BOARD[2][2])==King)
+
+print(wk.isMoveValid(("c", 5))==True)
+print(wk.isMoveValid(("c", 7))==True)
+print(wk.isMoveValid(("b", 6))==True)
+print(wk.isMoveValid(("d", 6))==True)
+print(wk.isMoveValid(("d", 7))==True)
+print(wk.isMoveValid(("d", 5))==True)
+print(wk.isMoveValid(("b", 7))==True)
+print(wk.isMoveValid(("b", 5))==True)
+print(wk.isMoveValid(("a", 5))==False)
