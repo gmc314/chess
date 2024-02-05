@@ -224,9 +224,15 @@ class Piece:
     # this function keeps checking the squares above the currentSquare for checking if the move is valid
     def checkSquaresUp(self, currentSquare):
         upOneSquare = self.getOneSquareUp(currentSquare)
-        while type(upOneSquare) == tuple:
+        nextSquareUp = self.getOneSquareUp(upOneSquare)
+        while type(nextSquareUp) == tuple:
             upOneSquare = self.getOneSquareUp(upOneSquare)
             
+            if type(upOneSquare) != tuple:
+                break
+            
+            nextSquareUp = self.getOneSquareUp(nextSquareUp)
+
         return upOneSquare
 
 
