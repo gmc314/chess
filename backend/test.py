@@ -32,17 +32,17 @@ print(type(BOARD[1][7])==Pawn)
 print(moveFromCurrentSquare(bp, ("h", 4)) == "invalid move")
 
 # testing one square diagonals
-print(wb.getOneSquareDiag1(wb.location)==False)
-print(wb.getOneSquareDiag2(wb.location)==False)
-print(wb.getOneSquareDiag3(wb.location)==False)
-print(wb.getOneSquareDiag4(wb.location)==('b', 2))
+print(getOneSquareDiag1(wb, wb.location)==False)
+print(getOneSquareDiag2(wb, wb.location)==False)
+print(getOneSquareDiag3(wb, wb.location)==False)
+print(getOneSquareDiag4(wb, wb.location)==('b', 2))
 
 # testing one square cardinals
-print(wb.getOneSquareDown(wb.location)==False)
-print(wp.getOneSquareDown(wp.location)==('d', 3)) 
-print(bp.getOneSquareUp(bp.location)==('h', 8))
-print(wb.getOneSquareLeft(wb.location)==False)
-print(wp.getOneSquareRight(wp.location)==('e', 4))
+print(getOneSquareDown(wb, wb.location)==False)
+print(getOneSquareDown(wp, wp.location)==('d', 3)) 
+print(getOneSquareUp(bp, bp.location)==('h', 8))
+print(getOneSquareLeft(wb, wb.location)==False)
+print(getOneSquareRight(wp, wp.location)==('e', 4))
 
 # testing king valid move
 wk = King("White", "4", ("c", 6))
@@ -60,8 +60,16 @@ print(wk.isMoveValid(("b", 5))==True)
 print(wk.isMoveValid(("a", 5))==False)
 
 # moving white king
-print(moveFromCurrentSquare(wk, ("b", 5))=="King C6 to B5")
+print(moveFromCurrentSquare(wk, ("b", 5))=="King C6 to B5. ")
 print(moveFromCurrentSquare(wk, ("d", 7))=="invalid move")
 print(wk.location==("b", 5))
+moveFromCurrentSquare(wk, ("b", 5))
 
-print(wk.checkSquaresUp(("b", 5)))
+bn = Knight("Black", "8", ("b", 8))
+placePiece(bn)
+wq = Queen("White", "123", ("b", 6))
+
+print(getValidMovesInStraightDir(wq, getOneSquareUp, wq.location))
+
+print(moveFromCurrentSquare(wq, bn.location))
+pprint(BOARD)
