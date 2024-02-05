@@ -1,4 +1,4 @@
-from classes import *
+from script import *
 from pprint import pprint
 
 # testing placing a piece on the board
@@ -72,4 +72,23 @@ wq = Queen("White", "123", ("b", 6))
 print(getValidMovesInStraightDir(wq, getOneSquareUp, wq.location))
 
 print(moveFromCurrentSquare(wq, bn.location))
-pprint(BOARD)
+
+# obstructed knight wheel
+bn2 = Knight("Black", "8", ("g", 1))
+placePiece(bn2)
+bp2 = Pawn("Black", "8", ("e", 2))
+placePiece(bp2)
+print(knightWheel(bn2))
+
+# full knight wheel
+
+bp2 = Pawn("Black", "8", ("f", 2))
+placePiece(bp2)
+
+wp2 = Pawn("White", "8", ("d", 2))
+placePiece(wp2)
+
+
+bn5 = Knight("Black", "8", ("e", 3))
+placePiece(bn5)
+print(knightWheel(bn5))
