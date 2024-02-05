@@ -33,14 +33,14 @@ print(type(BOARD[1][7])==Pawn)
 print(moveFromCurrentSquare(bp, ("h", 4)) == "invalid move")
 
 # testing one square diagonals
-print(oneSquareDiag1(wb)==False)
-print(oneSquareDiag2(wb)==False)
-print(oneSquareDiag3(wb)==False)
-print(oneSquareDiag4(wb)==('b', 2))
+print(wb.oneSquareDiag1(wb.location)==False)
+print(wb.oneSquareDiag2(wb.location)==False)
+print(wb.oneSquareDiag3(wb.location)==False)
+print(wb.oneSquareDiag4(wb.location)==('b', 2))
 
 # testing one square cardinals
-print(oneSquareDown(wb)==False)
-print(oneSquareDown(wp)==('d', 3)) 
-print(oneSquareUp(bp)==('h', 8))
-print(oneSquareLeft(wb)==False)
-print(oneSquareRight(wp)==('e', 4))
+print(wb.oneSquareDown(wb.location)==False)
+print(wp.oneSquareDown(wp.location)==('d', 3)) 
+print(bp.oneSquareUp(bp.location)==('h', 8))
+print(wb.oneSquareLeft(wb.location)==False)
+print(wp.oneSquareRight(wp.location)==('e', 4))
