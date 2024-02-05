@@ -1,4 +1,3 @@
-from functions import *
 from typing import Union
 
 BOARD = [
