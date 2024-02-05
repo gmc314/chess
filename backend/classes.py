@@ -424,16 +424,16 @@ def knightWheel(knight: Knight):
     oneSquareD4 = getOneSquareDiag4(knight, currentSquare)
 
     if oneSquareD1 != False:
-        movesD1 = [getOneSquareRight(oneSquareD1), getOneSquareDown(oneSquareD1)]
+        movesD1 = [getOneSquareRight(knight, oneSquareD1), getOneSquareDown(knight, oneSquareD1)]
     
     if oneSquareD2 != False:
-        movesD2 = [getOneSquareLeft(oneSquareD2), getOneSquareUp(oneSquareD2)]
+        movesD2 = [getOneSquareLeft(knight, oneSquareD2), getOneSquareUp(knight, oneSquareD2)]
     
     if oneSquareD3 != False:
-        movesD3 = [getOneSquareLeft(oneSquareD3), getOneSquareDown(oneSquareD3)]
+        movesD3 = [getOneSquareLeft(knight, oneSquareD3), getOneSquareDown(knight, oneSquareD3)]
     
     if oneSquareD4 != False:
-        movesD4 = [getOneSquareRight(oneSquareD4), getOneSquareUp(oneSquareD4)]
+        movesD4 = [getOneSquareRight(knight, oneSquareD4), getOneSquareUp(knight, oneSquareD4)]
     
     validMoves = movesD1 + movesD2 + movesD3 + movesD4
     validMoves = list(filter(lambda x: x != False, validMoves))
