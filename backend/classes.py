@@ -14,26 +14,6 @@ BOARD = [
 fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 
 
-# gets the indices of the Board from rank and file 
-def getBoardIndexFromRankAndFile(square: tuple[str, int]):
-    file, rank = square
-    col = fileIndex[file]
-    row = len(BOARD) - rank
-    return (row, col)
-
-
-# gets the rank and file from indices of the Board
-def getRankAndFileFromBoardIndex(row, col):
-    file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
-    rank = len(BOARD) - row 
-    return (file, rank)
-
-
-# convert rank and file tuple to string
-def stringifyRankFile(square: tuple[str, int]):
-    return f"{square[0].upper()}{square[1]}"
-
-
 class Piece:
     def __init__(self, color: str, name: str, ID: str, location: tuple, canCastle: bool, points: int):
         self.color = color 
@@ -47,210 +27,20 @@ class Piece:
         return f"{self.color} {self.name}"
 
 
-    # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareLeft(self, currentSquare):
-        file, rank = currentSquare
-        if file == "a":
-            return False
-
-        newFile = chr(ord(file) - 1)
-        r, c = getBoardIndexFromRankAndFile((newFile, rank))
-
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-
-            else:
-                return "can capture"
-            
-        return (newFile, rank)
-
-    # the getOneSquareRight function returns the right adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareRight(self, currentSquare):
-        file, rank = currentSquare
-        if file == "h":
-            return False
-
-        newFile = chr(ord(file) + 1)
-        r, c = getBoardIndexFromRankAndFile((newFile, rank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-            
-            else:
-                return "can capture"
-
-        return (newFile, rank)
-
-
-    # the getOneSquareUp function returns the up adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareUp(self, currentSquare):
-        file, rank = currentSquare
-        if rank == len(BOARD):
-            return False
-
-        newRank = rank + 1
-        r, c = getBoardIndexFromRankAndFile((file, newRank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-            
-            else:
-                return "can capture"
-
-        return (file, newRank)
-
-    # the getOneSquareDown function returns the down adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareDown(self, currentSquare):
-        file, rank = currentSquare
-        if rank == 1:
-            return False
-
-        newRank = rank - 1
-        r, c = getBoardIndexFromRankAndFile((file, newRank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-            
-            else:
-                return "can capture"
-
-        return (file, newRank)
-
-
-    # diag1 means the diagonal from top left to bottom right
-    # the getOneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareDiag1(self, currentSquare):
-        file, rank = currentSquare
-        if file == "h" or rank == 1:
-            return False
-        
-        newFile = chr(ord(file) + 1)
-        newRank = rank - 1
-        r, c = getBoardIndexFromRankAndFile((newFile, newRank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color != self.color:
-                return "can capture"
-            
-            else:
-                return False
-
-        return (newFile, newRank)
-
-
-    # diag2 means the diagonal from bottom right to top left
-    # the getOneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareDiag2(self, currentSquare):
-        file, rank = currentSquare
-        if file == "a" or rank == len(BOARD):
-            return False
-        
-        newFile = chr(ord(file) - 1)
-        newRank = rank + 1
-        r, c = getBoardIndexFromRankAndFile((newFile, newRank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-            
-            else:
-                return "can capture"
-
-        return (newFile, newRank)
-
-
-    # diag3 means the diagonal from top right to bottom left
-    # the getOneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareDiag3(self, currentSquare):
-        file, rank = currentSquare
-        if file == "a" or rank == 1:
-            return False
-        
-        newFile = chr(ord(file) - 1)
-        newRank = rank - 1
-        r, c = getBoardIndexFromRankAndFile((newFile, newRank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-            
-            else:
-                return "can capture"
-
-        return (newFile, newRank)
-
-
-    # diag4 means the diagonal from bottom left to top right 
-    # the getOneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
-    # false if the square is occupied by the same color or if the square is off the board
-    def getOneSquareDiag4(self, currentSquare):
-        file, rank = currentSquare
-        if file == "h" or rank == len(BOARD):
-            return False
-        
-        newFile = chr(ord(file) + 1)
-        newRank = rank + 1
-        r, c = getBoardIndexFromRankAndFile((newFile, newRank))
-        
-        occupant = BOARD[r][c]
-        if type(occupant) == Piece:
-            if occupant.color == self.color:
-                return False
-            
-            else:
-                return "can capture"
-
-        return (newFile, newRank)
-
-
-    # this function keeps checking the squares above the currentSquare for checking if the move is valid
-    def checkSquaresUp(self, currentSquare):
-        upOneSquare = self.getOneSquareUp(currentSquare)
-        nextSquareUp = self.getOneSquareUp(upOneSquare)
-        while type(nextSquareUp) == tuple:
-            upOneSquare = self.getOneSquareUp(upOneSquare)
-            
-            if type(upOneSquare) != tuple:
-                break
-            
-            nextSquareUp = self.getOneSquareUp(nextSquareUp)
-
-        return upOneSquare
-
-
-
 # inheriting from Piece class
 class King(Piece):    
     def __init__(self, color, ID, location):
         super().__init__(color, "King", ID, location, True, 0) 
 
     def isMoveValid(self, newSquare):
-        up = self.getOneSquareUp(self.location) 
-        down = self.getOneSquareDown(self.location)
-        left = self.getOneSquareLeft(self.location)
-        right = self.getOneSquareRight(self.location)
-        d1 = self.getOneSquareDiag1(self.location)
-        d2 = self.getOneSquareDiag2(self.location)
-        d3 = self.getOneSquareDiag3(self.location)
-        d4 = self.getOneSquareDiag4(self.location)
+        up = getOneSquareUp(self, self.location) 
+        down = getOneSquareDown(self, self.location)
+        left = getOneSquareLeft(self, self.location)
+        right = getOneSquareRight(self, self.location)
+        d1 = getOneSquareDiag1(self, self.location)
+        d2 = getOneSquareDiag2(self, self.location)
+        d3 = getOneSquareDiag3(self, self.location)
+        d4 = getOneSquareDiag4(self, self.location)
         
         if up == newSquare:
             return True
@@ -283,9 +73,23 @@ class King(Piece):
 class Queen(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Queen", ID, location, False, 9) 
-   
-    @classmethod
+    
     def isMoveValid(self, newSquare):
+        upMoves = getValidMovesInStraightDir(self, getOneSquareUp, self.location)
+        downMoves = getValidMovesInStraightDir(self, getOneSquareDown, self.location)
+        leftMoves = getValidMovesInStraightDir(self, getOneSquareLeft, self.location)
+        rightMoves = getValidMovesInStraightDir(self, getOneSquareRight, self.location)
+        
+        diag1Moves = getValidMovesInStraightDir(self, getOneSquareDiag1, self.location)
+        diag2Moves = getValidMovesInStraightDir(self, getOneSquareDiag2, self.location)
+        diag3Moves = getValidMovesInStraightDir(self, getOneSquareDiag3, self.location)
+        diag4Moves = getValidMovesInStraightDir(self, getOneSquareDiag4, self.location)
+        
+        validMoves = upMoves+downMoves+leftMoves+rightMoves+diag1Moves+diag2Moves+diag3Moves+diag4Moves
+        
+        if newSquare not in validMoves:
+            return False
+        
         return True
     
 
@@ -293,7 +97,6 @@ class Rook(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Rook", ID, location, True, 5)
 
-    @classmethod
     def isMoveValid(self, newSquare):
         return True
         
@@ -302,7 +105,6 @@ class Bishop(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Bishop", ID, location, False, 3) 
     
-    @classmethod
     def isMoveValid(self, newSquare):
         return True
         
@@ -311,7 +113,6 @@ class Knight(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "Knight", ID, location, False, 3) 
     
-    @classmethod
     def isMoveValid(self, newSquare):
         return True    
 
@@ -344,6 +145,24 @@ class Pawn(Piece):
                 return (currentFile == newFile) and (currentRank - newRank == 1)
             
 
+# gets the indices of the Board from rank and file 
+def getBoardIndexFromRankAndFile(square: tuple[str, int]):
+    file, rank = square
+    col = fileIndex[file]
+    row = len(BOARD) - rank
+    return (row, col)
+
+
+# gets the rank and file from indices of the Board
+def getRankAndFileFromBoardIndex(row, col):
+    file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
+    rank = len(BOARD) - row 
+    return (file, rank)
+
+
+# convert rank and file tuple to string
+def stringifyRankFile(square: tuple[str, int]):
+    return f"{square[0].upper()}{square[1]}"
 
 
 # place a piece on the board at its initial square
@@ -354,8 +173,23 @@ def placePiece(piece: Piece):
     return f"{piece} placed"
 
 
+# captures the capturee
+def capture(capturer: Piece, capturee: Piece):
+    captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
+    BOARD[captureeRow][captureeCol] = None
+    capturer.location = capturee.location
+    BOARD[captureeRow][captureeCol] = capturer
+    return f"{capturee} captured."
+
+
+# returns the piece at the specific square
+def getPieceFromLocation(square):
+    r, c = getBoardIndexFromRankAndFile(square)
+    return BOARD[r][c]
+
+
 # move piece from current square to new `square`
-def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple):
+def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]):
     if not piece.isMoveValid(newSquare):
         return "invalid move"
     
@@ -366,12 +200,19 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # getting location of move
     newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
     newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
-
+    occupant = getPieceFromLocation((newRank, newFile))
+    
+    if occupant != None:
+        captureMessage = capture(piece, occupant)
+    else:
+        captureMessage = ""
+    
     # move piece from the current square
     BOARD[currentRow][currentCol] = None
 
-    # to new
-    piece.location = (newRank, newFile)
+    # to new square
+    piece.location = (newRank, newFile)    
+    
     BOARD[newRow][newCol] = piece
 
     # condition for en passant and first turn two-square forward move
@@ -379,12 +220,172 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         piece.firstTurn = False
 
     # print out the move 
-    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}"
+    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
 
-def capture(capturer: Piece, capturee: Piece):
-    captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
-    BOARD[captureeRow][captureeCol] = None
-    capturer.location = capturee.location
-    BOARD[captureeRow][captureeCol] = capturer
-    return f"{capturee} captured"
 
+# the getOneSquareLeft function returns the left adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareLeft(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if file == "a":
+        return False
+
+    newFile = chr(ord(file) - 1)
+    r, c = getBoardIndexFromRankAndFile((newFile, rank))
+
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+        
+    return (newFile, rank)
+
+
+# the getOneSquareRight function returns the right adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareRight(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if file == "h":
+        return False
+
+    newFile = chr(ord(file) + 1)
+    r, c = getBoardIndexFromRankAndFile((newFile, rank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+
+    return (newFile, rank)
+
+
+# the getOneSquareUp function returns the up adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareUp(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if rank == len(BOARD):
+        return False
+
+    newRank = rank + 1
+    r, c = getBoardIndexFromRankAndFile((file, newRank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+
+    return (file, newRank)
+
+
+# the getOneSquareDown function returns the down adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareDown(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if rank == 1:
+        return False
+
+    newRank = rank - 1
+    r, c = getBoardIndexFromRankAndFile((file, newRank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+
+    return (file, newRank)
+
+
+# diag1 means the diagonal from top left to bottom right
+# the getOneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareDiag1(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if file == "h" or rank == 1:
+        return False
+    
+    newFile = chr(ord(file) + 1)
+    newRank = rank - 1
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+        
+    return (newFile, newRank)
+
+
+# diag2 means the diagonal from bottom right to top left
+# the getOneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareDiag2(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if file == "a" or rank == len(BOARD):
+        return False
+    
+    newFile = chr(ord(file) - 1)
+    newRank = rank + 1
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+
+    return (newFile, newRank)
+
+
+# diag3 means the diagonal from top right to bottom left
+# the getOneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareDiag3(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if file == "a" or rank == 1:
+        return False
+    
+    newFile = chr(ord(file) - 1)
+    newRank = rank - 1
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+        
+    return (newFile, newRank)
+
+
+# diag4 means the diagonal from bottom left to top right 
+# the getOneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
+# false if the square is occupied by the same color or if the square is off the board
+def getOneSquareDiag4(piece: Piece, currentSquare: tuple[str, int]):
+    file, rank = currentSquare
+    if file == "h" or rank == len(BOARD):
+        return False
+    
+    newFile = chr(ord(file) + 1)
+    newRank = rank + 1
+    r, c = getBoardIndexFromRankAndFile((newFile, newRank))
+    
+    occupant = BOARD[r][c]
+    if isinstance(occupant, Piece):
+        if occupant.color == piece.color:
+            return False
+
+    return (newFile, newRank)
+
+
+# this function returns a list of valid moves in a straight (cardinal and diagonal) direction
+def getValidMovesInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple[str, int]):
+    validMoves = []
+    nextSquareUp = getOneSquareDirFunction(piece, square)
+    while type(nextSquareUp) == tuple:
+        validMoves.append(nextSquareUp)
+        upOneSquare = getOneSquareDirFunction(piece, nextSquareUp)
+        
+        if type(upOneSquare) != tuple:
+            break
+        
+        nextSquareUp = getOneSquareDirFunction(piece, nextSquareUp)
+
+    return validMoves
