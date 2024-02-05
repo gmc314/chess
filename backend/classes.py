@@ -333,7 +333,7 @@ def getOneSquareDiag1(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
             return False
         
     return (newFile, newRank)
@@ -353,7 +353,7 @@ def getOneSquareDiag2(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
             return False
 
     return (newFile, newRank)
@@ -373,7 +373,7 @@ def getOneSquareDiag3(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
             return False
         
     return (newFile, newRank)
@@ -393,7 +393,7 @@ def getOneSquareDiag4(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
             return False
 
     return (newFile, newRank)
@@ -411,5 +411,31 @@ def getValidMovesInStraightDir(piece: Piece, getOneSquareDirFunction, square: tu
             break
         
         nextSquareUp = getOneSquareDirFunction(piece, nextSquareUp)
+
+    return validMoves
+
+
+# gets a list of valid moves for the Knight
+def knightWheel(knight: Knight):
+    currentSquare = knight.location
+    oneSquareD1 = getOneSquareDiag1(knight, currentSquare)
+    oneSquareD2 = getOneSquareDiag2(knight, currentSquare)
+    oneSquareD3 = getOneSquareDiag3(knight, currentSquare)
+    oneSquareD4 = getOneSquareDiag4(knight, currentSquare)
+
+    if oneSquareD1 != False:
+        movesD1 = [getOneSquareRight(oneSquareD1), getOneSquareDown(oneSquareD1)]
+    
+    if oneSquareD2 != False:
+        movesD2 = [getOneSquareLeft(oneSquareD2), getOneSquareUp(oneSquareD2)]
+    
+    if oneSquareD3 != False:
+        movesD3 = [getOneSquareLeft(oneSquareD3), getOneSquareDown(oneSquareD3)]
+    
+    if oneSquareD4 != False:
+        movesD4 = [getOneSquareRight(oneSquareD4), getOneSquareUp(oneSquareD4)]
+    
+    validMoves = movesD1 + movesD2 + movesD3 + movesD4
+    validMoves = list(filter(lambda x: x != False, validMoves))
 
     return validMoves
