@@ -333,9 +333,12 @@ def getOneSquareDiag1(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
+        if (not isinstance(piece, Knight)):
             return False
         
+        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+            return False
+    
     return (newFile, newRank)
 
 
@@ -353,9 +356,12 @@ def getOneSquareDiag2(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
+        if (not isinstance(piece, Knight)):
             return False
-
+        
+        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+            return False
+        
     return (newFile, newRank)
 
 
@@ -373,9 +379,12 @@ def getOneSquareDiag3(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
+        if (not isinstance(piece, Knight)):
             return False
         
+        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+            return False
+            
     return (newFile, newRank)
 
 
@@ -393,9 +402,12 @@ def getOneSquareDiag4(piece: Piece, currentSquare: tuple[str, int]):
     
     occupant = BOARD[r][c]
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)) or occupant.color == piece.color:
+        if (not isinstance(piece, Knight)):
             return False
-
+        
+        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+            return False
+        
     return (newFile, newRank)
 
 
@@ -422,20 +434,30 @@ def knightWheel(knight: Knight):
     oneSquareD2 = getOneSquareDiag2(knight, currentSquare)
     oneSquareD3 = getOneSquareDiag3(knight, currentSquare)
     oneSquareD4 = getOneSquareDiag4(knight, currentSquare)
-
+    
     if oneSquareD1 != False:
         movesD1 = [getOneSquareRight(knight, oneSquareD1), getOneSquareDown(knight, oneSquareD1)]
+    else:
+        movesD1 = []
     
     if oneSquareD2 != False:
         movesD2 = [getOneSquareLeft(knight, oneSquareD2), getOneSquareUp(knight, oneSquareD2)]
-    
+    else:
+        movesD2 = []
+
     if oneSquareD3 != False:
         movesD3 = [getOneSquareLeft(knight, oneSquareD3), getOneSquareDown(knight, oneSquareD3)]
+    else:
+        movesD3 = []    
     
     if oneSquareD4 != False:
         movesD4 = [getOneSquareRight(knight, oneSquareD4), getOneSquareUp(knight, oneSquareD4)]
+    else:
+        movesD4 = []
     
     validMoves = movesD1 + movesD2 + movesD3 + movesD4
     validMoves = list(filter(lambda x: x != False, validMoves))
 
     return validMoves
+
+
