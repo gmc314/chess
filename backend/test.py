@@ -84,7 +84,7 @@ bn2 = Knight("Black", "8", ("g", 1))
 placePiece(bn2)
 bp2 = Pawn("Black", "8", ("e", 2))
 placePiece(bp2)
-print(knightWheel(bn2))
+print(bn2.getValidMoves())
 
 # two pawns are placed for testing knight's ability to jump over any piece
 bp2 = Pawn("Black", "8", ("f", 2))
@@ -99,13 +99,18 @@ placePiece(wp3)
 # placing the knight and printing valid moves via knightWheel function
 bn5 = Knight("Black", "8", ("e", 3))
 placePiece(bn5)
-print(knightWheel(bn5))
+print(bn5.getValidMoves())
 
 # capturing the pawn
 print(moveFromCurrentSquare(bn5, wp3.location))
-
-print(knightWheel(bn5))
+print(bn5.getValidMoves())
 ########
 # BISHOP
 # capturing the knight
-pprint(BOARD)
+
+
+#######
+# KING
+bk = King("Black", "7", ("e", 6))
+placePiece(bk)
+print(bk.getValidMoves())
