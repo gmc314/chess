@@ -72,9 +72,9 @@ bn = Knight("Black", "8", ("b", 8))
 placePiece(bn)
 wq = Queen("White", "123", ("b", 6))
 
-print(getValidMovesInStraightDir(wq, getOneSquareUp, wq.location))
+print(getValidMovesInStraightDir(wq, getOneSquareUp, wq.location) == [('b', 7), ('b', 8)])
 
-print(moveFromCurrentSquare(wq, bn.location))
+print(moveFromCurrentSquare(wq, bn.location)=='Q B6 to B8. BN captured.')
 
 
 #########
@@ -84,7 +84,7 @@ bn2 = Knight("Black", "8", ("g", 1))
 placePiece(bn2)
 bp2 = Pawn("Black", "8", ("e", 2))
 placePiece(bp2)
-print(bn2.getValidMoves())
+print(bn2.getValidMoves() == [('f', 3), ('h', 3)])
 
 # two pawns are placed for testing knight's ability to jump over any piece
 bp2 = Pawn("Black", "8", ("f", 2))
@@ -96,21 +96,21 @@ placePiece(wp2)
 wp3 = Pawn("White", "8", ("c", 2))
 placePiece(wp3)
 
-# placing the knight and printing valid moves via knightWheel function
+# placing the knight and printing valid moves via getValidMoves function
 bn5 = Knight("Black", "8", ("e", 3))
 placePiece(bn5)
-print(bn5.getValidMoves())
+print(bn5.getValidMoves() == [('g', 2), ('f', 1), ('c', 4), ('d', 5), ('c', 2), ('d', 1), ('g', 4), ('f', 5)])
 
 # capturing the pawn
-print(moveFromCurrentSquare(bn5, wp3.location))
-print(bn5.getValidMoves())
+print(moveFromCurrentSquare(bn5, wp3.location) == 'N E3 to C2. WP captured.')
+print(bn5.getValidMoves() == [('e', 1), ('a', 3), ('b', 4), ('a', 1), ('e', 3), ('d', 4)])
 ########
 # BISHOP
-# capturing the knight
-
 
 #######
 # KING
 bk = King("Black", "7", ("e", 6))
 placePiece(bk)
-print(bk.getValidMoves())
+print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
+
+pprint(BOARD)
