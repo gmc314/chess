@@ -1,16 +1,9 @@
 from typing import Union
 
-BOARD = [
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-    [None, None, None, None, None, None, None, None],
-]
+# the board is an 8x8 matrix
+BOARD = [[" -- " for i in range(8)] for j in range(8)]
 
+# this is for mapping the board's letters of the files to list indices
 fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 
 
@@ -24,13 +17,13 @@ class Piece:
         self.points = points
 
     def __repr__(self) -> str:
-        return f"{self.color} {self.name}"
+        return f"' {self.color[0]}{self.name} '"
 
 
 # inheriting from Piece class
 class King(Piece):    
     def __init__(self, color, ID, location):
-        super().__init__(color, "King", ID, location, True, 0) 
+        super().__init__(color, "K", ID, location, True, 0) 
 
     def isMoveValid(self, newSquare):
         up = getOneSquareUp(self, self.location) 
@@ -72,19 +65,24 @@ class King(Piece):
 
 class Queen(Piece):
     def __init__(self, color, ID, location):
-        super().__init__(color, "Queen", ID, location, False, 9) 
+        super().__init__(color, "Q", ID, location, False, 9) 
     
     def isMoveValid(self, newSquare):
+        # getting all valid moves in all directions
+
+        # valid vertical and horizontal moves
         upMoves = getValidMovesInStraightDir(self, getOneSquareUp, self.location)
         downMoves = getValidMovesInStraightDir(self, getOneSquareDown, self.location)
         leftMoves = getValidMovesInStraightDir(self, getOneSquareLeft, self.location)
         rightMoves = getValidMovesInStraightDir(self, getOneSquareRight, self.location)
         
+        # valid diagonal moves
         diag1Moves = getValidMovesInStraightDir(self, getOneSquareDiag1, self.location)
         diag2Moves = getValidMovesInStraightDir(self, getOneSquareDiag2, self.location)
         diag3Moves = getValidMovesInStraightDir(self, getOneSquareDiag3, self.location)
         diag4Moves = getValidMovesInStraightDir(self, getOneSquareDiag4, self.location)
         
+        # a list of all valid moves
         validMoves = upMoves+downMoves+leftMoves+rightMoves+diag1Moves+diag2Moves+diag3Moves+diag4Moves
         
         if newSquare not in validMoves:
@@ -96,7 +94,7 @@ class Queen(Piece):
 
 class Rook(Piece):
     def __init__(self, color, ID, location):
-        super().__init__(color, "Rook", ID, location, True, 5)
+        super().__init__(color, "R", ID, location, True, 5)
 
     def isMoveValid(self, newSquare):
         upMoves = getValidMovesInStraightDir(self, getOneSquareUp, self.location)
@@ -112,9 +110,10 @@ class Rook(Piece):
         else:
             return True
     
+
 class Bishop(Piece):
     def __init__(self, color, ID, location):
-        super().__init__(color, "Bishop", ID, location, False, 3) 
+        super().__init__(color, "B", ID, location, False, 3) 
     
     def isMoveValid(self, newSquare):
         diag1Moves = getValidMovesInStraightDir(self, getOneSquareDiag1, self.location)
@@ -133,16 +132,19 @@ class Bishop(Piece):
 
 class Knight(Piece):
     def __init__(self, color, ID, location):
-        super().__init__(color, "Knight", ID, location, False, 3) 
+        super().__init__(color, "N", ID, location, False, 3) 
     
     def isMoveValid(self, newSquare):
-        return True    
-
+        if newSquare in knightWheel(self):
+            return True
+        
+        else:
+            return False
 
 
 class Pawn(Piece):
     def __init__(self, color, ID, location):
-        super().__init__(color, "Pawn", ID, location, False, 1) 
+        super().__init__(color, "P", ID, location, False, 1) 
         self.firstTurn = True
 
     def isMoveValid(self, newSquare):
@@ -200,10 +202,10 @@ def placePiece(piece: Piece):
 # captures the capturee
 def capture(capturer: Piece, capturee: Piece):
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
-    BOARD[captureeRow][captureeCol] = None
+    BOARD[captureeRow][captureeCol] = " -- "
     capturer.location = capturee.location
     BOARD[captureeRow][captureeCol] = capturer
-    return f"{capturee} captured."
+    return f"{capturee.color[0]}{capturee.name} captured."
 
 
 # returns the piece at the specific square
@@ -224,15 +226,17 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # getting location of move
     newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
     newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
-    occupant = getPieceFromLocation((newRank, newFile))
     
-    if occupant != None:
+    # if the space is occupied by the opposite colour:
+    occupant = getPieceFromLocation((newRank, newFile))
+    if occupant != " -- ":
+        # call the capture function and print out the message
         captureMessage = capture(piece, occupant)
     else:
         captureMessage = ""
     
     # move piece from the current square
-    BOARD[currentRow][currentCol] = None
+    BOARD[currentRow][currentCol] = " -- "
 
     # to new square
     piece.location = (newRank, newFile)    
@@ -417,9 +421,9 @@ def getValidMovesInStraightDir(piece: Piece, getOneSquareDirFunction, square: tu
     nextSquareUp = getOneSquareDirFunction(piece, square)
     while type(nextSquareUp) == tuple:
         validMoves.append(nextSquareUp)
-        upOneSquare = getOneSquareDirFunction(piece, nextSquareUp)
+        oneMoreSquare = getOneSquareDirFunction(piece, nextSquareUp)
         
-        if type(upOneSquare) != tuple:
+        if type(oneMoreSquare) != tuple:
             break
         
         nextSquareUp = getOneSquareDirFunction(piece, nextSquareUp)
@@ -434,30 +438,24 @@ def knightWheel(knight: Knight):
     oneSquareD2 = getOneSquareDiag2(knight, currentSquare)
     oneSquareD3 = getOneSquareDiag3(knight, currentSquare)
     oneSquareD4 = getOneSquareDiag4(knight, currentSquare)
-    
+    movesD1 = []
+    movesD2 = []
+    movesD3 = []
+    movesD4 = []
+
     if oneSquareD1 != False:
-        movesD1 = [getOneSquareRight(knight, oneSquareD1), getOneSquareDown(knight, oneSquareD1)]
-    else:
-        movesD1 = []
+        movesD1 = [getOneSquareRight(knight, oneSquareD1), getOneSquareDown(knight, oneSquareD1)]        
     
     if oneSquareD2 != False:
         movesD2 = [getOneSquareLeft(knight, oneSquareD2), getOneSquareUp(knight, oneSquareD2)]
-    else:
-        movesD2 = []
-
+        
     if oneSquareD3 != False:
         movesD3 = [getOneSquareLeft(knight, oneSquareD3), getOneSquareDown(knight, oneSquareD3)]
-    else:
-        movesD3 = []    
     
     if oneSquareD4 != False:
         movesD4 = [getOneSquareRight(knight, oneSquareD4), getOneSquareUp(knight, oneSquareD4)]
-    else:
-        movesD4 = []
     
     validMoves = movesD1 + movesD2 + movesD3 + movesD4
     validMoves = list(filter(lambda x: x != False, validMoves))
 
     return validMoves
-
-
