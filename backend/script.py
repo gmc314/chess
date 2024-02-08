@@ -160,18 +160,21 @@ class Knight(Piece):
 class Pawn(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "P", ID, location, False, 1) 
-        self.firstTurn = True
-
+        # a number variable to track the number of turns for en passant capturing
+        self.firstTurn = 0
 
     def getPawnCaptureMoves(self):
         capturableMoves = []
 
         if self.color == "White":
             # regular case capturing 
+            
+            # the two diagonal moves are tracked
             captureSquareTopLeft = getOneSquareDiag2(self.location)
             captureSquareTopRight = getOneSquareDiag4(self.location)
             captureSquares = [captureSquareTopLeft, captureSquareTopRight]
 
+            # tracking occupants of the opposite colour for each diagonal move
             for square in captureSquares:
                 occupant = getPieceFromLocation(square)
                 if square != False and self.color != occupant.color:
@@ -179,41 +182,50 @@ class Pawn(Piece):
         
         else:
             # regular case capturing 
+
+            # the two diagonal moves are tracked
             captureSquareBottomLeft = getOneSquareDiag3(self.location)
             captureSquareBottomRight = getOneSquareDiag1(self.location)
             captureSquares = [captureSquareBottomLeft, captureSquareBottomRight]
 
+            # tracking occupants of the opposite colour for each diagonal move
             for square in captureSquares:
                 occupant = getPieceFromLocation(square)
                 if square != False and self.color != occupant.color:
                     capturableMoves.append(square)
+        
+        return capturableMoves
+
+    def getPawnMoves(self):
+        validMoves = []
+        if self.color == "White":
+            oneSquareUp = getOneSquareUp(self.location)
+            # two square advance on first turn
+            if self.firstTurn == 0:
+                # gets the two valid moves for a white pawn on the first turn
+                validMoves += [oneSquareUp, getOneSquareUp(oneSquareUp)] 
+        
+            else:
+                validMoves.append(oneSquareUp)
             
+        else:
+            oneSquareDown = getOneSquareDown(self.location)
+            # two square advance on first turn
+            if self.firstTurn == 0:
+                # gets the two valid moves for a black pawn on the first turn
+                validMoves += [oneSquareDown, getOneSquareDown(oneSquareDown)] 
+        
+            else:
+                validMoves.append(oneSquareUp)
+    
+        return validMoves
 
     def isMoveValid(self, newSquare):
-        # getting files and ranks of currrent and new squares
-        currentFile, currentRank = self.location
-        newFile, newRank = newSquare
+        # valid moves from Pawn capture and move functions 
+        validMoves = self.getPawnCaptureMoves() + self.getPawnMoves()
+        
+        return newSquare in validMoves
 
-        if self.color == "White":
-            
-            # straight line move
-            if self.firstTurn == True:
-                # returns a boolean 
-                return (currentFile == newFile) and (1 <= newRank - currentRank <= 2)
-        
-            else:
-                # returns a boolean 
-                return (currentFile == newFile) and (newRank - currentRank == 1)
-            
-        if self.color == "Black":
-            if self.firstTurn == True:
-                # returns a boolean 
-                return (currentFile == newFile) and (1 <= currentRank - newRank <= 2)
-        
-            else:
-                # returns a boolean 
-                return (currentFile == newFile) and (currentRank - newRank == 1)
-       
 
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
@@ -295,8 +307,8 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     BOARD[newRow][newCol] = piece
 
     # condition for en passant and first turn two-square forward move
-    if type(piece) == Pawn:
-        piece.firstTurn = False
+    if type(piece) == Pawn and piece.firstTurn <= 2:
+        piece.firstTurn += 1
 
     # print out the move 
     return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
