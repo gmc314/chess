@@ -170,50 +170,54 @@ class Pawn(Piece):
             # regular case capturing 
             
             # the two diagonal moves are tracked
-            captureSquareTopLeft = getOneSquareDiag2(self.location)
-            captureSquareTopRight = getOneSquareDiag4(self.location)
+            captureSquareTopLeft = getOneSquareDiag2(self, self.location)
+            captureSquareTopRight = getOneSquareDiag4(self, self.location)
             captureSquares = [captureSquareTopLeft, captureSquareTopRight]
-
+            captureSquares = list(filter(lambda x: isinstance(x, tuple), captureSquares))
             # tracking occupants of the opposite colour for each diagonal move
             for square in captureSquares:
                 occupant = getPieceFromLocation(square)
-                if square != False and self.color != occupant.color:
-                    capturableMoves.append(square)
+
+                if isinstance(occupant, Piece):
+                    if square != False and self.color != occupant.color:
+                        capturableMoves.append(square)
         
         else:
             # regular case capturing 
 
             # the two diagonal moves are tracked
-            captureSquareBottomLeft = getOneSquareDiag3(self.location)
-            captureSquareBottomRight = getOneSquareDiag1(self.location)
+            captureSquareBottomLeft = getOneSquareDiag3(self, self.location)
+            captureSquareBottomRight = getOneSquareDiag1(self, self.location)
             captureSquares = [captureSquareBottomLeft, captureSquareBottomRight]
-
+            captureSquares = list(filter(lambda x: isinstance(x, tuple), captureSquares))
             # tracking occupants of the opposite colour for each diagonal move
             for square in captureSquares:
                 occupant = getPieceFromLocation(square)
-                if square != False and self.color != occupant.color:
-                    capturableMoves.append(square)
+                
+                if isinstance(occupant, Piece):
+                    if square != False and self.color != occupant.color:
+                        capturableMoves.append(square)
         
         return capturableMoves
 
     def getPawnMoves(self):
         validMoves = []
         if self.color == "White":
-            oneSquareUp = getOneSquareUp(self.location)
+            oneSquareUp = getOneSquareUp(self, self.location)
             # two square advance on first turn
             if self.firstTurn == 0:
                 # gets the two valid moves for a white pawn on the first turn
-                validMoves += [oneSquareUp, getOneSquareUp(oneSquareUp)] 
+                validMoves += [oneSquareUp, getOneSquareUp(self, oneSquareUp)] 
         
             else:
                 validMoves.append(oneSquareUp)
             
         else:
-            oneSquareDown = getOneSquareDown(self.location)
+            oneSquareDown = getOneSquareDown(self, self.location)
             # two square advance on first turn
             if self.firstTurn == 0:
                 # gets the two valid moves for a black pawn on the first turn
-                validMoves += [oneSquareDown, getOneSquareDown(oneSquareDown)] 
+                validMoves += [oneSquareDown, getOneSquareDown(self, oneSquareDown)] 
         
             else:
                 validMoves.append(oneSquareUp)

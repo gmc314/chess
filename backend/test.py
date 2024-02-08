@@ -17,13 +17,13 @@ print(type(BOARD[7][0])==Bishop)
 wp = Pawn("White", "1", ("d", 2))
 placePiece(wp)
 print(type(BOARD[6][3])==Pawn)
-print(wp.firstTurn)
+print(wp.firstTurn == 0)
 
 # testing moving piece
 moveFromCurrentSquare(wp, ("d", 4))
 print(BOARD[6][3]==' -- ')
 print(type(BOARD[4][3])==Pawn)
-print(not wp.firstTurn)
+print(wp.firstTurn==1)
 
 # testing invalid move
 bp = Pawn("Black", "1", ("h", 7))
