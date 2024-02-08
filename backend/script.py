@@ -162,12 +162,41 @@ class Pawn(Piece):
         super().__init__(color, "P", ID, location, False, 1) 
         self.firstTurn = True
 
+
+    def getPawnCaptureMoves(self):
+        capturableMoves = []
+
+        if self.color == "White":
+            # regular case capturing 
+            captureSquareTopLeft = getOneSquareDiag2(self.location)
+            captureSquareTopRight = getOneSquareDiag4(self.location)
+            captureSquares = [captureSquareTopLeft, captureSquareTopRight]
+
+            for square in captureSquares:
+                occupant = getPieceFromLocation(square)
+                if square != False and self.color != occupant.color:
+                    capturableMoves.append(square)
+        
+        else:
+            # regular case capturing 
+            captureSquareBottomLeft = getOneSquareDiag3(self.location)
+            captureSquareBottomRight = getOneSquareDiag1(self.location)
+            captureSquares = [captureSquareBottomLeft, captureSquareBottomRight]
+
+            for square in captureSquares:
+                occupant = getPieceFromLocation(square)
+                if square != False and self.color != occupant.color:
+                    capturableMoves.append(square)
+            
+
     def isMoveValid(self, newSquare):
         # getting files and ranks of currrent and new squares
         currentFile, currentRank = self.location
         newFile, newRank = newSquare
 
         if self.color == "White":
+            
+            # straight line move
             if self.firstTurn == True:
                 # returns a boolean 
                 return (currentFile == newFile) and (1 <= newRank - currentRank <= 2)
@@ -175,7 +204,7 @@ class Pawn(Piece):
             else:
                 # returns a boolean 
                 return (currentFile == newFile) and (newRank - currentRank == 1)
-        
+            
         if self.color == "Black":
             if self.firstTurn == True:
                 # returns a boolean 
@@ -184,7 +213,7 @@ class Pawn(Piece):
             else:
                 # returns a boolean 
                 return (currentFile == newFile) and (currentRank - newRank == 1)
-            
+       
 
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
@@ -199,6 +228,13 @@ def getRankAndFileFromBoardIndex(row, col):
     file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
     rank = len(BOARD) - row 
     return (file, rank)
+
+
+# returns the piece at the specific square,
+# or the empty square if there isn't a piece on the square
+def getPieceFromLocation(square: tuple[str, int]) -> Union[Piece, str]:
+    r, c = getBoardIndexFromRankAndFile(square)
+    return BOARD[r][c]
 
 
 # converts the rank and file tuple to a string
@@ -227,13 +263,6 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     capturer.location = capturee.location
     BOARD[captureeRow][captureeCol] = capturer
     return f"{capturee.color[0]}{capturee.name} captured."
-
-
-# returns the piece at the specific square,
-# or the empty square if there isn't a piece on the square
-def getPieceFromLocation(square: tuple[str, int]) -> Union[Piece, str]:
-    r, c = getBoardIndexFromRankAndFile(square)
-    return BOARD[r][c]
 
 
 # move piece from current square to new `square`
