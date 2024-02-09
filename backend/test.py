@@ -113,4 +113,4 @@ bk = King("Black", "7", ("e", 6))
 placePiece(bk)
 print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
 
-#pprint(BOARD)
+pprint(BOARD)

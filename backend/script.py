@@ -386,12 +386,12 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     if not piece.isMoveValid(newSquare):
         return "invalid move"
     
-    if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves[0] != []:
-        enPassantMoves = piece.getEnPassantCaptureMoves[0]
+    if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves()[0] != []:
+        enPassantMoves = piece.getEnPassantCaptureMoves()[0]
 
         if newSquare not in enPassantMoves:
             return "invalid move"
-        enPassantCaptureSquares = piece.getEnPassantCaptureMoves[1]
+        enPassantCaptureSquares = piece.getEnPassantCaptureMoves()[1]
         # if the space is occupied:
         for cSqr in enPassantCaptureSquares:
             occupant = getPieceFromLocation(cSqr)
