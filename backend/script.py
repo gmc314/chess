@@ -33,10 +33,10 @@ class King(Piece):
             1: getOneSquareDown,
             2: getOneSquareLeft,
             3: getOneSquareRight,
-            4: getOneSquareDiag1,
-            5: getOneSquareDiag2,
-            6: getOneSquareDiag3,
-            7: getOneSquareDiag4
+            4: getOneSquareDiagBR,
+            5: getOneSquareDiagTL,
+            6: getOneSquareDiagBL,
+            7: getOneSquareDiagTR
         }
         for i in range(8):
             validMoves.append(indexToOneSquareMoveFunctions[i](self, self.location))
@@ -46,7 +46,8 @@ class King(Piece):
         return validMoves
 
     def isMoveValid(self, newSquare):
-        return newSquare in self.getValidMoves()
+        # returns a Boolean value depending on if the square is valid 
+        return newSquare in self.getValidMoves() 
         
 
 class Queen(Piece):
@@ -61,10 +62,10 @@ class Queen(Piece):
             1: getOneSquareDown,
             2: getOneSquareLeft,
             3: getOneSquareRight,
-            4: getOneSquareDiag1,
-            5: getOneSquareDiag2,
-            6: getOneSquareDiag3,
-            7: getOneSquareDiag4
+            4: getOneSquareDiagBR,
+            5: getOneSquareDiagTL,
+            6: getOneSquareDiagBL,
+            7: getOneSquareDiagTR
         }
         
         # looping to get all moves in all directions
@@ -75,12 +76,15 @@ class Queen(Piece):
         return validMoves
     
     def isMoveValid(self, newSquare):
+        # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves()
     
+
 class Rook(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "R", ID, location, True, 5)
 
+    # getting the vertical and horizontal moves 
     def getValidMoves(self):
         validMoves = []
         indexToOneSquareVerticalHorizontalFunctions = {
@@ -92,12 +96,16 @@ class Rook(Piece):
         
         # looping over the four vertical and horizontal directions
         for i in range(4):
-            validMoves += getValidMovesInStraightDir(self, indexToOneSquareVerticalHorizontalFunctions[i], self.location)
+            validMoves += getValidMovesInStraightDir(self, 
+                                                     indexToOneSquareVerticalHorizontalFunctions[i], 
+                                                     self.location
+                                                     )
         
         # return valid vertical and horizontal moves        
         return validMoves
     
     def isMoveValid(self, newSquare):
+        # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves()
     
 
@@ -108,21 +116,26 @@ class Bishop(Piece):
     def getValidMoves(self):
         validMoves = []
         indexToOneSquareDiagonalFunctions = {
-            0: getOneSquareDiag1,
-            1: getOneSquareDiag2,
-            2: getOneSquareDiag3,
-            3: getOneSquareDiag4
+            0: getOneSquareDiagBR,
+            1: getOneSquareDiagTL,
+            2: getOneSquareDiagBL,
+            3: getOneSquareDiagTR
         }
         
         # looping over the four diagonal directions
         for i in range(4):
-            validMoves += getValidMovesInStraightDir(self, indexToOneSquareDiagonalFunctions[i], self.location)
+            validMoves += getValidMovesInStraightDir(self, 
+                                                     indexToOneSquareDiagonalFunctions[i],
+                                                     self.location
+                                                     )
         
         # return valid diagonal moves
         return validMoves
     
     def isMoveValid(self, newSquare):
+        # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves()
+
 
 class Knight(Piece):
     def __init__(self, color, ID, location):
@@ -134,31 +147,45 @@ class Knight(Piece):
     # square in an either vertical or horizontal direction 
     # referring to standard chess rules 
     def getValidMoves(self):
-        currentSquare = self.location
         validMoves = []
-        # the four diagonal directions 
-        oneSquareD1 = getOneSquareDiag1(self, currentSquare)
-        oneSquareD2 = getOneSquareDiag2(self, currentSquare)
-        oneSquareD3 = getOneSquareDiag3(self, currentSquare)
-        oneSquareD4 = getOneSquareDiag4(self, currentSquare)
+        diagSquares = []
+
+        # the four one-square diagonal functions
+        indexToOneSquareDiagonalFunctions = {
+            0: getOneSquareDiagBR,
+            1: getOneSquareDiagTL,
+            2: getOneSquareDiagBL,
+            3: getOneSquareDiagTR
+        }
+        # getting the squares that are adjacent diagonally 
+        for i in range(4):
+            diagSquares.append(indexToOneSquareDiagonalFunctions[i](self, self.location))
         
-        diagSquares = [oneSquareD1, oneSquareD2, oneSquareD3, oneSquareD4]
-        diagSquares = list(filter(lambda x: isinstance(x, tuple), diagSquares))
+        # keep track of each diagonal square
+        oneSquareD1, oneSquareD2, oneSquareD3, oneSquareD4 = diagSquares
         
-        diagSquaresIndexToKnightMoves = {
+        # keep the valid squares (not off the board)
+        diagSquares = list(filter(lambda x: x != False, diagSquares))
+        
+        
+        # this dictionary maps each diagonal square above to the one square vertical or horizontal 
+        # function that follows to get the L-shape
+        diagSquaresToKnightMoves = {
             oneSquareD1: [getOneSquareRight, getOneSquareDown],
             oneSquareD2: [getOneSquareLeft, getOneSquareUp],
             oneSquareD3: [getOneSquareLeft, getOneSquareDown],
             oneSquareD4: [getOneSquareRight, getOneSquareUp]
         }
-        # if the diagonal is on the board, then check the vertical or horizontal adjacent squares
+        
+        # if the adjacent diagonal square is on the board, check the following 
+        # vertical or horizontal square to form the knight's L-shape move
         for sqr in diagSquares:
-            knightMove1 = diagSquaresIndexToKnightMoves[sqr][0](self, sqr)
-            knightMove2 = diagSquaresIndexToKnightMoves[sqr][1](self, sqr)
-            # gather all the results after looping through the diagonal squares
+            knightMove1 = diagSquaresToKnightMoves[sqr][0](self, sqr)
+            knightMove2 = diagSquaresToKnightMoves[sqr][1](self, sqr)
+
             validMoves += [knightMove1, knightMove2]
-                    
-        # filter list for valid moves 
+        # gather all the results after looping through the diagonal squares and
+        # filter the list for valid moves 
         validMoves = list(filter(lambda x: x != False, validMoves))
 
         return validMoves
@@ -178,8 +205,8 @@ class Pawn(Piece):
     def getPawnCaptureSquares(self) -> list[tuple]:
         # maps pawn colour to its diagonal capture moves 
         colorToCaptureMoveFunctions = {
-            "White": [getOneSquareDiag2, getOneSquareDiag4],
-            "Black": [getOneSquareDiag3, getOneSquareDiag1]
+            "White": [getOneSquareDiagTL, getOneSquareDiagTR],
+            "Black": [getOneSquareDiagBL, getOneSquareDiagBR]
             }
         # the two adjacent diagonal squares stored in a list
         captureSquareDiagLeft = colorToCaptureMoveFunctions[self.color][0](self, self.location)
@@ -192,6 +219,7 @@ class Pawn(Piece):
 
         return captureSquares
 
+    # gets the diagonal squares for capturing
     def getPawnCaptureMoves(self) -> list[tuple]:
         capturableMoves = []
         captureSquares = self.getPawnCaptureSquares()
@@ -205,6 +233,7 @@ class Pawn(Piece):
         
         return capturableMoves
 
+    # gets the one or two square forward moves for the pawn
     def getPawnAdvanceMoves(self):
         validMoves = []
 
@@ -215,7 +244,8 @@ class Pawn(Piece):
 
         oneSquareAdvance = colorToAdvanceDirectionFunction[self.color](self, self.location)
         occupant = getPieceFromLocation(oneSquareAdvance)
-
+        
+        # if the square in front of the pawn is occupied, the oneSquareAdvance is invalid
         if isinstance(occupant, Piece):
             oneSquareAdvance = False
         
@@ -233,9 +263,12 @@ class Pawn(Piece):
         validMoves = list(filter(lambda x: isinstance(x, tuple), validMoves))    
         return validMoves
 
+    # gets the diagonal squares and the adjacent horizontal squares for the en passant capture
     def getEnPassantCaptureMoves(self):
         validMoves = []
         selfRank = self.location[1]
+
+        # storing the occupant's square for the capture function
         occupantSquares = []
         # maps pawn colour to rank for meeting the en passant capture conditions
         colorToCurrentRank = {"White": 4, "Black": 6}
@@ -243,7 +276,7 @@ class Pawn(Piece):
         adjacentLeftSquare = getOneSquareLeft(self, self.location)
         adjacentRightSquare = getOneSquareRight(self, self.location)
         adjacentSquares = [adjacentLeftSquare, adjacentRightSquare]
-        adjacentSquares = list(filter(lambda x: isinstance(x, tuple), adjacentSquares))
+        adjacentSquares = list(filter(lambda x: x != False, adjacentSquares))
         
         for square in adjacentSquares:
             file = square[0]
@@ -270,8 +303,9 @@ class Pawn(Piece):
         return validMoves
     
     def isMoveValid(self, newSquare):
-        return newSquare in self.getValidMoves()
-    
+        # returns a Boolean value depending on if the square is valid 
+        return newSquare in self.getValidMoves() 
+        
     
 ####################################################
 ## Functions 
@@ -437,10 +471,10 @@ def getOneSquareDown(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool
     return (file, newRank)
 
 
-# diag1 means the diagonal from top left to bottom right
-# the getOneSquareDiag1 function returns the diag1 adjacent square of the piece. returns 
+# diagBR means the diagonal from top left to bottom right
+# the function returns the diagBR adjacent square of the piece. returns 
 # false if the square is occupied by the same color or if the square is off the board
-def getOneSquareDiag1(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
+def getOneSquareDiagBR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "h" or rank == 1:
         return False
@@ -460,10 +494,10 @@ def getOneSquareDiag1(piece: Piece, currentSquare: tuple[str, int]) -> Union[boo
     return newSquare
 
 
-# diag2 means the diagonal from bottom right to top left
-# the getOneSquareDiag2 function returns the diag2 adjacent square of the piece. returns 
+# diagTL means the diagonal from bottom right to top left
+# the function returns the diagTL adjacent square of the piece. returns 
 # false if the square is occupied by the same color or if the square is off the board
-def getOneSquareDiag2(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
+def getOneSquareDiagTL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "a" or rank == len(BOARD):
         return False
@@ -483,10 +517,10 @@ def getOneSquareDiag2(piece: Piece, currentSquare: tuple[str, int]) -> Union[boo
     return newSquare
 
 
-# diag3 means the diagonal from top right to bottom left
-# the getOneSquareDiag3 function returns the diag3 adjacent square of the piece. returns 
+# diagBL means the diagonal from top right to bottom left
+# the getOneSquareDiag3 function returns the diagBL adjacent square of the piece. returns 
 # false if the square is occupied by the same color or if the square is off the board
-def getOneSquareDiag3(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
+def getOneSquareDiagBL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "a" or rank == 1:
         return False
@@ -506,10 +540,10 @@ def getOneSquareDiag3(piece: Piece, currentSquare: tuple[str, int]) -> Union[boo
     return newSquare
 
 
-# diag4 means the diagonal from bottom left to top right 
-# the getOneSquareDiag4 function returns the diag4 adjacent square of the piece. returns 
+# diagTR means the diagonal from bottom left to top right 
+# the function returns the diagTR adjacent square of the piece. returns 
 # false if the square is occupied by the same color or if the square is off the board
-def getOneSquareDiag4(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
+def getOneSquareDiagTR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "h" or rank == len(BOARD):
         return False
