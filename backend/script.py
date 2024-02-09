@@ -41,7 +41,7 @@ class King(Piece):
         for i in range(8):
             validMoves.append(indexToOneSquareMoveFunctions[i](self, self.location))
         
-        validMoves = list(filter(lambda x: x != False, validMoves))
+        validMoves = filterListForSquares(validMoves)
     
         return validMoves
 
@@ -165,7 +165,7 @@ class Knight(Piece):
         oneSquareD1, oneSquareD2, oneSquareD3, oneSquareD4 = diagSquares
         
         # keep the valid squares (not off the board)
-        diagSquares = list(filter(lambda x: x != False, diagSquares))
+        diagSquares = filterListForSquares(diagSquares)
         
         
         # this dictionary maps each diagonal square above to the one square vertical or horizontal 
@@ -186,7 +186,7 @@ class Knight(Piece):
             validMoves += [knightMove1, knightMove2]
         # gather all the results after looping through the diagonal squares and
         # filter the list for valid moves 
-        validMoves = list(filter(lambda x: x != False, validMoves))
+        validMoves = filterListForSquares(validMoves)
 
         return validMoves
 
@@ -215,7 +215,7 @@ class Pawn(Piece):
         captureSquares = [captureSquareDiagLeft, captureSquareDiagRight]
         
         # if any are not valid moves, filter them out
-        captureSquares = list(filter(lambda x: isinstance(x, tuple), captureSquares))
+        captureSquares = filterListForSquares(captureSquares)
 
         return captureSquares
 
@@ -260,7 +260,7 @@ class Pawn(Piece):
         else: # if it's not the pawn's first turn
             validMoves.append(oneSquareAdvance)
 
-        validMoves = list(filter(lambda x: isinstance(x, tuple), validMoves))    
+        validMoves = filterListForSquares(validMoves)  
         return validMoves
 
     # gets the diagonal squares and the adjacent horizontal squares for the en passant capture
@@ -329,6 +329,11 @@ def getBoardIndexFromRankAndFile(square: tuple[str, int]):
     col = fileIndex[file]
     row = len(BOARD) - rank
     return (row, col)
+
+
+# filters the list for squares instead of False
+def filterListForSquares(squareList: list) -> list:
+    return list(filter(lambda x: isinstance(x, tuple), squareList))
 
 
 # gets the rank and file from indices of the Board
