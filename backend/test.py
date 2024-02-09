@@ -126,5 +126,5 @@ placePiece(bp)
 moveFromCurrentSquare(bp, ("h", 5))
 #print(("h", 6) in bp.getValidMoves())
 
+print(moveFromCurrentSquare(wp, ("h", 6)))
 pprint(BOARD)
-print(wp.getEnPassantCaptureMoves())

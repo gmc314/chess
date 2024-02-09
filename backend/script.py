@@ -267,7 +267,6 @@ class Pawn(Piece):
     def getEnPassantCaptureMoves(self):
         validMoves = []
         selfRank = self.location[1]
-
         
         # maps pawn colour to rank for meeting the en passant capture conditions
         colourToCurrentRank = {"White": 5, "Black": 4}
@@ -404,6 +403,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
 
         if newSquare not in enPassantMoves:
             return "invalid move"
+        
         enPassantCaptureSquares = piece.getEnPassantCaptureMoves()[1]
         # if the space is occupied:
         for cSqr in enPassantCaptureSquares:
