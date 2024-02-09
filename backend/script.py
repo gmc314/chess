@@ -21,7 +21,7 @@ class Piece:
 
 
 # inheriting from Piece class
-class King(Piece):    
+class King(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "K", ID, location, True, 0) 
     
@@ -38,6 +38,8 @@ class King(Piece):
             6: getOneSquareDiagBL,
             7: getOneSquareDiagTR
         }
+
+        # looping to get all single square moves in all directions
         for i in range(8):
             validMoves.append(indexToOneSquareMoveFunctions[i](self, self.location))
         
@@ -45,11 +47,22 @@ class King(Piece):
     
         return validMoves
 
+        
+    # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
+    def getCastleMoves(self):
+        pass
+    
+    # self.castle() returns the notation of o-o or o-o-o depending a short or long castle 
+    # MODIFIES: BOARD
+    def castle(self):
+        pass
+
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
-        
+    
 
+# inheriting from Piece class
 class Queen(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "Q", ID, location, False, 9) 
@@ -70,16 +83,18 @@ class Queen(Piece):
         
         # looping to get all moves in all directions
         for i in range(8):
-            validMoves += getValidMovesInStraightDir(self, indexToOneSquareMoveFunctions[i], self.location)
+            validMoves += getValidMovesInStraightDir(self, 
+                                                     indexToOneSquareMoveFunctions[i],
+                                                     self.location)
         
-        # return valid vertical and horizontal moves        
         return validMoves
     
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves()
-    
 
+
+# inheriting from Piece class
 class Rook(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "R", ID, location, True, 5)
@@ -107,8 +122,9 @@ class Rook(Piece):
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves()
-    
 
+
+# inheriting from Piece class
 class Bishop(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "B", ID, location, False, 3) 
@@ -137,6 +153,7 @@ class Bishop(Piece):
         return newSquare in self.getValidMoves()
 
 
+# inheriting from Piece class
 class Knight(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "N", ID, location, False, 3) 
@@ -193,8 +210,9 @@ class Knight(Piece):
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
-        
 
+
+# inheriting from Piece class
 class Pawn(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "P", ID, location, False, 1) 
@@ -280,6 +298,7 @@ class Pawn(Piece):
         for sqr in adjacentSquares:
             if sqr != False:
                 occupant = getPieceFromLocation(sqr)
+                
                 if occupant != " -- ":
                     adjacentOccupants.append(occupant)
         
@@ -320,7 +339,9 @@ class Pawn(Piece):
 ####################################################
 ## Functions 
 ####################################################
-    
+
+# this function returns the string
+# MODIFIES: BOARD
 def clearBoard():
     for i in range(8): 
         for j in range(8):
@@ -345,6 +366,7 @@ def filterListForSquares(squareList: list) -> list:
 def getRankAndFileFromBoardIndex(row, col):
     file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
     rank = len(BOARD) - row 
+    
     return (file, rank)
 
 
@@ -352,6 +374,7 @@ def getRankAndFileFromBoardIndex(row, col):
 # or the empty square if there isn't a piece on the square
 def getPieceFromLocation(square: tuple[str, int]) -> Union[Piece, str]:
     r, c = getBoardIndexFromRankAndFile(square)
+    
     return BOARD[r][c]
 
 
@@ -363,17 +386,18 @@ def stringifyRankFile(square: tuple[str, int]) -> str:
 
 # place a piece on the board at its initial square. 
 # returns a verification message
-# modifies: BOARD
+# MODIFIES: BOARD
 def placePiece(piece: Piece) -> str:
     currentSquare = piece.location
     row, col = getBoardIndexFromRankAndFile(currentSquare)
     BOARD[row][col] = piece
+    
     return f"{piece} placed"
 
 
 # this function does the process of capturing where
 # the capturer piece captures the capturee piece
-# modifies: BOARD 
+# MODIFIES: BOARD 
 # returns a verification message
 def capture(capturer: Piece, capturee: Piece) -> str:
     
@@ -382,21 +406,31 @@ def capture(capturer: Piece, capturee: Piece) -> str:
         moveSquares = capturer.getEnPassantCaptureMoves()[0]
         occupantSquares = capturer.getEnPassantCaptureMoves()[1]
         captureeFile = capturee.location[0]
+        # the current BOARD location of the capturee
+        captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
+        
+        # the current BOARD location of the capturer
+        capturerRow, capturerCol = getBoardIndexFromRankAndFile(capturer.location)
+        
         if capturee.location in occupantSquares:
             # take the diag square that has the same file as the capturee
             for mSqr in moveSquares:
                 file = mSqr[0] 
+                
                 if file == captureeFile:
                     # moving the capturee off the board
-                    captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
                     BOARD[captureeRow][captureeCol] = " -- "
+
+                    # moving the attacking pawn from the current square
+                    BOARD[capturerRow][capturerCol] = " -- "
                     
-                    # moving the capturer pawn to the adjacent diagonal square
+                    # moving the attacking pawn to the adjacent diagonal square
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(mSqr)
                     BOARD[capturerRow][capturerCol] = capturer
 
                     return f"{capturee.colour[0]}{capturee.name} captured en passant."
 
+    # non en-passant case
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     
     # delete capturee from the board
@@ -410,10 +444,11 @@ def capture(capturer: Piece, capturee: Piece) -> str:
 
 
 # move piece from current square to new `square`
+# MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
     if not piece.isMoveValid(newSquare):
-        return "invalid move"
-    
+        return "invalid move"   
+
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
@@ -424,47 +459,51 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
             return "invalid move"
         
         enPassantCaptureSquares = piece.getEnPassantCaptureMoves()[1]
+        
         # if the space is occupied:
         for cSqr in enPassantCaptureSquares:
             occupant = getPieceFromLocation(cSqr)
+            
             if occupant != " -- ":
                 # call the capture function and print out the message
                 captureMessage = capture(piece, occupant)
             else:
                 captureMessage = ""
         
-        # move piece from the current square
-        BOARD[currentRow][currentCol] = " -- "
-
         return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
 
-    else: # non en-passant case
-        # getting location of move
-        newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
-        newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
-        
-        # if the space is occupied by the opposite colour:
-        occupant = getPieceFromLocation((newRank, newFile))
-        if occupant != " -- ":
-            # call the capture function and print out the message
-            captureMessage = capture(piece, occupant)
-        else:
-            captureMessage = ""
-        
-        # move piece from the current square
-        BOARD[currentRow][currentCol] = " -- "
+    # non en-passant case:
+    # getting location of move
+    newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
+    newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
+    
+    # if the space is occupied by the opposite colour:
+    occupant = getPieceFromLocation((newRank, newFile))
+    
+    if occupant != " -- ":
+        # call the capture function and print out the message
+        captureMessage = capture(piece, occupant)
+    else:
+        captureMessage = ""
+    
+    # move piece from the current square
+    BOARD[currentRow][currentCol] = " -- "
 
-        # to new square
-        piece.location = (newRank, newFile)
-        
-        BOARD[newRow][newCol] = piece
+    # to new square
+    piece.location = (newRank, newFile)
+    
+    BOARD[newRow][newCol] = piece
 
-        # condition for en passant and first turn two-square forward move
-        if isinstance(piece, Pawn) and piece.firstTurn <= 2:
-            piece.firstTurn += 1
+    # condition for en passant and first turn two-square forward move
+    if isinstance(piece, Pawn) and piece.firstTurn <= 2:
+        piece.firstTurn += 1
 
-        # print out the move 
-        return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
+    # coniditon for castling
+    elif isinstance(piece, Rook):
+        piece.canCastle = False
+
+    # print out the move 
+    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
 
 
 # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
