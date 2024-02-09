@@ -290,7 +290,7 @@ class Pawn(Piece):
                 
                 for cSqr in captureSquares:
                     cFile = cSqr[0]
-                    if cFile == file:
+                    if cFile == file and getPieceFromLocation(cSqr) == " -- ":
                         validMoves.append(cSqr)
                         occupantSquares.append(occupant.location)
 
