@@ -427,7 +427,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     BOARD[newRow][newCol] = piece
 
     # condition for en passant and first turn two-square forward move
-    if type(piece) == Pawn and piece.firstTurn <= 2:
+    if isinstance(piece, Pawn) and piece.firstTurn <= 2:
         piece.firstTurn += 1
 
     # print out the move 
