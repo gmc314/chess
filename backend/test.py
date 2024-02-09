@@ -1,6 +1,7 @@
 from script import *
 from pprint import pprint
-
+########
+# BISHOP
 # testing placing a piece on the board
 wb = Bishop("White", "1", ("b", 2))
 placePiece(wb)
@@ -104,8 +105,7 @@ print(bn5.getValidMoves() == [('g', 2), ('f', 1), ('c', 4), ('d', 5), ('c', 2), 
 # capturing the pawn
 print(moveFromCurrentSquare(bn5, wp3.location) == 'N E3 to C2. WP captured.')
 print(bn5.getValidMoves() == [('e', 1), ('a', 3), ('b', 4), ('a', 1), ('e', 3), ('d', 4)])
-########
-# BISHOP
+
 
 #######
 # KING

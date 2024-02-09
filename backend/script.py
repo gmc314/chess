@@ -386,6 +386,22 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     if not piece.isMoveValid(newSquare):
         return "invalid move"
     
+    if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves[0] != []:
+        enPassantMoves = piece.getEnPassantCaptureMoves[0]
+
+        if newSquare not in enPassantMoves:
+            return "invalid move"
+        enPassantCaptureSquares = piece.getEnPassantCaptureMoves[1]
+        # if the space is occupied:
+        for cSqr in enPassantCaptureSquares:
+            occupant = getPieceFromLocation(cSqr)
+            if occupant != " -- ":
+                # call the capture function and print out the message
+                captureMessage = capture(piece, occupant)
+            else:
+                captureMessage = ""
+
+
     # getting current location of piece
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
@@ -406,7 +422,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     BOARD[currentRow][currentCol] = " -- "
 
     # to new square
-    piece.location = (newRank, newFile)    
+    piece.location = (newRank, newFile)
     
     BOARD[newRow][newCol] = piece
 
