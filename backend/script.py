@@ -8,8 +8,8 @@ fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
 
 
 class Piece:
-    def __init__(self, color: str, name: str, ID: str, location: tuple, canCastle: bool, points: int) -> None:
-        self.color = color 
+    def __init__(self, colour: str, name: str, ID: str, location: tuple, canCastle: bool, points: int) -> None:
+        self.colour = colour 
         self.name = name
         self.ID = ID
         self.location = location
@@ -17,13 +17,13 @@ class Piece:
         self.points = points
 
     def __repr__(self) -> str:
-        return f"' {self.color[0]}{self.name} '"
+        return f"' {self.colour[0]}{self.name} '"
 
 
 # inheriting from Piece class
 class King(Piece):    
-    def __init__(self, color, ID, location):
-        super().__init__(color, "K", ID, location, True, 0) 
+    def __init__(self, colour, ID, location):
+        super().__init__(colour, "K", ID, location, True, 0) 
     
     # returns one-square moves in all directions
     def getValidMoves(self):
@@ -51,8 +51,8 @@ class King(Piece):
         
 
 class Queen(Piece):
-    def __init__(self, color, ID, location):
-        super().__init__(color, "Q", ID, location, False, 9) 
+    def __init__(self, colour, ID, location):
+        super().__init__(colour, "Q", ID, location, False, 9) 
     
     # getting all valid moves in all directions
     def getValidMoves(self):
@@ -81,8 +81,8 @@ class Queen(Piece):
     
 
 class Rook(Piece):
-    def __init__(self, color, ID, location):
-        super().__init__(color, "R", ID, location, True, 5)
+    def __init__(self, colour, ID, location):
+        super().__init__(colour, "R", ID, location, True, 5)
 
     # getting the vertical and horizontal moves 
     def getValidMoves(self):
@@ -110,8 +110,8 @@ class Rook(Piece):
     
 
 class Bishop(Piece):
-    def __init__(self, color, ID, location):
-        super().__init__(color, "B", ID, location, False, 3) 
+    def __init__(self, colour, ID, location):
+        super().__init__(colour, "B", ID, location, False, 3) 
     
     def getValidMoves(self):
         validMoves = []
@@ -138,8 +138,8 @@ class Bishop(Piece):
 
 
 class Knight(Piece):
-    def __init__(self, color, ID, location):
-        super().__init__(color, "N", ID, location, False, 3) 
+    def __init__(self, colour, ID, location):
+        super().__init__(colour, "N", ID, location, False, 3) 
     
     # gets a list of valid moves for the Knight
     # for a knight to move, it can go in a diagonal direction one 
@@ -196,21 +196,21 @@ class Knight(Piece):
         
 
 class Pawn(Piece):
-    def __init__(self, color, ID, location):
-        super().__init__(color, "P", ID, location, False, 1) 
+    def __init__(self, colour, ID, location):
+        super().__init__(colour, "P", ID, location, False, 1) 
         # a number variable to track the number of turns for en passant capturing
         self.firstTurn = 0
 
     # this function returns the possible adjacent diagonal squares that a pawn could capture  
     def getPawnCaptureSquares(self) -> list[tuple]:
         # maps pawn colour to its diagonal capture moves 
-        colorToCaptureMoveFunctions = {
+        colourToCaptureMoveFunctions = {
             "White": [getOneSquareDiagTL, getOneSquareDiagTR],
             "Black": [getOneSquareDiagBL, getOneSquareDiagBR]
             }
         # the two adjacent diagonal squares stored in a list
-        captureSquareDiagLeft = colorToCaptureMoveFunctions[self.color][0](self, self.location)
-        captureSquareDiagRight = colorToCaptureMoveFunctions[self.color][1](self, self.location)
+        captureSquareDiagLeft = colourToCaptureMoveFunctions[self.colour][0](self, self.location)
+        captureSquareDiagRight = colourToCaptureMoveFunctions[self.colour][1](self, self.location)
 
         captureSquares = [captureSquareDiagLeft, captureSquareDiagRight]
         
@@ -228,7 +228,7 @@ class Pawn(Piece):
         for square in captureSquares:
             occupant = getPieceFromLocation(square)
 
-            if isinstance(occupant, Piece) and square != False and self.color != occupant.color:
+            if isinstance(occupant, Piece) and square != False and self.colour != occupant.colour:
                 capturableMoves.append(square)
         
         return capturableMoves
@@ -237,12 +237,12 @@ class Pawn(Piece):
     def getPawnAdvanceMoves(self):
         validMoves = []
 
-        colorToAdvanceDirectionFunction = {
+        colourToAdvanceDirectionFunction = {
             "White": getOneSquareUp,
             "Black": getOneSquareDown
         }
 
-        oneSquareAdvance = colorToAdvanceDirectionFunction[self.color](self, self.location)
+        oneSquareAdvance = colourToAdvanceDirectionFunction[self.colour](self, self.location)
         occupant = getPieceFromLocation(oneSquareAdvance)
         
         # if the square in front of the pawn is occupied, the oneSquareAdvance is invalid
@@ -252,7 +252,7 @@ class Pawn(Piece):
         # if this is the pawn's first turn, can advance two squares
         if self.firstTurn == 0:
             try: # get the two valid moves for a white pawn on the first turn
-                validMoves += [oneSquareAdvance, colorToAdvanceDirectionFunction[self.color](self, oneSquareAdvance)] 
+                validMoves += [oneSquareAdvance, colourToAdvanceDirectionFunction[self.colour](self, oneSquareAdvance)] 
 
             except TypeError: # if the two-square move is obstructed 
                 validMoves.append(oneSquareAdvance)
@@ -268,33 +268,40 @@ class Pawn(Piece):
         validMoves = []
         selfRank = self.location[1]
 
-        # storing the occupant's square for the capture function
-        occupantSquares = []
+        
         # maps pawn colour to rank for meeting the en passant capture conditions
-        colorToCurrentRank = {"White": 4, "Black": 6}
+        colourToCurrentRank = {"White": 5, "Black": 4}
         
         adjacentLeftSquare = getOneSquareLeft(self, self.location)
         adjacentRightSquare = getOneSquareRight(self, self.location)
+        
+        # storing the occupant's square for the capture function
+        adjacentOccupants = []
         adjacentSquares = [adjacentLeftSquare, adjacentRightSquare]
-        adjacentSquares = list(filter(lambda x: x != False, adjacentSquares))
+        for sqr in adjacentSquares:
+            if sqr != False:
+                occupant = getPieceFromLocation(sqr)
+                if occupant != " -- ":
+                    adjacentOccupants.append(occupant)
+        
+        adjacentSquares = [x.location for x in adjacentOccupants if isinstance(x, Pawn)]      
         
         for square in adjacentSquares:
             file = square[0]
             occupant = getPieceFromLocation(square)
             occRank = square[1]
-            # if a pawn of opposite color moves two squares forward on its first turn
-            if isinstance(occupant, Pawn) and occupant.color != self.color \
-                and selfRank == occRank == colorToCurrentRank[self.color] \
-                    and occupant.firstTurn == 1:
+            # if a pawn of opposite colour moves two squares forward on its first turn
+            if occupant.colour != self.colour and \
+                selfRank == occRank == colourToCurrentRank[self.colour] and \
+                   occupant.firstTurn == 1:
                 captureSquares = self.getPawnCaptureSquares()
                 
                 for cSqr in captureSquares:
                     cFile = cSqr[0]
                     if cFile == file and getPieceFromLocation(cSqr) == " -- ":
                         validMoves.append(cSqr)
-                        occupantSquares.append(occupant.location)
-
-        return [validMoves, occupantSquares]
+                        
+        return [validMoves, adjacentSquares]
         
     def getValidMoves(self):
         # valid moves from Pawn capture and move functions 
@@ -310,6 +317,12 @@ class Pawn(Piece):
 ## Functions 
 ####################################################
     
+def clearBoard():
+    for i in range(8): 
+        for j in range(8):
+            BOARD[i][j] = " -- "
+    
+    return "Board Cleared"
 
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
@@ -372,13 +385,13 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(mSqr)
                     BOARD[capturerRow][capturerCol] = capturer
 
-                    return f"{capturee.color[0]}{capturee.name} captured."
+                    return f"{capturee.colour[0]}{capturee.name} captured."
 
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     BOARD[captureeRow][captureeCol] = " -- "
     capturer.location = capturee.location
     BOARD[captureeRow][captureeCol] = capturer
-    return f"{capturee.color[0]}{capturee.name} captured."
+    return f"{capturee.colour[0]}{capturee.name} captured."
 
 
 # move piece from current square to new `square`
@@ -435,7 +448,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
 
 
 # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareLeft(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "a":
@@ -446,14 +459,14 @@ def getOneSquareLeft(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool
     occupant = getPieceFromLocation(newSquare)
     
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if occupant.colour == piece.colour:
             return False
         
     return newSquare
 
 
 # the getOneSquareRight function returns the right adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareRight(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "h":
@@ -464,14 +477,14 @@ def getOneSquareRight(piece: Piece, currentSquare: tuple[str, int]) -> Union[boo
     occupant = getPieceFromLocation(newSquare)    
     
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if occupant.colour == piece.colour:
             return False
 
     return newSquare
 
 
 # the getOneSquareUp function returns the up adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareUp(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if rank == len(BOARD):
@@ -482,14 +495,14 @@ def getOneSquareUp(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, 
     occupant = getPieceFromLocation((file, newRank))
     
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if occupant.colour == piece.colour:
             return False
 
     return (file, newRank)
 
 
 # the getOneSquareDown function returns the down adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareDown(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if rank == 1:
@@ -500,7 +513,7 @@ def getOneSquareDown(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool
     occupant = getPieceFromLocation((file, newRank))
     
     if isinstance(occupant, Piece):
-        if occupant.color == piece.color:
+        if occupant.colour == piece.colour:
             return False
 
     return (file, newRank)
@@ -508,7 +521,7 @@ def getOneSquareDown(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool
 
 # diagBR means the diagonal from top left to bottom right
 # the function returns the diagBR adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareDiagBR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "h" or rank == 1:
@@ -523,7 +536,7 @@ def getOneSquareDiagBR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
         if (not isinstance(piece, Knight)):
             return False
         
-        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+        if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
     return newSquare
@@ -531,7 +544,7 @@ def getOneSquareDiagBR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
 # diagTL means the diagonal from bottom right to top left
 # the function returns the diagTL adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareDiagTL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "a" or rank == len(BOARD):
@@ -546,7 +559,7 @@ def getOneSquareDiagTL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
         if (not isinstance(piece, Knight)):
             return False
         
-        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+        if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
     return newSquare
@@ -554,7 +567,7 @@ def getOneSquareDiagTL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
 # diagBL means the diagonal from top right to bottom left
 # the getOneSquareDiag3 function returns the diagBL adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareDiagBL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "a" or rank == 1:
@@ -569,7 +582,7 @@ def getOneSquareDiagBL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
         if (not isinstance(piece, Knight)):
             return False
         
-        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+        if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
     return newSquare
@@ -577,7 +590,7 @@ def getOneSquareDiagBL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
 # diagTR means the diagonal from bottom left to top right 
 # the function returns the diagTR adjacent square of the piece. returns 
-# false if the square is occupied by the same color or if the square is off the board
+# false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareDiagTR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
     if file == "h" or rank == len(BOARD):
@@ -592,7 +605,7 @@ def getOneSquareDiagTR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
         if (not isinstance(piece, Knight)):
             return False
         
-        if occupant.color == piece.color and (not isinstance(piece, Knight)):
+        if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
     return newSquare
