@@ -163,40 +163,33 @@ class Pawn(Piece):
         # a number variable to track the number of turns for en passant capturing
         self.firstTurn = 0
 
-    def getPawnCaptureMoves(self):
-        capturableMoves = []
-
-        if self.color == "White":
-            # regular case capturing 
+    # this funcction returns the possible adjacent diagonal squares that a pawn could capture  
+    def getPawnCaptureSquares(self) -> list[tuple]:
+        # THIS WORKS! :)
+        captureMoveFunctions = {"White": [getOneSquareDiag2, getOneSquareDiag4],
+                                "Black": [getOneSquareDiag3, getOneSquareDiag1]}
             
-            # the two diagonal moves are tracked
-            captureSquareTopLeft = getOneSquareDiag2(self, self.location)
-            captureSquareTopRight = getOneSquareDiag4(self, self.location)
-            captureSquares = [captureSquareTopLeft, captureSquareTopRight]
-            captureSquares = list(filter(lambda x: isinstance(x, tuple), captureSquares))
-            # tracking occupants of the opposite colour for each diagonal move
-            for square in captureSquares:
-                occupant = getPieceFromLocation(square)
-
-                if isinstance(occupant, Piece):
-                    if square != False and self.color != occupant.color:
-                        capturableMoves.append(square)
+        # the two adjacent diagonal squares stored in a list
+        captureSquareDiagLeft = captureMoveFunctions[self.color][0](self, self.location)
+        captureSquareDiagRight = captureMoveFunctions[self.color][1](self, self.location)
+        captureSquares = [captureSquareDiagLeft, captureSquareDiagRight]
         
-        else:
-            # regular case capturing 
+        # if any are not valid moves, filter them out
+        captureSquares = list(filter(lambda x: isinstance(x, tuple), captureSquares))
 
-            # the two diagonal moves are tracked
-            captureSquareBottomLeft = getOneSquareDiag3(self, self.location)
-            captureSquareBottomRight = getOneSquareDiag1(self, self.location)
-            captureSquares = [captureSquareBottomLeft, captureSquareBottomRight]
-            captureSquares = list(filter(lambda x: isinstance(x, tuple), captureSquares))
-            # tracking occupants of the opposite colour for each diagonal move
-            for square in captureSquares:
-                occupant = getPieceFromLocation(square)
-                
-                if isinstance(occupant, Piece):
-                    if square != False and self.color != occupant.color:
-                        capturableMoves.append(square)
+        return captureSquares
+
+    def getPawnCaptureMoves(self) -> list[tuple]:
+        capturableMoves = []
+        captureSquares = self.getPawnCaptureSquares()
+
+        # tracking occupants of the opposite colour for each diagonal move
+        for square in captureSquares:
+            occupant = getPieceFromLocation(square)
+
+            if isinstance(occupant, Piece):
+                if square != False and self.color != occupant.color:
+                    capturableMoves.append(square)
         
         return capturableMoves
 
@@ -224,12 +217,50 @@ class Pawn(Piece):
     
         return validMoves
 
-    def isMoveValid(self, newSquare):
-        # valid moves from Pawn capture and move functions 
-        validMoves = self.getPawnCaptureMoves() + self.getPawnMoves()
+    def enPassantCaptureMoves(self):
+        validMoves = []
+        selfRank = self.location[1]
+        occupantSquares = []
+        # maps self.colour to rank for meeting the en passant capture conditions
+        colorToCurrentRank = {"White": 4, "Black": 6}
         
-        return newSquare in validMoves
+        adjacentLeftSquare = getOneSquareLeft(self, self.location)
+        adjacentRightSquare = getOneSquareRight(self, self.location)
+        adjacentSquares = [adjacentLeftSquare, adjacentRightSquare]
+        adjacentSquares = list(filter(lambda x: isinstance(x, tuple), adjacentSquares))
+        
+        for square in adjacentSquares:
+            file = square[0]
+            occupant = getPieceFromLocation(square)
 
+            # if a pawn of opposite color moves two squares forward on its first turn
+            if isinstance(occupant, Pawn) and occupant.color != self.color \
+                and selfRank == occRank == colorToCurrentRank[self.color] \
+                    and occupant.firstTurn == 1:
+                occRank = square[1]
+                captureSquares = self.getPawnCaptureSquares()
+                
+                for cSqr in captureSquares:
+                    cFile = cSqr[0]
+                    if cFile == file:
+                        validMoves.append(cSqr)
+                        occupantSquares.append(occupant.location)
+
+        return [validMoves, occupantSquares]
+        
+    def getValidMoves(self):
+        # valid moves from Pawn capture and move functions 
+        validMoves = self.getPawnCaptureMoves() + self.getPawnMoves() + self.enPassantCaptureMoves()[0]
+        return validMoves
+    
+    def isMoveValid(self, newSquare):
+        return newSquare in self.getValidMoves()
+    
+    
+####################################################
+## Functions 
+####################################################
+    
 
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
