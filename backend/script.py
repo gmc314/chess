@@ -27,16 +27,20 @@ class King(Piece):
     
     # returns one-square moves in all directions
     def getValidMoves(self):
-        up = getOneSquareUp(self, self.location) 
-        down = getOneSquareDown(self, self.location)
-        left = getOneSquareLeft(self, self.location)
-        right = getOneSquareRight(self, self.location)
-        d1 = getOneSquareDiag1(self, self.location)
-        d2 = getOneSquareDiag2(self, self.location)
-        d3 = getOneSquareDiag3(self, self.location)
-        d4 = getOneSquareDiag4(self, self.location)
-
-        validMoves = [up, down, left, right, d1, d2, d3, d4]
+        validMoves = []
+        indexToOneSquareMoveFunctions = {
+            0: getOneSquareUp,
+            1: getOneSquareDown,
+            2: getOneSquareLeft,
+            3: getOneSquareRight,
+            4: getOneSquareDiag1,
+            5: getOneSquareDiag2,
+            6: getOneSquareDiag3,
+            7: getOneSquareDiag4
+        }
+        for i in range(8):
+            validMoves.append(indexToOneSquareMoveFunctions[i](self, self.location))
+        
         validMoves = list(filter(lambda x: x != False, validMoves))
     
         return validMoves
@@ -51,41 +55,48 @@ class Queen(Piece):
     
     # getting all valid moves in all directions
     def getValidMoves(self):
-        # valid vertical and horizontal moves
-        upMoves = getValidMovesInStraightDir(self, getOneSquareUp, self.location)
-        downMoves = getValidMovesInStraightDir(self, getOneSquareDown, self.location)
-        leftMoves = getValidMovesInStraightDir(self, getOneSquareLeft, self.location)
-        rightMoves = getValidMovesInStraightDir(self, getOneSquareRight, self.location)
+        validMoves = []
+        indexToOneSquareMoveFunctions = {
+            0: getOneSquareUp,
+            1: getOneSquareDown,
+            2: getOneSquareLeft,
+            3: getOneSquareRight,
+            4: getOneSquareDiag1,
+            5: getOneSquareDiag2,
+            6: getOneSquareDiag3,
+            7: getOneSquareDiag4
+        }
         
-        # valid diagonal moves
-        diag1Moves = getValidMovesInStraightDir(self, getOneSquareDiag1, self.location)
-        diag2Moves = getValidMovesInStraightDir(self, getOneSquareDiag2, self.location)
-        diag3Moves = getValidMovesInStraightDir(self, getOneSquareDiag3, self.location)
-        diag4Moves = getValidMovesInStraightDir(self, getOneSquareDiag4, self.location)
+        # looping to get all moves in all directions
+        for i in range(8):
+            validMoves += getValidMovesInStraightDir(self, indexToOneSquareMoveFunctions[i], self.location)
         
-        # a list of all valid moves
-        validMoves = upMoves+downMoves+leftMoves+rightMoves+diag1Moves+diag2Moves+diag3Moves+diag4Moves
-        return validMoves    
-
+        # return valid vertical and horizontal moves        
+        return validMoves
+    
     def isMoveValid(self, newSquare):
         return newSquare in self.getValidMoves()
-            
-
+    
 class Rook(Piece):
     def __init__(self, color, ID, location):
         super().__init__(color, "R", ID, location, True, 5)
 
     def getValidMoves(self):
-        # valid vertical and horizontal moves
-        upMoves = getValidMovesInStraightDir(self, getOneSquareUp, self.location)
-        downMoves = getValidMovesInStraightDir(self, getOneSquareDown, self.location)
-        leftMoves = getValidMovesInStraightDir(self, getOneSquareLeft, self.location)
-        rightMoves = getValidMovesInStraightDir(self, getOneSquareRight, self.location)
+        validMoves = []
+        indexToOneSquareVerticalHorizontalFunctions = {
+            0: getOneSquareUp,
+            1: getOneSquareDown,
+            2: getOneSquareLeft,
+            3: getOneSquareRight
+        }
         
-        # list of valid moves
-        validMoves = upMoves + downMoves + leftMoves + rightMoves
+        # looping over the four vertical and horizontal directions
+        for i in range(4):
+            validMoves += getValidMovesInStraightDir(self, indexToOneSquareVerticalHorizontalFunctions[i], self.location)
+        
+        # return valid vertical and horizontal moves        
         return validMoves
-        
+    
     def isMoveValid(self, newSquare):
         return newSquare in self.getValidMoves()
     
@@ -96,15 +107,16 @@ class Bishop(Piece):
     
     def getValidMoves(self):
         validMoves = []
-        indexToDiagonalMoveFunctions = {
+        indexToOneSquareDiagonalFunctions = {
             0: getOneSquareDiag1,
             1: getOneSquareDiag2,
             2: getOneSquareDiag3,
             3: getOneSquareDiag4
         }
         
+        # looping over the four diagonal directions
         for i in range(4):
-            validMoves += getValidMovesInStraightDir(self, indexToDiagonalMoveFunctions[i], self.location)
+            validMoves += getValidMovesInStraightDir(self, indexToOneSquareDiagonalFunctions[i], self.location)
         
         # return valid diagonal moves
         return validMoves
