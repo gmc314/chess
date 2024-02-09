@@ -95,14 +95,18 @@ class Bishop(Piece):
         super().__init__(color, "B", ID, location, False, 3) 
     
     def getValidMoves(self):
-        # valid diagonal moves
-        diag1Moves = getValidMovesInStraightDir(self, getOneSquareDiag1, self.location)
-        diag2Moves = getValidMovesInStraightDir(self, getOneSquareDiag2, self.location)
-        diag3Moves = getValidMovesInStraightDir(self, getOneSquareDiag3, self.location)
-        diag4Moves = getValidMovesInStraightDir(self, getOneSquareDiag4, self.location)
+        validMoves = []
+        indexToDiagonalMoveFunctions = {
+            0: getOneSquareDiag1,
+            1: getOneSquareDiag2,
+            2: getOneSquareDiag3,
+            3: getOneSquareDiag4
+        }
         
-        # list of valid moves
-        validMoves = diag1Moves + diag2Moves + diag3Moves + diag4Moves
+        for i in range(4):
+            validMoves += getValidMovesInStraightDir(self, indexToDiagonalMoveFunctions[i], self.location)
+        
+        # return valid diagonal moves
         return validMoves
     
     def isMoveValid(self, newSquare):
@@ -125,39 +129,24 @@ class Knight(Piece):
         oneSquareD2 = getOneSquareDiag2(self, currentSquare)
         oneSquareD3 = getOneSquareDiag3(self, currentSquare)
         oneSquareD4 = getOneSquareDiag4(self, currentSquare)
-        movesD1 = []
-        movesD2 = []
-        movesD3 = []
-        movesD4 = []
-
+        
         diagSquares = [oneSquareD1, oneSquareD2, oneSquareD3, oneSquareD4]
-
+        diagSquares = list(filter(lambda x: isinstance(x, tuple), diagSquares))
+        
         diagSquaresIndexToKnightMoves = {
-            0: [getOneSquareRight, getOneSquareDown],
-            1: [getOneSquareLeft, getOneSquareUp],
-            2: [getOneSquareLeft, getOneSquareDown],
-            3: [getOneSquareRight, getOneSquareUp]
+            oneSquareD1: [getOneSquareRight, getOneSquareDown],
+            oneSquareD2: [getOneSquareLeft, getOneSquareUp],
+            oneSquareD3: [getOneSquareLeft, getOneSquareDown],
+            oneSquareD4: [getOneSquareRight, getOneSquareUp]
         }
         # if the diagonal is on the board, then check the vertical or horizontal adjacent squares
-        for sqr, index in enumerate(diagSquares):
-            if sqr != False:
-                validMoves += [diagSquaresIndexToKnightMoves[index][0](self, sqr), 
-                               diagSquaresIndexToKnightMoves[index][1](self, sqr)]        
-            
-        # if oneSquareD2 != False:
-        #     movesD2 = [getOneSquareLeft(self, oneSquareD2), getOneSquareUp(self, oneSquareD2)]
-            
-        # if oneSquareD3 != False:
-        #     movesD3 = [getOneSquareLeft(self, oneSquareD3), getOneSquareDown(self, oneSquareD3)]
-        
-        # if oneSquareD4 != False:
-        #     movesD4 = [getOneSquareRight(self, oneSquareD4), getOneSquareUp(self, oneSquareD4)]
-        
-        # # then gather all the results and filter for valid moves
-        # validMoves = movesD1 + movesD2 + movesD3 + movesD4
-
-        # filter for non-False values in the validMoves list because 
-        # of the output of the getOneSquare functions  
+        for sqr in diagSquares:
+            knightMove1 = diagSquaresIndexToKnightMoves[sqr][0](self, sqr)
+            knightMove2 = diagSquaresIndexToKnightMoves[sqr][1](self, sqr)
+            # gather all the results after looping through the diagonal squares
+            validMoves += [knightMove1, knightMove2]
+                    
+        # filter list for valid moves 
         validMoves = list(filter(lambda x: x != False, validMoves))
 
         return validMoves
