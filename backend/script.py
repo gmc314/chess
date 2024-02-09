@@ -4,7 +4,7 @@ from typing import Union
 BOARD = [[" -- " for i in range(8)] for j in range(8)]
 
 # this is for mapping the board's letters of the files to list indices
-fileIndex = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7}
+fileIndex = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
 
 class Piece:
@@ -283,16 +283,21 @@ class Pawn(Piece):
                 if occupant != " -- ":
                     adjacentOccupants.append(occupant)
         
-        adjacentSquares = [x.location for x in adjacentOccupants if isinstance(x, Pawn)]      
+        adjacentSquares = [occ.location for occ in adjacentOccupants if isinstance(occ, Pawn)]      
         
+        # loop over the available left and right adjacent squares to see if there are any pawna on them
         for square in adjacentSquares:
             file = square[0]
             occupant = getPieceFromLocation(square)
             occRank = square[1]
+
             # if a pawn of opposite colour moves two squares forward on its first turn
             if occupant.colour != self.colour and \
                 selfRank == occRank == colourToCurrentRank[self.colour] and \
                    occupant.firstTurn == 1:
+                
+                # if the condition above holds, the we get the diagonal
+                # squares for the pawn to move to as per en passant
                 captureSquares = self.getPawnCaptureSquares()
                 
                 for cSqr in captureSquares:
@@ -433,7 +438,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
 
         return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
 
-    else:
+    else: # non en-passant case
         # getting location of move
         newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
         newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
