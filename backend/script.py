@@ -366,10 +366,11 @@ def placePiece(piece: Piece) -> str:
 # modifies: BOARD 
 # returns a verification message
 def capture(capturer: Piece, capturee: Piece) -> str:
-    if isinstance(capturer, Pawn) and capturer.getEnPassantCaptureMoves[1] != []:
+    
+    if isinstance(capturer, Pawn) and isinstance(capturee, Pawn) and capturer.getEnPassantCaptureMoves()[1] != []:
         # if the pawn is capturing en passant, it moves to the forward diagonal square
-        moveSquares = capturer.getEnPassantCaptureMoves[0]
-        occupantSquares = capturer.getEnPassantCaptureMoves[1]
+        moveSquares = capturer.getEnPassantCaptureMoves()[0]
+        occupantSquares = capturer.getEnPassantCaptureMoves()[1]
         captureeFile = capturee.location[0]
         if capturee.location in occupantSquares:
             # take the diag square that has the same file as the capturee
@@ -384,12 +385,17 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(mSqr)
                     BOARD[capturerRow][capturerCol] = capturer
 
-                    return f"{capturee.colour[0]}{capturee.name} captured."
+                    return f"{capturee.colour[0]}{capturee.name} captured en passant."
 
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
+    
+    # delete capturee from the board
     BOARD[captureeRow][captureeCol] = " -- "
     capturer.location = capturee.location
+
+    # the capturer gets the capturee's location
     BOARD[captureeRow][captureeCol] = capturer
+    
     return f"{capturee.colour[0]}{capturee.name} captured."
 
 
@@ -397,6 +403,9 @@ def capture(capturer: Piece, capturee: Piece) -> str:
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
     if not piece.isMoveValid(newSquare):
         return "invalid move"
+    
+    currentSquare = piece.location
+    currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
     if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves()[0] != []:
         enPassantMoves = piece.getEnPassantCaptureMoves()[0]
@@ -413,38 +422,39 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
                 captureMessage = capture(piece, occupant)
             else:
                 captureMessage = ""
+        
+        # move piece from the current square
+        BOARD[currentRow][currentCol] = " -- "
 
+        return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
 
-    # getting current location of piece
-    currentSquare = piece.location
-    currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
-
-    # getting location of move
-    newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
-    newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
-    
-    # if the space is occupied by the opposite colour:
-    occupant = getPieceFromLocation((newRank, newFile))
-    if occupant != " -- ":
-        # call the capture function and print out the message
-        captureMessage = capture(piece, occupant)
     else:
-        captureMessage = ""
-    
-    # move piece from the current square
-    BOARD[currentRow][currentCol] = " -- "
+        # getting location of move
+        newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
+        newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
+        
+        # if the space is occupied by the opposite colour:
+        occupant = getPieceFromLocation((newRank, newFile))
+        if occupant != " -- ":
+            # call the capture function and print out the message
+            captureMessage = capture(piece, occupant)
+        else:
+            captureMessage = ""
+        
+        # move piece from the current square
+        BOARD[currentRow][currentCol] = " -- "
 
-    # to new square
-    piece.location = (newRank, newFile)
-    
-    BOARD[newRow][newCol] = piece
+        # to new square
+        piece.location = (newRank, newFile)
+        
+        BOARD[newRow][newCol] = piece
 
-    # condition for en passant and first turn two-square forward move
-    if isinstance(piece, Pawn) and piece.firstTurn <= 2:
-        piece.firstTurn += 1
+        # condition for en passant and first turn two-square forward move
+        if isinstance(piece, Pawn) and piece.firstTurn <= 2:
+            piece.firstTurn += 1
 
-    # print out the move 
-    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
+        # print out the move 
+        return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
 
 
 # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
