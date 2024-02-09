@@ -166,12 +166,12 @@ class Pawn(Piece):
     # this funcction returns the possible adjacent diagonal squares that a pawn could capture  
     def getPawnCaptureSquares(self) -> list[tuple]:
         # THIS WORKS! :)
-        captureMoveFunctions = {"White": [getOneSquareDiag2, getOneSquareDiag4],
+        colorToCaptureMoveFunctions = {"White": [getOneSquareDiag2, getOneSquareDiag4],
                                 "Black": [getOneSquareDiag3, getOneSquareDiag1]}
             
         # the two adjacent diagonal squares stored in a list
-        captureSquareDiagLeft = captureMoveFunctions[self.color][0](self, self.location)
-        captureSquareDiagRight = captureMoveFunctions[self.color][1](self, self.location)
+        captureSquareDiagLeft = colorToCaptureMoveFunctions[self.color][0](self, self.location)
+        captureSquareDiagRight = colorToCaptureMoveFunctions[self.color][1](self, self.location)
         captureSquares = [captureSquareDiagLeft, captureSquareDiagRight]
         
         # if any are not valid moves, filter them out
