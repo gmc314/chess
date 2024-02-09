@@ -153,7 +153,7 @@ class Knight(Piece):
         return validMoves
 
     def isMoveValid(self, newSquare):
-        # valid moves from knightWheel function 
+        # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
         
 
@@ -163,15 +163,17 @@ class Pawn(Piece):
         # a number variable to track the number of turns for en passant capturing
         self.firstTurn = 0
 
-    # this funcction returns the possible adjacent diagonal squares that a pawn could capture  
+    # this function returns the possible adjacent diagonal squares that a pawn could capture  
     def getPawnCaptureSquares(self) -> list[tuple]:
-        # THIS WORKS! :)
-        colorToCaptureMoveFunctions = {"White": [getOneSquareDiag2, getOneSquareDiag4],
-                                "Black": [getOneSquareDiag3, getOneSquareDiag1]}
-            
+        # maps pawn colour to its diagonal capture moves 
+        colorToCaptureMoveFunctions = {
+            "White": [getOneSquareDiag2, getOneSquareDiag4],
+            "Black": [getOneSquareDiag3, getOneSquareDiag1]
+            }
         # the two adjacent diagonal squares stored in a list
         captureSquareDiagLeft = colorToCaptureMoveFunctions[self.color][0](self, self.location)
         captureSquareDiagRight = colorToCaptureMoveFunctions[self.color][1](self, self.location)
+
         captureSquares = [captureSquareDiagLeft, captureSquareDiagRight]
         
         # if any are not valid moves, filter them out
@@ -187,41 +189,44 @@ class Pawn(Piece):
         for square in captureSquares:
             occupant = getPieceFromLocation(square)
 
-            if isinstance(occupant, Piece):
-                if square != False and self.color != occupant.color:
-                    capturableMoves.append(square)
+            if isinstance(occupant, Piece) and square != False and self.color != occupant.color:
+                capturableMoves.append(square)
         
         return capturableMoves
 
-    def getPawnMoves(self):
+    def getPawnAdvanceMoves(self):
         validMoves = []
-        if self.color == "White":
-            oneSquareUp = getOneSquareUp(self, self.location)
-            # two square advance on first turn
-            if self.firstTurn == 0:
-                # gets the two valid moves for a white pawn on the first turn
-                validMoves += [oneSquareUp, getOneSquareUp(self, oneSquareUp)] 
+
+        colorToAdvanceDirectionFunction = {
+            "White": getOneSquareUp,
+            "Black": getOneSquareDown
+        }
+
+        oneSquareAdvance = colorToAdvanceDirectionFunction[self.color](self, self.location)
+        occupant = getPieceFromLocation(oneSquareAdvance)
+
+        if isinstance(occupant, Piece):
+            oneSquareAdvance = False
         
-            else:
-                validMoves.append(oneSquareUp)
-            
-        else:
-            oneSquareDown = getOneSquareDown(self, self.location)
-            # two square advance on first turn
-            if self.firstTurn == 0:
-                # gets the two valid moves for a black pawn on the first turn
-                validMoves += [oneSquareDown, getOneSquareDown(self, oneSquareDown)] 
-        
-            else:
-                validMoves.append(oneSquareUp)
-    
+        # if this is the pawn's first turn, can advance two squares
+        if self.firstTurn == 0:
+            try: # get the two valid moves for a white pawn on the first turn
+                validMoves += [oneSquareAdvance, colorToAdvanceDirectionFunction[self.color](self, oneSquareAdvance)] 
+
+            except TypeError: # if the two-square move is obstructed 
+                validMoves.append(oneSquareAdvance)
+                
+        else: # if it's not the pawn's first turn
+            validMoves.append(oneSquareAdvance)
+
+        validMoves = list(filter(lambda x: isinstance(x, tuple), validMoves))    
         return validMoves
 
-    def enPassantCaptureMoves(self):
+    def getEnPassantCaptureMoves(self):
         validMoves = []
         selfRank = self.location[1]
         occupantSquares = []
-        # maps self.colour to rank for meeting the en passant capture conditions
+        # maps pawn colour to rank for meeting the en passant capture conditions
         colorToCurrentRank = {"White": 4, "Black": 6}
         
         adjacentLeftSquare = getOneSquareLeft(self, self.location)
@@ -250,7 +255,7 @@ class Pawn(Piece):
         
     def getValidMoves(self):
         # valid moves from Pawn capture and move functions 
-        validMoves = self.getPawnCaptureMoves() + self.getPawnMoves() + self.enPassantCaptureMoves()[0]
+        validMoves = self.getPawnCaptureMoves() + self.getPawnAdvanceMoves() + self.getEnPassantCaptureMoves()[0]
         return validMoves
     
     def isMoveValid(self, newSquare):
