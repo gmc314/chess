@@ -281,12 +281,11 @@ class Pawn(Piece):
         for square in adjacentSquares:
             file = square[0]
             occupant = getPieceFromLocation(square)
-
+            occRank = square[1]
             # if a pawn of opposite color moves two squares forward on its first turn
             if isinstance(occupant, Pawn) and occupant.color != self.color \
                 and selfRank == occRank == colorToCurrentRank[self.color] \
                     and occupant.firstTurn == 1:
-                occRank = square[1]
                 captureSquares = self.getPawnCaptureSquares()
                 
                 for cSqr in captureSquares:
@@ -355,6 +354,26 @@ def placePiece(piece: Piece) -> str:
 # modifies: BOARD 
 # returns a verification message
 def capture(capturer: Piece, capturee: Piece) -> str:
+    if isinstance(capturer, Pawn) and capturer.getEnPassantCaptureMoves[1] != []:
+        # if the pawn is capturing en passant, it moves to the forward diagonal square
+        moveSquares = capturer.getEnPassantCaptureMoves[0]
+        occupantSquares = capturer.getEnPassantCaptureMoves[1]
+        captureeFile = capturee.location[0]
+        if capturee.location in occupantSquares:
+            # take the diag square that has the same file as the capturee
+            for mSqr in moveSquares:
+                file = mSqr[0] 
+                if file == captureeFile:
+                    # moving the capturee off the board
+                    captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
+                    BOARD[captureeRow][captureeCol] = " -- "
+                    
+                    # moving the capturer pawn to the adjacent diagonal square
+                    capturerRow, capturerCol = getBoardIndexFromRankAndFile(mSqr)
+                    BOARD[capturerRow][capturerCol] = capturer
+
+                    return f"{capturee.color[0]}{capturee.name} captured."
+
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     BOARD[captureeRow][captureeCol] = " -- "
     capturer.location = capturee.location
