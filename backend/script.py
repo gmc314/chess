@@ -119,7 +119,7 @@ class Knight(Piece):
     # referring to standard chess rules 
     def getValidMoves(self):
         currentSquare = self.location
-
+        validMoves = []
         # the four diagonal directions 
         oneSquareD1 = getOneSquareDiag1(self, currentSquare)
         oneSquareD2 = getOneSquareDiag2(self, currentSquare)
@@ -130,21 +130,31 @@ class Knight(Piece):
         movesD3 = []
         movesD4 = []
 
+        diagSquares = [oneSquareD1, oneSquareD2, oneSquareD3, oneSquareD4]
+
+        diagSquaresIndexToKnightMoves = {
+            0: [getOneSquareRight, getOneSquareDown],
+            1: [getOneSquareLeft, getOneSquareUp],
+            2: [getOneSquareLeft, getOneSquareDown],
+            3: [getOneSquareRight, getOneSquareUp]
+        }
         # if the diagonal is on the board, then check the vertical or horizontal adjacent squares
-        if oneSquareD1 != False:
-            movesD1 = [getOneSquareRight(self, oneSquareD1), getOneSquareDown(self, oneSquareD1)]        
-        
-        if oneSquareD2 != False:
-            movesD2 = [getOneSquareLeft(self, oneSquareD2), getOneSquareUp(self, oneSquareD2)]
+        for sqr, index in enumerate(diagSquares):
+            if sqr != False:
+                validMoves += [diagSquaresIndexToKnightMoves[index][0](self, sqr), 
+                               diagSquaresIndexToKnightMoves[index][1](self, sqr)]        
             
-        if oneSquareD3 != False:
-            movesD3 = [getOneSquareLeft(self, oneSquareD3), getOneSquareDown(self, oneSquareD3)]
+        # if oneSquareD2 != False:
+        #     movesD2 = [getOneSquareLeft(self, oneSquareD2), getOneSquareUp(self, oneSquareD2)]
+            
+        # if oneSquareD3 != False:
+        #     movesD3 = [getOneSquareLeft(self, oneSquareD3), getOneSquareDown(self, oneSquareD3)]
         
-        if oneSquareD4 != False:
-            movesD4 = [getOneSquareRight(self, oneSquareD4), getOneSquareUp(self, oneSquareD4)]
+        # if oneSquareD4 != False:
+        #     movesD4 = [getOneSquareRight(self, oneSquareD4), getOneSquareUp(self, oneSquareD4)]
         
-        # then gather all the results and filter for valid moves
-        validMoves = movesD1 + movesD2 + movesD3 + movesD4
+        # # then gather all the results and filter for valid moves
+        # validMoves = movesD1 + movesD2 + movesD3 + movesD4
 
         # filter for non-False values in the validMoves list because 
         # of the output of the getOneSquare functions  
