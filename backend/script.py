@@ -6,7 +6,6 @@ BOARD = [[" -- " for i in range(8)] for j in range(8)]
 # this is for mapping the board's letters of the files to list indices
 fileIndex = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
-
 class Piece:
     def __init__(self, colour: str, name: str, ID: str, location: tuple, canCastle: bool, points: int) -> None:
         self.colour = colour 
@@ -335,7 +334,25 @@ class Pawn(Piece):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
         
+
+class Player:
+    def __init__(self, colour: str, points: int, pieces: list[Piece]) -> None:
+        self.colour = colour
+        self.points = points
+        self.pieces = pieces
+
+    def __repr__(self) -> str:
+        pluralS = "" if self.points == 1 else "s"
+        return f"{self.colour} with {self.points} point{pluralS}"    
     
+WHITE = Player("White", 0, [])
+BLACK = Player("Black", 0, [])
+
+colourToPlayer = {
+    "White": WHITE,
+    "Black": BLACK
+}
+
 ####################################################
 ## Functions 
 ####################################################
@@ -392,6 +409,8 @@ def placePiece(piece: Piece) -> str:
     row, col = getBoardIndexFromRankAndFile(currentSquare)
     BOARD[row][col] = piece
     
+    colourToPlayer[piece.colour].pieces.append(piece)
+
     return f"{piece} placed"
 
 
@@ -428,6 +447,9 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(mSqr)
                     BOARD[capturerRow][capturerCol] = capturer
 
+                    # add points to player
+                    colourToPlayer[capturer.colour].points += capturee.points
+                    
                     return f"{capturee.colour[0]}{capturee.name} captured en passant."
 
     # non en-passant case
@@ -440,6 +462,9 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     # the capturer gets the capturee's location
     BOARD[captureeRow][captureeCol] = capturer
     
+    # add points to player
+    colourToPlayer[capturer.colour].points += capturee.points
+                    
     return f"{capturee.colour[0]}{capturee.name} captured."
 
 
