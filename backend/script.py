@@ -42,6 +42,8 @@ class King(Piece):
             "Short": 2,
             "Long": 3
         }
+
+        # the original rook squares according to colour and length of castle
         rookSquares = {
             "Black": {"Short": ("h", 8), 
                       "Long": ("a", 8)}, 
@@ -49,19 +51,18 @@ class King(Piece):
             "White": {"Short": ("h", 1), 
                       "Long": ("a", 1)}
         }
-        
 
-        # i is for the keys of the dictionaries defined above so we can efficiently use space 
+        # castleLength is for the keys of the dictionaries defined above so we can efficiently use space 
         # in writng code and avoid too much repetition
-        for i in ["Short", "Long"]:
-            castlingDirectionSquares = mapToSquaresForCastling[i]
+        for castleLength in ["Short", "Long"]:
+            castlingDirectionSquares = mapToSquaresForCastling[castleLength]
             # checking if the direction has any obstructions other than the rook
             castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == " -- ", 
                                                 castlingDirectionSquares))       
                   
-            if mapToNumberOfEmptySquaresForCastling[i] == len(castlingDirectionSquares):
-                # checking for the rook to be on its original square
-                rookSquareOccupant = getPieceFromLocation(rookSquares[self.colour][i])
+            if mapToNumberOfEmptySquaresForCastling[castleLength] == len(castlingDirectionSquares):
+                # checking if the rook is on its original square and hasn't moved yet
+                rookSquareOccupant = getPieceFromLocation(rookSquares[self.colour][castleLength])
 
                 if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
                     # this will add the two-square move of the king as a valid move
