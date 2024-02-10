@@ -24,6 +24,15 @@ class King(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "K", ID, location, True, 0) 
     
+    # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
+    def getCastleMoves(self):
+        pass
+    
+    # self.castle() returns the notation of o-o or o-o-o depending a short or long castle 
+    # MODIFIES: BOARD
+    def castle(self):
+        pass
+    
     # returns one-square moves in all directions
     def getValidMoves(self):
         validMoves = []
@@ -46,15 +55,6 @@ class King(Piece):
     
         return validMoves
 
-        
-    # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
-    def getCastleMoves(self):
-        pass
-    
-    # self.castle() returns the notation of o-o or o-o-o depending a short or long castle 
-    # MODIFIES: BOARD
-    def castle(self):
-        pass
 
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
