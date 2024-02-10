@@ -30,27 +30,30 @@ class King(Piece):
         if self.canCastle == False:
             return validMoves
         
-        oneSquareMoveInDirectionOfCastling = {
-            0: getOneSquareRight,
-            1: getOneSquareLeft
-        }
-
         # both sets of squares for the castling conditions are defined  
         mapToSquaresForCastling = {
-            0: getSquaresInStraightDir(self, getOneSquareRight, self.location), # for short castling 
-            1: getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for long castling 
+            "Short": getSquaresInStraightDir(self, getOneSquareRight, self.location), # for short castling 
+            "Long": getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for long castling 
         }
 
         # we expect the number of empty squares between the king and rook 
         # to be 2 if short castling and 3 if long castling
         mapToNumberOfEmptySquaresForCastling = {
-            0: 2,
-            1: 3
+            "Short": 2,
+            "Long": 3
+        }
+        rookSquares = {
+            "Black": {"Short": ("h", 8), 
+                      "Long": ("a", 8)}, 
+
+            "White": {"Short": ("h", 8), 
+                      "Long": ("a", 8)}
         }
         
+
         # i is for the keys of the dictionaries defined above so we can efficiently use space 
         # in writng code and avoid too much repetition
-        for i in range(2):
+        for i in ["Short", "Long"]:
             castlingDirectionSquares = mapToSquaresForCastling[i]
             # checking if the direction has any obstructions other than the rook
             castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == " -- ", 
@@ -58,8 +61,7 @@ class King(Piece):
                   
             if mapToNumberOfEmptySquaresForCastling[i] == len(castlingDirectionSquares):
                 # checking for the rook to be on its original square
-                rookOriginalSquare = oneSquareMoveInDirectionOfCastling[i](castlingDirectionSquares[-1])
-                rookSquareOccupant = getPieceFromLocation(rookOriginalSquare)
+                rookSquareOccupant = rookSquares[self.colour][i]
 
                 if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
                     # this will add the two-square move of the king as a valid move
