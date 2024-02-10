@@ -46,8 +46,8 @@ class King(Piece):
             "Black": {"Short": ("h", 8), 
                       "Long": ("a", 8)}, 
 
-            "White": {"Short": ("h", 8), 
-                      "Long": ("a", 8)}
+            "White": {"Short": ("h", 1), 
+                      "Long": ("a", 1)}
         }
         
 
@@ -61,7 +61,7 @@ class King(Piece):
                   
             if mapToNumberOfEmptySquaresForCastling[i] == len(castlingDirectionSquares):
                 # checking for the rook to be on its original square
-                rookSquareOccupant = rookSquares[self.colour][i]
+                rookSquareOccupant = getPieceFromLocation(rookSquares[self.colour][i])
 
                 if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
                     # this will add the two-square move of the king as a valid move
