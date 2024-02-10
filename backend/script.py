@@ -26,15 +26,52 @@ class King(Piece):
     
     # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
     def getCastleMoves(self):
-        pass
-    
-    # self.castle() returns the notation of o-o or o-o-o depending a short or long castle 
-    # MODIFIES: BOARD
+        validMoves = []
+        if self.canCastle == False:
+            return validMoves
+        
+        oneSquareMoveInDirectionOfCastling = {
+            0: getOneSquareRight,
+            1: getOneSquareLeft
+        }
+
+        # both sets of squares for the castling conditions are defined  
+        mapToSquaresForCastling = {
+            0: getSquaresInStraightDir(self, getOneSquareRight, self.location), # for short castling 
+            1: getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for long castling 
+        }
+
+        # we expect the number of empty squares between the king and rook 
+        # to be 2 if short castling and 3 if long castling
+        mapToNumberOfEmptySquaresForCastling = {
+            0: 2,
+            1: 3
+        }
+        
+        # i is for the keys of the dictionaries defined above so we can efficiently use space 
+        # in writng code and avoid too much repetition
+        for i in range(2):
+            castlingDirectionSquares = mapToSquaresForCastling[i]
+            # checking if the direction has any obstructions other than the rook
+            castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == " -- ", 
+                                                castlingDirectionSquares))       
+                  
+            if mapToNumberOfEmptySquaresForCastling[i] == len(castlingDirectionSquares):
+                # checking for the rook to be on its original square
+                rookOriginalSquare = oneSquareMoveInDirectionOfCastling[i](castlingDirectionSquares[-1])
+                rookSquareOccupant = getPieceFromLocation(rookOriginalSquare)
+
+                if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
+                    # this will add the two-square move of the king as a valid move
+                    validMoves.append(castlingDirectionSquares[1])
+
+        return validMoves
+
     def castle(self):
         pass
-    
+
     # returns one-square moves in all directions
-    def getValidMoves(self):
+    def getSingleSquareMoves(self):
         validMoves = []
         indexToOneSquareMoveFunctions = {
             0: getOneSquareUp,
@@ -55,6 +92,8 @@ class King(Piece):
     
         return validMoves
 
+    def getValidMoves(self):
+        return self.getSingleSquareMoves() + self.getCastleMoves()
 
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
@@ -82,7 +121,7 @@ class Queen(Piece):
         
         # looping to get all moves in all directions
         for i in range(8):
-            validMoves += getValidMovesInStraightDir(self, 
+            validMoves += getSquaresInStraightDir(self, 
                                                      indexToOneSquareMoveFunctions[i],
                                                      self.location)
         
@@ -110,7 +149,7 @@ class Rook(Piece):
         
         # looping over the four vertical and horizontal directions
         for i in range(4):
-            validMoves += getValidMovesInStraightDir(self, 
+            validMoves += getSquaresInStraightDir(self, 
                                                      indexToOneSquareVerticalHorizontalFunctions[i], 
                                                      self.location
                                                      )
@@ -139,7 +178,7 @@ class Bishop(Piece):
         
         # looping over the four diagonal directions
         for i in range(4):
-            validMoves += getValidMovesInStraightDir(self, 
+            validMoves += getSquaresInStraightDir(self, 
                                                      indexToOneSquareDiagonalFunctions[i],
                                                      self.location
                                                      )
@@ -697,7 +736,7 @@ def getOneSquareDiagTR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
 # this function returns a list of valid moves in a vertical, horizontal, or diagonal direction
 # depending on getOneSquareDirFunction
-def getValidMovesInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple[str, int]) -> list:
+def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple[str, int]) -> list:
     validMoves = []
     nextSquare = getOneSquareDirFunction(piece, square)
     

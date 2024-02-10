@@ -127,4 +127,18 @@ moveFromCurrentSquare(bp, ("h", 5))
 #print(("h", 6) in bp.getValidMoves())
 
 print(moveFromCurrentSquare(wp, ("h", 6)))
+
+
+###### 
+# CASTLING
+
+
+wk = King("White", "6", ("e", 1))
+placePiece(wk)
+wr = Rook("White", "4", ("h", 1))
+placePiece(wr)
+wr2 = Rook("White", "3", ("a", 1))
+placePiece(wr2)
 pprint(BOARD)
+
+print(wk.getCastleMoves())
