@@ -22,7 +22,7 @@ class Piece:
 # inheriting from Piece class
 class King(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "K", ID, location, True, 0) 
+        super().__init__(colour, "K", ID, location, canCastle=True, points=0) 
     
     # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
     def getCastleMoves(self):
@@ -137,8 +137,7 @@ class King(Piece):
 # inheriting from Piece class
 class Queen(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "Q", ID, location, False, 9) 
-    
+        super().__init__(colour, "Q", ID, location, canCastle=False, points=9)  
     # getting all valid moves in all directions
     def getValidMoves(self):
         validMoves = []
@@ -169,8 +168,8 @@ class Queen(Piece):
 # inheriting from Piece class
 class Rook(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "R", ID, location, True, 5)
-
+        super().__init__(colour, "R", ID, location, canCastle=True, points=5)
+        
     # getting the vertical and horizontal moves 
     def getValidMoves(self):
         validMoves = []
@@ -199,8 +198,8 @@ class Rook(Piece):
 # inheriting from Piece class
 class Bishop(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "B", ID, location, False, 3) 
-    
+        super().__init__(colour, "B", ID, location, canCastle=False, points=3) 
+         
     def getValidMoves(self):
         validMoves = []
         indexToOneSquareDiagonalFunctions = {
@@ -228,8 +227,8 @@ class Bishop(Piece):
 # inheriting from Piece class
 class Knight(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "N", ID, location, False, 3) 
-    
+        super().__init__(colour, "N", ID, location, canCastle=False, points=3) 
+        
     # gets a list of valid moves for the Knight
     # for a knight to move, it can go in a diagonal direction one 
     # square regardless if the square is occupied, and then it goes one more 
@@ -287,7 +286,7 @@ class Knight(Piece):
 # inheriting from Piece class
 class Pawn(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "P", ID, location, False, 1) 
+        super().__init__(colour, "P", ID, location, canCastle=False, points=1) 
         # a number variable to track the number of turns for en passant capturing
         self.numMoves = 0
 
@@ -408,14 +407,13 @@ class Pawn(Piece):
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
-        
-
+ 
 class Player:
     def __init__(self, colour: str, points: int, pieces: list[Piece]) -> None:
         self.colour = colour
         self.points = points
         self.pieces = pieces
-
+        
     def __repr__(self) -> str:
         pluralS = "" if self.points == 1 else "s"
         return f"{self.colour} with {self.points} point{pluralS}"    
@@ -547,7 +545,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
     if not piece.isMoveValid(newSquare):
-        return "invalid move"   
+        return "invalid move"
 
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
@@ -848,3 +846,39 @@ def checkmate(king: King):
             return False
         
     return True
+
+# replaces the pawn with a piece with pieceName 
+# requires pieceName to be one of Q, B, R, N
+def pawnPromotion(pawn: Pawn, pieceName: str):
+    colourToRank = {"White": 8, 
+                    "Black": 1}
+    
+    nameToClass = {
+        "Q": Queen,
+        "N": Knight, 
+        "B": Bishop,
+        "R": Rook
+    }
+
+    nameToPoints = {
+        "Q": 9,
+        "R": 5,
+        "B": 3,
+        "N": 3
+    }
+
+    if pawn.location[1] == colourToRank[pawn.colour]:
+        newColour = pawn.colour 
+        newName = pieceName
+        newLocation = pawn.location
+
+        newPiece = nameToClass[pieceName](newColour, newName,newLocation)
+        return newPiece
+    
+nameToClass = {
+    "Q": Queen,
+    "N": Knight, 
+    "B": Bishop,
+    "R": Rook
+}
+

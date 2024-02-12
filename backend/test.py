@@ -141,4 +141,3 @@ wr2 = Rook("White", "3", ("a", 1))
 placePiece(wr2)
 pprint(BOARD)
 
-print(wk.getCastleMoves())
