@@ -80,9 +80,6 @@ class King(Piece):
         fileToDirection = {"g": getOneSquareLeft, 
                            "c": getOneSquareRight}
         
-        fileToDirection = {"g": getOneSquareRight, 
-                           "c": getOneSquareLeft}
-        
         # getting locations of rooks 
         kingFileToRookFile = {"g": "h",
                         "c": "a"}
@@ -101,6 +98,8 @@ class King(Piece):
 
         newRookLocation = fileToDirection[selfFile](self, self.location)
         newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
+        rook.location = newRookLocation
+
         BOARD[newRookRow][newRookCol] = rook
         
         return kingFileToCastleSymbol[selfFile]
@@ -567,11 +566,11 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
             
             if occupant != " -- ":
                 # call the capture function and print out the message
-                captureMessage = capture(piece, occupant)
+                message = capture(piece, occupant)
             else:
-                captureMessage = ""
+                message = ""
         
-        return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
+        return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
     # non en-passant case:
     # getting location of move
@@ -583,9 +582,9 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     
     if occupant != " -- ":
         # call the capture function and print out the message
-        captureMessage = capture(piece, occupant)
+        message = capture(piece, occupant)
     else:
-        captureMessage = ""
+        message = ""
     
     # move piece from the current square
     BOARD[currentRow][currentCol] = " -- "
@@ -595,21 +594,27 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     
     BOARD[newRow][newCol] = piece
 
+    # the following lines until the return statment are post-move conditions:
+    
     # condition for en passant and first turn two-square forward move
     if isinstance(piece, Pawn) and piece.numMoves <= 2:
         piece.numMoves += 1
 
-    # Conditions for not being allowed to castle:     
+    # Conditions for not being allowed to castle:
     # if the rook moves 
-    elif isinstance(piece, Rook):
+    if isinstance(piece, Rook):
         piece.canCastle = False
 
     # if the king doesn't move to a castling square
-    elif isinstance(piece, King) and newSquare not in piece.getCastleMoves():
+    if isinstance(piece, King) and newSquare not in piece.getCastleMoves():
         piece.canCastle = False
 
+    # if the king moves to a castling square
+    elif isinstance(piece, King) and newSquare in piece.getCastleMoves():
+        message = piece.castle()
+    
     # print out the move 
-    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {captureMessage}"
+    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
 
 # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
