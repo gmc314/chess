@@ -546,7 +546,11 @@ def capture(capturer: Piece, capturee: Piece) -> str:
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
     if not piece.isMoveValid(newSquare):
         return "invalid move"
-
+    
+    pawnColourToPromotionRank = {"White": 8, 
+                                 "Black": 1
+                                }
+    
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
@@ -590,9 +594,14 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # to new square
     piece.location = (newRank, newFile)
     
+    # pawn promotion
+    if isinstance(piece, Pawn) and newRank == pawnColourToPromotionRank[piece.colour]:
+        nameOfNewPiece = input("Enter one of [Q, R, N, B] to promote the pawn: ")
+        BOARD[newRow][newCol] = pawnPromotion(piece, nameOfNewPiece)    
+
     BOARD[newRow][newCol] = piece
 
-    # the following lines until the return statment are post-move conditions:
+    # the following lines until the return statement are post-move conditions:
     
     # condition for en passant and first turn two-square forward move
     if isinstance(piece, Pawn) and piece.numMoves <= 2:
@@ -851,34 +860,18 @@ def checkmate(king: King):
 # requires pieceName to be one of Q, B, R, N
 def pawnPromotion(pawn: Pawn, pieceName: str):
     colourToRank = {"White": 8, 
-                    "Black": 1}
-    
+                    "Black": 1
+                    }
     nameToClass = {
         "Q": Queen,
         "N": Knight, 
         "B": Bishop,
         "R": Rook
-    }
-
-    nameToPoints = {
-        "Q": 9,
-        "R": 5,
-        "B": 3,
-        "N": 3
-    }
-
+    } 
     if pawn.location[1] == colourToRank[pawn.colour]:
         newColour = pawn.colour 
         newName = pieceName
         newLocation = pawn.location
 
-        newPiece = nameToClass[pieceName](newColour, newName,newLocation)
+        newPiece = nameToClass[pieceName](newColour, newName, newLocation)
         return newPiece
-    
-nameToClass = {
-    "Q": Queen,
-    "N": Knight, 
-    "B": Bishop,
-    "R": Rook
-}
-
