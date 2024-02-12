@@ -804,3 +804,47 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
         nextSquare = getOneSquareDirFunction(piece, nextSquare)
 
     return validMoves
+
+# returns True if the king is in check by a piece
+def kingIsInCheck(king: King) -> bool:
+    oppositeColour = "White" if king.colour == "Black" else "Black"
+    opponentPlayer = colourToPlayer[oppositeColour]
+    
+    # looping over the opponent's pieces
+    for piece in opponentPlayer.pieces:
+
+        # if a piece can capture the king, return True
+        if king.location in piece.getValidMoves():
+            return True
+    
+    return False
+
+
+# returns True if the square is defended by a piece
+def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bishop, Knight, Pawn]) -> bool: 
+    pieceMoves = piece.getValidMoves()
+    
+    if square in pieceMoves:
+        return True
+    
+    return False
+
+# returns True if the king is in checkmate
+def checkmate(king: King):
+    oppositeColour = "White" if king.colour == "Black" else "Black"
+    opponentPlayer = colourToPlayer[oppositeColour]
+    if not kingIsInCheck(king):
+        return False
+    
+    # checking if every move is threatened 
+    validMoves = king.getValidMoves()
+    for move in validMoves:
+        # filter for opponent pieces that defends the square that the king can move to 
+        piecesThreateningTheKing = list(filter(lambda piece: squareDefended(move, piece), 
+                                               opponentPlayer.pieces))
+        
+        # if there are no pieces defending that square
+        if piecesThreateningTheKing == []:
+            return False
+        
+    return True
