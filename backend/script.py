@@ -31,14 +31,14 @@ class King(Piece):
             return validMoves
         
         # both sets of squares for the castling conditions are defined  
-        mapToSquaresForCastling = {
+        castleLengthToSquaresForCastling = {
             "Short": getSquaresInStraightDir(self, getOneSquareRight, self.location), # for short castling 
             "Long": getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for long castling 
         }
 
         # we expect the number of empty squares between the king and rook 
         # to be 2 if short castling and 3 if long castling
-        mapToNumberOfEmptySquaresForCastling = {
+        castleLengthToNumberOfEmptySquaresForCastling = {
             "Short": 2,
             "Long": 3
         }
@@ -55,23 +55,55 @@ class King(Piece):
         # castleLength is for the keys of the dictionaries defined above so we can efficiently use space 
         # in writng code and avoid too much repetition
         for castleLength in ["Short", "Long"]:
-            castlingDirectionSquares = mapToSquaresForCastling[castleLength]
-            # checking if the direction has any obstructions other than the rook
+            castlingDirectionSquares = castleLengthToSquaresForCastling[castleLength]
+            # filtering for empty squares
             castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == " -- ", 
                                                 castlingDirectionSquares))       
-                  
-            if mapToNumberOfEmptySquaresForCastling[castleLength] == len(castlingDirectionSquares):
-                # checking if the rook is on its original square and hasn't moved yet
+            
+            # checking if the direction has any obstructions other than the rook
+            if castleLengthToNumberOfEmptySquaresForCastling[castleLength] == len(castlingDirectionSquares):
                 rookSquareOccupant = getPieceFromLocation(rookSquares[self.colour][castleLength])
-
+                # checking if the rook is on its original square and hasn't moved yet
                 if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
                     # this will add the two-square move of the king as a valid move
                     validMoves.append(castlingDirectionSquares[1])
 
         return validMoves
 
-    def castle(self):
-        pass
+    # assuming the king can castle, this function moves the king and rook to castling position 
+    # MODIFIES: BOARD
+    def castle(self) -> str:
+        selfFile = self.location[0]
+        
+        # if the king long castles (and is on the c file), the rook moves to the adjacent right square
+        # if the king short castles (and is on the g file), the rook moves to the adjacent left square
+        fileToDirection = {"g": getOneSquareLeft, 
+                           "c": getOneSquareRight}
+        
+        fileToDirection = {"g": getOneSquareRight, 
+                           "c": getOneSquareLeft}
+        
+        # getting locations of rooks 
+        kingFileToRookFile = {"g": "h",
+                        "c": "a"}
+        colorToRookRank = {"Black": 8,
+                           "White": 1}
+        
+        # getting the symbols for casting
+        kingFileToCastleSymbol = {"g": "o-o",
+                        "c": "o-o-o"}
+        
+        rook = getPieceFromLocation((kingFileToRookFile[selfFile], colorToRookRank[self.colour]))
+        
+        # moves the rook to the correct position for castling
+        currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
+        BOARD[currentRookRow][currrentRookCol] = " -- "
+
+        newRookLocation = fileToDirection[selfFile](self, self.location)
+        newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
+        BOARD[newRookRow][newRookCol] = rook
+        
+        return kingFileToCastleSymbol[selfFile]
 
     # returns one-square moves in all directions
     def getSingleSquareMoves(self):
@@ -258,7 +290,7 @@ class Pawn(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "P", ID, location, False, 1) 
         # a number variable to track the number of turns for en passant capturing
-        self.firstTurn = 0
+        self.numMoves = 0
 
     # this function returns the possible adjacent diagonal squares that a pawn could capture  
     def getPawnCaptureSquares(self) -> list[tuple]:
@@ -309,7 +341,7 @@ class Pawn(Piece):
             oneSquareAdvance = False
         
         # if this is the pawn's first turn, can advance two squares
-        if self.firstTurn == 0:
+        if self.numMoves == 0:
             try: # get the two valid moves for a white pawn on the first turn
                 validMoves += [oneSquareAdvance, colourToAdvanceDirectionFunction[self.colour](self, oneSquareAdvance)] 
 
@@ -351,18 +383,20 @@ class Pawn(Piece):
             occupant = getPieceFromLocation(square)
             occRank = square[1]
 
-            # if a pawn of opposite colour moves two squares forward on its first turn
+            # if a pawn of the opposite colour moves two squares forward on its first turn
             if occupant.colour != self.colour and \
                 selfRank == occRank == colourToCurrentRank[self.colour] and \
-                   occupant.firstTurn == 1:
+                   occupant.numMoves == 1:
                 
-                # if the condition above holds, the we get the diagonal
-                # squares for the pawn to move to as per en passant
+                # we get the diagonal squares for the pawn 
+                # to move as per en passant
                 captureSquares = self.getPawnCaptureSquares()
                 
+                # loop through the two possible diagonal squares to see if they are valid moves
                 for cSqr in captureSquares:
                     cFile = cSqr[0]
                     if cFile == file and getPieceFromLocation(cSqr) == " -- ":
+                        # if yes, add the square to the valid moves list
                         validMoves.append(cSqr)
                         
         return [validMoves, adjacentSquares]
@@ -461,12 +495,12 @@ def placePiece(piece: Piece) -> str:
 # MODIFIES: BOARD 
 # returns a verification message
 def capture(capturer: Piece, capturee: Piece) -> str:
-    
+    # if the pawn is capturing en passant, it moves to the forward diagonal square
     if isinstance(capturer, Pawn) and isinstance(capturee, Pawn) and capturer.getEnPassantCaptureMoves()[1] != []:
-        # if the pawn is capturing en passant, it moves to the forward diagonal square
-        moveSquares = capturer.getEnPassantCaptureMoves()[0]
+        enPassantMoveSquares = capturer.getEnPassantCaptureMoves()[0]
         occupantSquares = capturer.getEnPassantCaptureMoves()[1]
         captureeFile = capturee.location[0]
+
         # the current BOARD location of the capturee
         captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
         
@@ -475,8 +509,8 @@ def capture(capturer: Piece, capturee: Piece) -> str:
         
         if capturee.location in occupantSquares:
             # take the diag square that has the same file as the capturee
-            for mSqr in moveSquares:
-                file = mSqr[0] 
+            for sqr in enPassantMoveSquares:
+                file = sqr[0] 
                 
                 if file == captureeFile:
                     # moving the capturee off the board
@@ -486,7 +520,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     BOARD[capturerRow][capturerCol] = " -- "
                     
                     # moving the attacking pawn to the adjacent diagonal square
-                    capturerRow, capturerCol = getBoardIndexFromRankAndFile(mSqr)
+                    capturerRow, capturerCol = getBoardIndexFromRankAndFile(sqr)
                     BOARD[capturerRow][capturerCol] = capturer
 
                     # add points to player
@@ -562,11 +596,16 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     BOARD[newRow][newCol] = piece
 
     # condition for en passant and first turn two-square forward move
-    if isinstance(piece, Pawn) and piece.firstTurn <= 2:
-        piece.firstTurn += 1
+    if isinstance(piece, Pawn) and piece.numMoves <= 2:
+        piece.numMoves += 1
 
-    # coniditon for castling
+    # Conditions for not being allowed to castle:     
+    # if the rook moves 
     elif isinstance(piece, Rook):
+        piece.canCastle = False
+
+    # if the king doesn't move to a castling square
+    elif isinstance(piece, King) and newSquare not in piece.getCastleMoves():
         piece.canCastle = False
 
     # print out the move 
