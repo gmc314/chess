@@ -854,6 +854,12 @@ def checkmate(king: King):
         if piecesThreateningTheKing == []:
             return False
         
+        # if the king can capture a piece that threatens it and that piece is not defended
+        for threatenPiece in piecesThreateningTheKing:
+            for otherPiece in opponentPlayer.pieces:
+                if threatenPiece.location == move and not squareDefended(move, otherPiece):
+                    return False 
+
     return True
 
 # replaces the pawn with a piece with pieceName 
