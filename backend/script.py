@@ -840,6 +840,7 @@ def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bish
 def checkmate(king: King):
     oppositeColour = "White" if king.colour == "Black" else "Black"
     opponentPlayer = colourToPlayer[oppositeColour]
+
     if not kingIsInCheck(king):
         return False
     
@@ -864,20 +865,29 @@ def checkmate(king: King):
 
 # replaces the pawn with a piece with pieceName 
 # requires pieceName to be one of Q, B, R, N
-def pawnPromotion(pawn: Pawn, pieceName: str):
-    colourToRank = {"White": 8, 
+def pawnPromotion(pawn: Pawn, pieceName: str) -> Union[Queen, Rook, Bishop, Knight]:
+    
+    # tracks white to 8 (the rank of which the pawn is promoted)
+    # and black to 1
+    colourToPromotionRank = {"White": 8, 
                     "Black": 1
                     }
+    
     nameToClass = {
         "Q": Queen,
         "N": Knight, 
         "B": Bishop,
         "R": Rook
     } 
-    if pawn.location[1] == colourToRank[pawn.colour]:
+    # if the pawn is in the most forward rank for promotion,
+    # return the new class of piece 
+    if pawn.location[1] == colourToPromotionRank[pawn.colour]:
+
+        # attributes of the new piece
         newColour = pawn.colour 
         newName = pieceName
         newLocation = pawn.location
 
+        # get a new instance of the class
         newPiece = nameToClass[pieceName](newColour, newName, newLocation)
         return newPiece

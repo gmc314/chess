@@ -131,8 +131,6 @@ print(moveFromCurrentSquare(wp, ("h", 6)))
 
 ###### 
 # CASTLING
-
-
 wk = King("White", "6", ("e", 1))
 placePiece(wk)
 wr = Rook("White", "4", ("h", 1))
