@@ -131,8 +131,10 @@ class King(Piece):
         return validMoves
 
     def getValidMoves(self):
-        return self.getSingleSquareMoves() + self.getCastleMoves()
-
+        moves = self.getSingleSquareMoves() + self.getCastleMoves()
+        moves = list(filter(lambda m: not kingIsInIndirectCheck(self, m), moves))
+        return moves
+    
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
@@ -838,9 +840,21 @@ def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bish
     return square in pieceMoves
 
 
+# this function returns True if the king is in indirect check 
+# (i.e. the king would be in check if moved to that square)
+def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
+    oppositeColour = "Black" if king.colour == "White" else "White"
+    opponentPlayer = colourToPlayer[oppositeColour]
+    
+    for piece in opponentPlayer.pieces:
+        if squareDefended(square, piece):
+            return True
+
+    return False    
+
 # returns True if the king is in checkmate
 def checkmate(king: King):
-    oppositeColour = "White" if king.colour == "Black" else "Black"
+    oppositeColour = "Black" if king.colour == "White" else "White"
     opponentPlayer = colourToPlayer[oppositeColour]
 
     if not kingIsInCheck(king):
@@ -849,6 +863,7 @@ def checkmate(king: King):
     # checking if every move is threatened 
     validMoves = king.getValidMoves()
     for move in validMoves:
+
         # filter for opponent pieces that defends the square that the king can move to 
         piecesThreateningTheKing = list(filter(lambda piece: squareDefended(move, piece), 
                                                opponentPlayer.pieces))
@@ -857,28 +872,16 @@ def checkmate(king: King):
         if piecesThreateningTheKing == []:
             return False
         
+        piecesNotThreateningTheKing = [piece for piece in opponentPlayer.pieces 
+                                       if piece not in piecesThreateningTheKing]
+
         # if the king can capture a piece that threatens it and that piece is not defended
         for threatenPiece in piecesThreateningTheKing:
-            for otherPiece in opponentPlayer.pieces:
-                if threatenPiece.location == move and not squareDefended(move, otherPiece):
+            for otherPiece in piecesNotThreateningTheKing:
+                if threatenPiece.location == move and not kingIsInIndirectCheck(king, otherPiece.location):
                     return False 
 
     return True
-
-
-# this function returns True if the king is in indirect check 
-# (i.e. the king would be in check if moved to that square)
-def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
-    opponentColour = "Black" if king.colour == "White" else "White"
-    opponentPlayer = colourToPlayer[opponentColour]
-    opponentPieces = opponentPlayer.pieces
-
-    for piece in opponentPieces:
-        if squareDefended(square, piece):
-            return True
-         
- 
-
 
 
 # replaces the pawn with a piece with pieceName 
