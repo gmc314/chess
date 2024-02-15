@@ -28,47 +28,63 @@ class King(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "K", ID, location, canCastle=True, points=0) 
     
+    # checks if the squares between rook and king are not defended as per rules of castling
+    def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
+        opponentColour = "Black" if self.colour == "White" else "White"
+        opponentPlayer = colourToPlayer[opponentColour]
+        for sqr in squaresBetweenKingAndRook:
+            for piece in opponentPlayer.pieces:
+                if squareDefended(sqr, piece):
+                    return True
+        return False 
+                    
     # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
     def getCastleMoves(self):
         validMoves = []
-        if self.canCastle == False:
+        if self.canCastle == False or kingIsInCheck(self):
             return validMoves
         
         # both sets of squares for the castling conditions are defined  
         castleLengthToSquaresForCastling = {
-            "Short": getSquaresInStraightDir(self, getOneSquareRight, self.location), # for short castling 
-            "Long": getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for long castling 
+            "Kingside": getSquaresInStraightDir(self, getOneSquareRight, self.location), # for Kingside castling 
+            "Queenside": getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for Queenside castling 
         }
 
         # we expect the number of empty squares between the king and rook 
-        # to be 2 if short castling and 3 if long castling
+        # to be 2 if Kingside castling and 3 if Queenside castling
         castleLengthToNumberOfEmptySquaresForCastling = {
-            "Short": 2,
-            "Long": 3
+            "Kingside": 2,
+            "Queenside": 3
         }
 
         # the original rook squares according to colour and length of castle
         rookSquares = {
-            "Black": {"Short": ("h", 8), 
-                      "Long": ("a", 8)}, 
+            "Black": {"Kingside": ("h", 8), 
+                      "Queenside": ("a", 8)}, 
 
-            "White": {"Short": ("h", 1), 
-                      "Long": ("a", 1)}
+            "White": {"Kingside": ("h", 1), 
+                      "Queenside": ("a", 1)}
         }
 
         # castleLength is for the keys of the dictionaries defined above so we can efficiently use space 
         # in writng code and avoid too much repetition
-        for castleLength in ["Short", "Long"]:
+        for castleLength in ["Kingside", "Queenside"]:
             castlingDirectionSquares = castleLengthToSquaresForCastling[castleLength]
             # filtering for empty squares
             castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == emptySquare, 
-                                                castlingDirectionSquares))       
+                                                castlingDirectionSquares))
+            
+            # if the squares between the king and rook are attacked, can't castle in that direction 
+            if self.checkEmptyCastleSquaresForThreatenedSquares(castlingDirectionSquares):
+                continue 
             
             # checking if the direction has any obstructions other than the rook
             if castleLengthToNumberOfEmptySquaresForCastling[castleLength] == len(castlingDirectionSquares):
                 rookSquareOccupant = getPieceFromLocation(rookSquares[self.colour][castleLength])
+                
                 # checking if the rook is on its original square and hasn't moved yet
                 if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
+                
                     # this will add the two-square move of the king as a valid move
                     validMoves.append(castlingDirectionSquares[1])
 
@@ -79,8 +95,8 @@ class King(Piece):
     def castle(self) -> str:
         selfFile = self.location[0]
         
-        # if the king long castles (and is on the c file), the rook moves to the adjacent right square
-        # if the king short castles (and is on the g file), the rook moves to the adjacent left square
+        # if the king Queenside castles (and is on the c file), the rook moves to the adjacent right square
+        # if the king Kingside castles (and is on the g file), the rook moves to the adjacent left square
         fileToDirection = {"g": getOneSquareLeft, 
                            "c": getOneSquareRight}
         
@@ -90,7 +106,7 @@ class King(Piece):
         colorToRookRank = {"Black": 8,
                            "White": 1}
         
-        # getting the symbols for casting
+        # getting the symbols for castling
         kingFileToCastleSymbol = {"g": "o-o",
                         "c": "o-o-o"}
         
