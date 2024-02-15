@@ -1,5 +1,31 @@
 from script import *
 from pprint import pprint
+import unittest
+
+class TestMiscFunctions(unittest.TestCase):
+    def testClearBoard(self):
+        result = clearBoard()
+        self.assertEqual(result, "Board Cleared")
+        
+
+    def testGetRankAndFile(self):
+        testIndices = (1,1)
+        row, col = testIndices
+        result = getRankAndFileFromBoardIndex(row, col)
+        self.assertEqual(result, ("b", 7))
+
+class TestChessPieces(unittest.TestCase):
+    def testPlacePiece(self):
+        testPiece = Pawn("Black", "5", ("a", 7))
+        resultString = placePiece(testPiece)
+        self.assertEqual(resultString, "BP placed")
+
+unittest.main()
+
+
+
+
+
 ########
 # BISHOP
 # testing placing a piece on the board
@@ -112,30 +138,30 @@ from pprint import pprint
 # bk = King("Black", "7", ("e", 6))
 # placePiece(bk)
 # print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
-clearBoard()
-######
-# EN PASSANT 
+# clearBoard()
+# ######
+# # EN PASSANT 
 
-wp = Pawn("White", "F", ("g", 2))
-placePiece(wp)
-moveFromCurrentSquare(wp, ("g", 4))
-moveFromCurrentSquare(wp, ("g", 5))
+# wp = Pawn("White", "F", ("g", 2))
+# placePiece(wp)
+# moveFromCurrentSquare(wp, ("g", 4))
+# moveFromCurrentSquare(wp, ("g", 5))
 
-bp = Pawn("Black", "W", ("h", 7))
-placePiece(bp)
-moveFromCurrentSquare(bp, ("h", 5))
-#print(("h", 6) in bp.getValidMoves())
+# bp = Pawn("Black", "W", ("h", 7))
+# placePiece(bp)
+# moveFromCurrentSquare(bp, ("h", 5))
+# #print(("h", 6) in bp.getValidMoves())
 
-print(moveFromCurrentSquare(wp, ("h", 6)))
+# print(moveFromCurrentSquare(wp, ("h", 6)))
 
 
-###### 
-# CASTLING
-wk = King("White", "6", ("e", 1))
-placePiece(wk)
-wr = Rook("White", "4", ("h", 1))
-placePiece(wr)
-wr2 = Rook("White", "3", ("a", 1))
-placePiece(wr2)
-pprint(BOARD)
+# ###### 
+# # CASTLING
+# wk = King("White", "6", ("e", 1))
+# placePiece(wk)
+# wr = Rook("White", "4", ("h", 1))
+# placePiece(wr)
+# wr2 = Rook("White", "3", ("a", 1))
+# placePiece(wr2)
+# pprint(BOARD)
 

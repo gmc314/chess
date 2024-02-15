@@ -1,7 +1,8 @@
 from typing import Union
 
 # the board is an 8x8 matrix
-BOARD = [[" -- " for i in range(8)] for j in range(8)]
+emptySquare = " -- "
+BOARD = [[emptySquare for i in range(8)] for j in range(8)]
 
 # this is for mapping the board's letters of the files to list indices
 fileIndex = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
@@ -18,6 +19,9 @@ class Piece:
     def __repr__(self) -> str:
         return f"' {self.colour[0]}{self.name} '"
 
+    def __str__(self) -> str:
+        return f"{self.colour[0]}{self.name}"
+    
 
 # inheriting from Piece class
 class King(Piece):
@@ -57,7 +61,7 @@ class King(Piece):
         for castleLength in ["Short", "Long"]:
             castlingDirectionSquares = castleLengthToSquaresForCastling[castleLength]
             # filtering for empty squares
-            castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == " -- ", 
+            castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == emptySquare, 
                                                 castlingDirectionSquares))       
             
             # checking if the direction has any obstructions other than the rook
@@ -94,7 +98,7 @@ class King(Piece):
         
         # moves the rook to the correct position for castling
         currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
-        BOARD[currentRookRow][currrentRookCol] = " -- "
+        BOARD[currentRookRow][currrentRookCol] = emptySquare
 
         newRookLocation = fileToDirection[selfFile](self, self.location)
         newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
@@ -370,7 +374,7 @@ class Pawn(Piece):
             if sqr != False:
                 occupant = getPieceFromLocation(sqr)
                 
-                if occupant != " -- ":
+                if occupant != emptySquare:
                     adjacentOccupants.append(occupant)
         
         adjacentSquares = [occ.location for occ in adjacentOccupants if isinstance(occ, Pawn)]      
@@ -393,7 +397,7 @@ class Pawn(Piece):
                 # loop through the two possible diagonal squares to see if they are valid moves
                 for cSqr in captureSquares:
                     cFile = cSqr[0]
-                    if cFile == file and getPieceFromLocation(cSqr) == " -- ":
+                    if cFile == file and getPieceFromLocation(cSqr) == emptySquare:
                         # if yes, add the square to the valid moves list
                         validMoves.append(cSqr)
                         
@@ -435,7 +439,7 @@ colourToPlayer = {
 def clearBoard():
     for i in range(8): 
         for j in range(8):
-            BOARD[i][j] = " -- "
+            BOARD[i][j] = emptySquare
     
     return "Board Cleared"
 
@@ -484,7 +488,7 @@ def placePiece(piece: Piece) -> str:
     
     colourToPlayer[piece.colour].pieces.append(piece)
 
-    return f"{piece} placed"
+    return str(piece) + " placed"
 
 
 # this function does the process of capturing where
@@ -511,10 +515,10 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                 
                 if file == captureeFile:
                     # moving the capturee off the board
-                    BOARD[captureeRow][captureeCol] = " -- "
+                    BOARD[captureeRow][captureeCol] = emptySquare
 
                     # moving the attacking pawn from the current square
-                    BOARD[capturerRow][capturerCol] = " -- "
+                    BOARD[capturerRow][capturerCol] = emptySquare
                     
                     # moving the attacking pawn to the adjacent diagonal square
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(sqr)
@@ -529,7 +533,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     
     # delete capturee from the board
-    BOARD[captureeRow][captureeCol] = " -- "
+    BOARD[captureeRow][captureeCol] = emptySquare
     capturer.location = capturee.location
 
     # the capturer gets the capturee's location
@@ -566,7 +570,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         for cSqr in enPassantCaptureSquares:
             occupant = getPieceFromLocation(cSqr)
             
-            if occupant != " -- ":
+            if occupant != emptySquare:
                 # call the capture function and print out the message
                 message = capture(piece, occupant)
             else:
@@ -582,14 +586,14 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # if the space is occupied by the opposite colour:
     occupant = getPieceFromLocation((newRank, newFile))
     
-    if occupant != " -- ":
+    if occupant != emptySquare:
         # call the capture function and print out the message
         message = capture(piece, occupant)
     else:
         message = ""
     
     # move piece from the current square
-    BOARD[currentRow][currentCol] = " -- "
+    BOARD[currentRow][currentCol] = emptySquare
 
     # to new square
     piece.location = (newRank, newFile)
