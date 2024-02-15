@@ -834,11 +834,9 @@ def kingIsInCheck(king: King) -> bool:
 # returns True if the square is defended by a piece
 def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bishop, Knight, Pawn]) -> bool: 
     pieceMoves = piece.getValidMoves()
-    
-    if square in pieceMoves:
-        return True
-    
-    return False
+
+    return square in pieceMoves
+
 
 # returns True if the king is in checkmate
 def checkmate(king: King):
@@ -866,6 +864,22 @@ def checkmate(king: King):
                     return False 
 
     return True
+
+
+# this function returns True if the king is in indirect check 
+# (i.e. the king would be in check if moved to that square)
+def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
+    opponentColour = "Black" if king.colour == "White" else "White"
+    opponentPlayer = colourToPlayer[opponentColour]
+    opponentPieces = opponentPlayer.pieces
+
+    for piece in opponentPieces:
+        if squareDefended(square, piece):
+            return True
+         
+ 
+
+
 
 # replaces the pawn with a piece with pieceName 
 # requires pieceName to be one of Q, B, R, N
