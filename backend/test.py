@@ -1,6 +1,17 @@
 import unittest
 from script import *
 from pprint import pprint
+
+class TestGetBoardIndices(unittest.TestCase):
+    def testGetIndices(self):
+        testCoords = ("a", 1)
+        result = getBoardIndexFromRankAndFile(testCoords)
+        self.assertEqual(result, (7, 0))        
+
+unittest.main()
+# 
+
+
 ########
 # BISHOP
 # testing placing a piece on the board
