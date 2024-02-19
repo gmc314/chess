@@ -1,10 +1,22 @@
+import unittest
 from script import *
 from pprint import pprint
-########
-# BISHOP
-# testing placing a piece on the board
-# wb = Bishop("White", "1", ("b", 2))
-# placePiece(wb)
+
+#########################
+#
+#    UNIT TESTS
+#
+
+# testing getting board indices from file and rank
+class TestGetBoardIndices(unittest.TestCase):
+    def testGetIndices(self):
+        testCoords = ("a", 1)
+        result = getBoardIndexFromRankAndFile(testCoords)
+        self.assertEqual(result, (7, 0))        
+
+unittest.main()
+# 
+#
 # print(type(BOARD[6][1])==Bishop)
 
 # # testing moving piece
