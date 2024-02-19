@@ -3,10 +3,20 @@ from script import *
 from pprint import pprint
 
 class TestGetBoardIndices(unittest.TestCase):
-    def testGetIndices(self):
+    def testGetIndicesRegular(self):
         testCoords = ("a", 1)
         result = getBoardIndexFromRankAndFile(testCoords)
-        self.assertEqual(result, (7, 0))        
+        self.assertEqual(result, (7, 0))      
+
+    def testGetIndicesKeyError(self):
+        testCoords = ("z", 5)
+        result = getBoardIndexFromRankAndFile(testCoords)
+        self.assertIsInstance(result, KeyError)
+
+    def testGetIndicesNumError(self):
+        testCoords = ("a", 9)
+        result = getBoardIndexFromRankAndFile(testCoords)
+        self.assertEqual(result, "Invalid")
 
 unittest.main()
 # 

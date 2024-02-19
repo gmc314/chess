@@ -464,8 +464,20 @@ def clearBoard():
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
     file, rank = square
-    col = fileIndex[file]
+    
+    # in case if the key is not in the fileIndex dictionary
+    try:
+        col = fileIndex[file]
+    
+    except KeyError as err:
+        return err
+
+    # if the rank is off the board
+    if rank > 8 or rank < 1:
+        return "Invalid"
+        
     row = len(BOARD) - rank
+
     return (row, col)
 
 
