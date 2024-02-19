@@ -1,7 +1,8 @@
 from typing import Union
 
 # the board is an 8x8 matrix
-BOARD = [[" -- " for i in range(8)] for j in range(8)]
+emptySquare = " -- "
+BOARD = [[emptySquare for i in range(8)] for j in range(8)]
 
 # this is for mapping the board's letters of the files to list indices
 fileIndex = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
@@ -18,53 +19,72 @@ class Piece:
     def __repr__(self) -> str:
         return f"' {self.colour[0]}{self.name} '"
 
+    def __str__(self) -> str:
+        return f"{self.colour[0]}{self.name}"
+    
 
 # inheriting from Piece class
 class King(Piece):
     def __init__(self, colour, ID, location):
         super().__init__(colour, "K", ID, location, canCastle=True, points=0) 
     
+    # checks if the squares between rook and king are not defended as per rules of castling
+    def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
+        opponentColour = "Black" if self.colour == "White" else "White"
+        opponentPlayer = colourToPlayer[opponentColour]
+        for sqr in squaresBetweenKingAndRook:
+            for piece in opponentPlayer.pieces:
+                if squareDefended(sqr, piece):
+                    return True
+        return False 
+                    
     # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
     def getCastleMoves(self):
         validMoves = []
-        if self.canCastle == False:
+        if self.canCastle == False or kingIsInCheck(self):
             return validMoves
         
         # both sets of squares for the castling conditions are defined  
         castleLengthToSquaresForCastling = {
-            "Short": getSquaresInStraightDir(self, getOneSquareRight, self.location), # for short castling 
-            "Long": getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for long castling 
+            "Kingside": getSquaresInStraightDir(self, getOneSquareRight, self.location), # for Kingside castling 
+            "Queenside": getSquaresInStraightDir(self, getOneSquareLeft, self.location) # for Queenside castling 
         }
 
         # we expect the number of empty squares between the king and rook 
-        # to be 2 if short castling and 3 if long castling
+        # to be 2 if Kingside castling and 3 if Queenside castling
         castleLengthToNumberOfEmptySquaresForCastling = {
-            "Short": 2,
-            "Long": 3
+            "Kingside": 2,
+            "Queenside": 3
         }
 
         # the original rook squares according to colour and length of castle
         rookSquares = {
-            "Black": {"Short": ("h", 8), 
-                      "Long": ("a", 8)}, 
+            "Black": {"Kingside": ("h", 8), 
+                      "Queenside": ("a", 8)}, 
 
-            "White": {"Short": ("h", 1), 
-                      "Long": ("a", 1)}
+            "White": {"Kingside": ("h", 1), 
+                      "Queenside": ("a", 1)}
         }
 
         # castleLength is for the keys of the dictionaries defined above so we can efficiently use space 
         # in writng code and avoid too much repetition
-        for castleLength in ["Short", "Long"]:
+        for castleLength in ["Kingside", "Queenside"]:
             castlingDirectionSquares = castleLengthToSquaresForCastling[castleLength]
             # filtering for empty squares
-            castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == " -- ", 
-                                                castlingDirectionSquares))       
+            castlingDirectionSquares = list(filter(lambda sqr: getPieceFromLocation(sqr) == emptySquare, 
+                                                castlingDirectionSquares))
+            
+            # if the squares between the king and rook are attacked, can't castle in that direction 
+            if self.checkEmptyCastleSquaresForThreatenedSquares(castlingDirectionSquares):
+                continue 
             
             # checking if the direction has any obstructions other than the rook
             if castleLengthToNumberOfEmptySquaresForCastling[castleLength] == len(castlingDirectionSquares):
                 rookSquareOccupant = getPieceFromLocation(rookSquares[self.colour][castleLength])
+                
                 # checking if the rook is on its original square and hasn't moved yet
                 if isinstance(rookSquareOccupant, Rook) and rookSquareOccupant.canCastle:
+                
                     # this will add the two-square move of the king as a valid move
                     validMoves.append(castlingDirectionSquares[1])
 
@@ -75,8 +95,8 @@ class King(Piece):
     def castle(self) -> str:
         selfFile = self.location[0]
         
-        # if the king long castles (and is on the c file), the rook moves to the adjacent right square
-        # if the king short castles (and is on the g file), the rook moves to the adjacent left square
+        # if the king Queenside castles (and is on the c file), the rook moves to the adjacent right square
+        # if the king Kingside castles (and is on the g file), the rook moves to the adjacent left square
         fileToDirection = {"g": getOneSquareLeft, 
                            "c": getOneSquareRight}
         
@@ -86,7 +106,7 @@ class King(Piece):
         colorToRookRank = {"Black": 8,
                            "White": 1}
         
-        # getting the symbols for casting
+        # getting the symbols for castling
         kingFileToCastleSymbol = {"g": "o-o",
                         "c": "o-o-o"}
         
@@ -94,7 +114,7 @@ class King(Piece):
         
         # moves the rook to the correct position for castling
         currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
-        BOARD[currentRookRow][currrentRookCol] = " -- "
+        BOARD[currentRookRow][currrentRookCol] = emptySquare
 
         newRookLocation = fileToDirection[selfFile](self, self.location)
         newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
@@ -127,8 +147,10 @@ class King(Piece):
         return validMoves
 
     def getValidMoves(self):
-        return self.getSingleSquareMoves() + self.getCastleMoves()
-
+        moves = self.getSingleSquareMoves() + self.getCastleMoves()
+        moves = list(filter(lambda m: not kingIsInIndirectCheck(self, m), moves))
+        return moves
+    
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
         return newSquare in self.getValidMoves() 
@@ -370,7 +392,7 @@ class Pawn(Piece):
             if sqr != False:
                 occupant = getPieceFromLocation(sqr)
                 
-                if occupant != " -- ":
+                if occupant != emptySquare:
                     adjacentOccupants.append(occupant)
         
         adjacentSquares = [occ.location for occ in adjacentOccupants if isinstance(occ, Pawn)]      
@@ -393,7 +415,7 @@ class Pawn(Piece):
                 # loop through the two possible diagonal squares to see if they are valid moves
                 for cSqr in captureSquares:
                     cFile = cSqr[0]
-                    if cFile == file and getPieceFromLocation(cSqr) == " -- ":
+                    if cFile == file and getPieceFromLocation(cSqr) == emptySquare:
                         # if yes, add the square to the valid moves list
                         validMoves.append(cSqr)
                         
@@ -435,7 +457,7 @@ colourToPlayer = {
 def clearBoard():
     for i in range(8): 
         for j in range(8):
-            BOARD[i][j] = " -- "
+            BOARD[i][j] = emptySquare
     
     return "Board Cleared"
 
@@ -484,7 +506,7 @@ def placePiece(piece: Piece) -> str:
     
     colourToPlayer[piece.colour].pieces.append(piece)
 
-    return f"{piece} placed"
+    return str(piece) + " placed"
 
 
 # this function does the process of capturing where
@@ -511,10 +533,10 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                 
                 if file == captureeFile:
                     # moving the capturee off the board
-                    BOARD[captureeRow][captureeCol] = " -- "
+                    BOARD[captureeRow][captureeCol] = emptySquare
 
                     # moving the attacking pawn from the current square
-                    BOARD[capturerRow][capturerCol] = " -- "
+                    BOARD[capturerRow][capturerCol] = emptySquare
                     
                     # moving the attacking pawn to the adjacent diagonal square
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(sqr)
@@ -529,7 +551,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     
     # delete capturee from the board
-    BOARD[captureeRow][captureeCol] = " -- "
+    BOARD[captureeRow][captureeCol] = emptySquare
     capturer.location = capturee.location
 
     # the capturer gets the capturee's location
@@ -566,7 +588,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         for cSqr in enPassantCaptureSquares:
             occupant = getPieceFromLocation(cSqr)
             
-            if occupant != " -- ":
+            if occupant != emptySquare:
                 # call the capture function and print out the message
                 message = capture(piece, occupant)
             else:
@@ -582,14 +604,14 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # if the space is occupied by the opposite colour:
     occupant = getPieceFromLocation((newRank, newFile))
     
-    if occupant != " -- ":
+    if occupant != emptySquare:
         # call the capture function and print out the message
         message = capture(piece, occupant)
     else:
         message = ""
     
     # move piece from the current square
-    BOARD[currentRow][currentCol] = " -- "
+    BOARD[currentRow][currentCol] = emptySquare
 
     # to new square
     piece.location = (newRank, newFile)
@@ -830,15 +852,25 @@ def kingIsInCheck(king: King) -> bool:
 # returns True if the square is defended by a piece
 def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bishop, Knight, Pawn]) -> bool: 
     pieceMoves = piece.getValidMoves()
+
+    return square in pieceMoves
+
+
+# this function returns True if the king is in indirect check 
+# (i.e. the king would be in check if moved to that square)
+def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
+    oppositeColour = "Black" if king.colour == "White" else "White"
+    opponentPlayer = colourToPlayer[oppositeColour]
     
-    if square in pieceMoves:
-        return True
-    
-    return False
+    for piece in opponentPlayer.pieces:
+        if squareDefended(square, piece):
+            return True
+
+    return False    
 
 # returns True if the king is in checkmate
 def checkmate(king: King):
-    oppositeColour = "White" if king.colour == "Black" else "Black"
+    oppositeColour = "Black" if king.colour == "White" else "White"
     opponentPlayer = colourToPlayer[oppositeColour]
 
     if not kingIsInCheck(king):
@@ -847,6 +879,7 @@ def checkmate(king: King):
     # checking if every move is threatened 
     validMoves = king.getValidMoves()
     for move in validMoves:
+
         # filter for opponent pieces that defends the square that the king can move to 
         piecesThreateningTheKing = list(filter(lambda piece: squareDefended(move, piece), 
                                                opponentPlayer.pieces))
@@ -855,13 +888,17 @@ def checkmate(king: King):
         if piecesThreateningTheKing == []:
             return False
         
+        piecesNotThreateningTheKing = [piece for piece in opponentPlayer.pieces 
+                                       if piece not in piecesThreateningTheKing]
+
         # if the king can capture a piece that threatens it and that piece is not defended
         for threatenPiece in piecesThreateningTheKing:
-            for otherPiece in opponentPlayer.pieces:
-                if threatenPiece.location == move and not squareDefended(move, otherPiece):
+            for otherPiece in piecesNotThreateningTheKing:
+                if threatenPiece.location == move and not kingIsInIndirectCheck(king, otherPiece.location):
                     return False 
 
     return True
+
 
 # replaces the pawn with a piece with pieceName 
 # requires pieceName to be one of Q, B, R, N
