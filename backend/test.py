@@ -4,9 +4,9 @@ from pprint import pprint
 
 class TestGetBoardIndices(unittest.TestCase):
     def testGetIndicesRegular(self):
-        testCoords = ("a", 1)
+        testCoords = ("b", 5)
         result = getBoardIndexFromRankAndFile(testCoords)
-        self.assertEqual(result, (7, 0))      
+        self.assertEqual(result, (3, 1))      
 
     def testGetIndicesKeyError(self):
         testCoords = ("z", 5)
@@ -17,6 +17,16 @@ class TestGetBoardIndices(unittest.TestCase):
         testCoords = ("a", 9)
         result = getBoardIndexFromRankAndFile(testCoords)
         self.assertEqual(result, "Invalid")
+
+    def testGetIndicesNumEdgeCase1(self):
+        testCoords = ("a", 8)
+        result = getBoardIndexFromRankAndFile(testCoords)
+        self.assertEqual(result, (0, 0))
+        
+    def testGetIndicesNumEdgeCase2(self):
+        testCoords = ("a", 1)
+        result = getBoardIndexFromRankAndFile(testCoords)
+        self.assertEqual(result, (7, 0))
 
 unittest.main()
 # 
