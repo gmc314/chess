@@ -79,6 +79,24 @@ class TestFilterListForSquares(unittest.TestCase):
         self.assertEqual(result, [("a", 6)])
 
 
+class TestGetRankAndFileFromBoardIndex(unittest.TestCase):
+    def testInvalidInputs(self):
+        params = ("a", 9)
+        result = getRankAndFileFromBoardIndex(*params)
+        self.assertEqual(result, "Invalid")
+
+    def testInvalidInputs2(self):
+        params = (-2, "h")
+        result = getRankAndFileFromBoardIndex(*params)
+        self.assertEqual(result, "Invalid")
+
+    def testValidInput(self):
+        params = (4, 4)
+        result = getRankAndFileFromBoardIndex(*params)
+        self.assertEqual(result, ("e", 4))
+
+
+
 unittest.main()
 
 ########

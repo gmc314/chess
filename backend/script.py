@@ -505,7 +505,11 @@ def filterListForSquares(squareList: list) -> list:
 
 
 # gets the rank and file from indices of the Board
-def getRankAndFileFromBoardIndex(row, col):
+def getRankAndFileFromBoardIndex(row: int, col: int):
+    # checking if row and col are integers between 0 and 7
+    if type(row) != int or type(col) != int or not (0 < row < 7) or not (0 < col < 7): 
+        return "Invalid"
+    
     file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
     rank = len(BOARD) - row 
     
