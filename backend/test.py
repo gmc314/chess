@@ -2,6 +2,12 @@ import unittest
 from script import *
 from pprint import pprint
 
+class TestClearBoard(unittest.TestCase):
+    def testClearBoard(self):
+        result = clearBoard()
+        self.assertEqual(result, "Board Cleared")
+
+
 class TestGetBoardIndices(unittest.TestCase):
     def testGetIndicesRegular(self):
         testCoords = ("b", 5)
@@ -27,6 +33,16 @@ class TestGetBoardIndices(unittest.TestCase):
         testCoords = ("a", 1)
         result = getBoardIndexFromRankAndFile(testCoords)
         self.assertEqual(result, (7, 0))
+
+
+class TestFilterListForSquares(unittest.TestCase):
+    def testEmptyList(self):
+        lst = []
+        result = filterListForSquares(lst)
+        self.assertEqual(result, lst)
+
+
+
 
 unittest.main()
 # 
