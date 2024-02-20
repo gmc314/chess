@@ -68,11 +68,14 @@ class King(Piece):
 
         # the original rook squares according to colour and length of castle
         rookSquares = {
-            "Black": {"Kingside": ("h", 8), 
-                      "Queenside": ("a", 8)}, 
-
-            "White": {"Kingside": ("h", 1), 
-                      "Queenside": ("a", 1)}
+            "Black": {
+                "Kingside": ("h", 8), 
+                "Queenside": ("a", 8)
+                }, 
+            "White": {
+                "Kingside": ("h", 1),
+                "Queenside": ("a", 1)
+                }
         }
 
         # castleLength is for the keys of the dictionaries defined above so we can efficiently use space 
@@ -186,10 +189,11 @@ class Queen(Piece):
         
         # looping to get all moves in all directions
         for i in range(8):
-            validMoves += getSquaresInStraightDir(self, 
-                                                     indexToOneSquareMoveFunctions[i],
-                                                     self.location)
-        
+            validMoves += getSquaresInStraightDir(
+                self, 
+                indexToOneSquareMoveFunctions[i],
+                self.location
+                )
         return validMoves
     
     def isMoveValid(self, newSquare):
@@ -214,10 +218,11 @@ class Rook(Piece):
         
         # looping over the four vertical and horizontal directions
         for i in range(4):
-            validMoves += getSquaresInStraightDir(self, 
-                                                     indexToOneSquareVerticalHorizontalFunctions[i], 
-                                                     self.location
-                                                     )
+            validMoves += getSquaresInStraightDir(
+                self, 
+                indexToOneSquareVerticalHorizontalFunctions[i], 
+                self.location
+                )
         
         # return valid vertical and horizontal moves        
         return validMoves
@@ -243,10 +248,11 @@ class Bishop(Piece):
         
         # looping over the four diagonal directions
         for i in range(4):
-            validMoves += getSquaresInStraightDir(self, 
-                                                     indexToOneSquareDiagonalFunctions[i],
-                                                     self.location
-                                                     )
+            validMoves += getSquaresInStraightDir(
+                self, 
+                indexToOneSquareDiagonalFunctions[i],
+                self.location
+                )
         
         # return valid diagonal moves
         return validMoves
@@ -621,9 +627,10 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"
     
-    pawnColourToPromotionRank = {"White": 8, 
-                                 "Black": 1}
-    
+    pawnColourToPromotionRank = {
+        "White": 8, 
+        "Black": 1
+        }    
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
@@ -737,7 +744,7 @@ def getOneSquareRight(piece: Piece, currentSquare: tuple[str, int]) -> Union[boo
 # false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareUp(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
-    if rank == len(BOARD):
+    if rank == boardLength:
         return False
 
     newRank = rank + 1
@@ -957,18 +964,22 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
     
     # tracks white to 8 (the rank of which the pawn is promoted)
     # and black to 1
-    colourToPromotionRank = {"White": 8,
-                             "Black": 1}
+    colourToPromotionRank = {
+        "White": 8,
+        "Black": 1
+        }    
     
     symbolToClass = {
         "Q": Queen,
         "N": Knight, 
         "B": Bishop,
-        "R": Rook}
+        "R": Rook
+        }
      
     # if the pawn is in the most forward rank for promotion,
     # return the new class of piece 
     if pawn.location[1] == colourToPromotionRank[pawn.colour]:
         # get a new instance of the class at the pawn's location
         newPiece = symbolToClass[pieceSymbol](pawn.colour, pieceSymbol, pawn.location)
+        
         return newPiece
