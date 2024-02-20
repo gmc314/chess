@@ -8,6 +8,28 @@ class TestClearBoard(unittest.TestCase):
         self.assertEqual(result, "Board Cleared")
 
 
+class TestIsSquareValid(unittest.TestCase):
+    def testInvalidInput(self):
+        sqr = "f"
+        result = isSquareValid(sqr)
+        self.assertIsInstance(result, ValueError)
+    
+    def testInvalidFile(self):
+        sqr = ("z", 6)
+        result = isSquareValid(sqr)
+        self.assertEqual(result, False)
+    
+    def testInvalidRank(self):
+        sqr = ("a", 9)
+        result = isSquareValid(sqr)
+        self.assertEqual(result, False)
+
+    def testValidSquare(self):
+        sqr = ("g", 6)
+        result = isSquareValid(sqr)
+        self.assertEqual(result, True)
+
+
 class TestGetBoardIndices(unittest.TestCase):
     def testGetIndicesRegular(self):
         testCoords = ("b", 5)

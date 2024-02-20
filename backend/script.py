@@ -463,9 +463,16 @@ def clearBoard():
     
     return "Board Cleared"
 
+
+# this function returns True if the square is valid. False otherwise 
 def isSquareValid(square: tuple[str, int]):
-    file, rank = square
+    # detecting for the right input
+    try:
+        file, rank = square
     
+    except ValueError as err:
+        return err
+
     # in case if the key is not in the fileIndex dictionary
     try:
         fileIndex[file]
