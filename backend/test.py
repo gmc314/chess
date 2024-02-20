@@ -12,7 +12,7 @@ class TestIsSquareValid(unittest.TestCase):
     def testInvalidInput(self):
         sqr = "f"
         result = isSquareValid(sqr)
-        self.assertIsInstance(result, ValueError)
+        self.assertEqual(result, False)
     
     def testInvalidFile(self):
         sqr = ("z", 6)
@@ -68,6 +68,10 @@ class TestFilterListForSquares(unittest.TestCase):
         result = filterListForSquares(lst)
         self.assertEqual(result, lst)
 
+    def testSingleElementFalse(self):
+        lst = [False]
+        result = filterListForSquares(lst)
+        self.assertEqual(result, [])
 
 
 unittest.main()
