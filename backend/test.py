@@ -41,12 +41,14 @@ class TestFilterListForSquares(unittest.TestCase):
         result = filterListForSquares(lst)
         self.assertEqual(result, lst)
 
+    def testSingleElement(self):
+        lst = [("a", 6)]
+        result = filterListForSquares(lst)
+        self.assertEqual(result, lst)
 
 
 
 unittest.main()
-# 
-
 
 ########
 # BISHOP

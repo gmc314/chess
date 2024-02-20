@@ -463,6 +463,20 @@ def clearBoard():
     
     return "Board Cleared"
 
+def isSquareValid(square: tuple[str, int]):
+    file, rank = square
+    
+    # in case if the key is not in the fileIndex dictionary
+    try:
+        fileIndex[file]
+    
+    except KeyError:
+        return False
+
+    # return a bool based on if rank is on or off the board
+    return 1 <= rank <= 8
+
+
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
     file, rank = square
@@ -485,7 +499,8 @@ def getBoardIndexFromRankAndFile(square: tuple[str, int]):
 
 # filters the list for squares instead of False
 def filterListForSquares(squareList: list) -> list:
-    return list(filter(lambda x: isinstance(x, tuple[str, int]), squareList))
+    return list(filter(lambda x: isinstance(x, tuple) and type(x[0]) == str 
+                       and type(x[1]) == int, squareList))
 
 
 # gets the rank and file from indices of the Board
