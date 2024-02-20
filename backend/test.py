@@ -71,7 +71,12 @@ class TestFilterListForSquares(unittest.TestCase):
     def testSingleElementFalse(self):
         lst = [False]
         result = filterListForSquares(lst)
-        self.assertEqual(result, [])
+        self.assertEqual(result, [])    
+        
+    def testTwoElement(self):
+        lst = [False, ("a", 6)]
+        result = filterListForSquares(lst)
+        self.assertEqual(result, [("a", 6)])
 
 
 unittest.main()
