@@ -486,19 +486,11 @@ def isSquareValid(square: tuple[str, int]):
 
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
-    file, rank = square
-    
-    # in case if the key is not in the fileIndex dictionary
-    try:
-        col = fileIndex[file]
-    
-    except KeyError as err:
-        return err
-
-    # if the rank is off the board
-    if rank > 8 or rank < 1:
+    if not isSquareValid(square):
         return "Invalid"
-        
+
+    file, rank = square
+    col = fileIndex[file]    
     row = len(BOARD) - rank
 
     return (row, col)

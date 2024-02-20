@@ -39,7 +39,7 @@ class TestGetBoardIndices(unittest.TestCase):
     def testGetIndicesKeyError(self):
         testCoords = ("z", 5)
         result = getBoardIndexFromRankAndFile(testCoords)
-        self.assertIsInstance(result, KeyError)
+        self.assertEqual(result, "Invalid")
 
     def testGetIndicesNumError(self):
         testCoords = ("a", 9)
