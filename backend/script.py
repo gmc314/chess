@@ -1,32 +1,41 @@
 from typing import Union
 
 # the board is an 8x8 matrix
+boardLength = 8
 emptySquare = " -- "
-BOARD = [[emptySquare for i in range(8)] for j in range(8)]
+BOARD = [[emptySquare for i in range(boardLength)] for j in range(boardLength)]
 
 # this is for mapping the board's letters of the files to list indices
 fileIndex = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
 class Piece:
-    def __init__(self, colour: str, name: str, ID: str, location: tuple, canCastle: bool, points: int) -> None:
+    def __init__(self, colour: str, symbol: str, ID: str, location: tuple, canCastle: bool, captured: bool, points: int) -> None:
         self.colour = colour 
-        self.name = name
+        self.symbol = symbol
         self.ID = ID
         self.location = location
         self.canCastle = canCastle
+        self.captured = captured
         self.points = points
 
     def __repr__(self) -> str:
-        return f"' {self.colour[0]}{self.name} '"
+        return f"' {self.colour[0]}{self.symbol} '"
 
     def __str__(self) -> str:
-        return f"{self.colour[0]}{self.name}"
+        symbolToName = {"K": "King",
+                        "Q": "Queen",
+                        "R": "Rook",
+                        "B": "Bishop",
+                        "N": "Knight",
+                        "P": "Pawn"}
+        
+        return f"{self.colour} {symbolToName[self.symbol]}"
     
 
 # inheriting from Piece class
 class King(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "K", ID, location, canCastle=True, points=0) 
+        super().__init__(colour, "K", ID, location, canCastle=True, captured=False, points=0) 
     
     # checks if the squares between rook and king are not defended as per rules of castling
     def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
@@ -59,11 +68,14 @@ class King(Piece):
 
         # the original rook squares according to colour and length of castle
         rookSquares = {
-            "Black": {"Kingside": ("h", 8), 
-                      "Queenside": ("a", 8)}, 
-
-            "White": {"Kingside": ("h", 1), 
-                      "Queenside": ("a", 1)}
+            "Black": {
+                "Kingside": ("h", 8), 
+                "Queenside": ("a", 8)
+                }, 
+            "White": {
+                "Kingside": ("h", 1),
+                "Queenside": ("a", 1)
+                }
         }
 
         # castleLength is for the keys of the dictionaries defined above so we can efficiently use space 
@@ -102,13 +114,14 @@ class King(Piece):
         
         # getting locations of rooks 
         kingFileToRookFile = {"g": "h",
-                        "c": "a"}
+                              "c": "a"}
+        
         colorToRookRank = {"Black": 8,
                            "White": 1}
         
-        # getting the symbols for castling
-        kingFileToCastleSymbol = {"g": "o-o",
-                        "c": "o-o-o"}
+        # getting the messages for castling
+        kingFileToCastleMessage = {"g": "Kingside castled",
+                                  "c": "Queenside castled"}
         
         rook = getPieceFromLocation((kingFileToRookFile[selfFile], colorToRookRank[self.colour]))
         
@@ -122,7 +135,7 @@ class King(Piece):
 
         BOARD[newRookRow][newRookCol] = rook
         
-        return kingFileToCastleSymbol[selfFile]
+        return kingFileToCastleMessage[selfFile]
 
     # returns one-square moves in all directions
     def getSingleSquareMoves(self):
@@ -159,7 +172,7 @@ class King(Piece):
 # inheriting from Piece class
 class Queen(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "Q", ID, location, canCastle=False, points=9)  
+        super().__init__(colour, "Q", ID, location, canCastle=False, captured=False, points=9)  
     # getting all valid moves in all directions
     def getValidMoves(self):
         validMoves = []
@@ -176,10 +189,11 @@ class Queen(Piece):
         
         # looping to get all moves in all directions
         for i in range(8):
-            validMoves += getSquaresInStraightDir(self, 
-                                                     indexToOneSquareMoveFunctions[i],
-                                                     self.location)
-        
+            validMoves += getSquaresInStraightDir(
+                self, 
+                indexToOneSquareMoveFunctions[i],
+                self.location
+                )
         return validMoves
     
     def isMoveValid(self, newSquare):
@@ -190,7 +204,7 @@ class Queen(Piece):
 # inheriting from Piece class
 class Rook(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "R", ID, location, canCastle=True, points=5)
+        super().__init__(colour, "R", ID, location, canCastle=True, captured=False, points=5)
         
     # getting the vertical and horizontal moves 
     def getValidMoves(self):
@@ -204,10 +218,11 @@ class Rook(Piece):
         
         # looping over the four vertical and horizontal directions
         for i in range(4):
-            validMoves += getSquaresInStraightDir(self, 
-                                                     indexToOneSquareVerticalHorizontalFunctions[i], 
-                                                     self.location
-                                                     )
+            validMoves += getSquaresInStraightDir(
+                self, 
+                indexToOneSquareVerticalHorizontalFunctions[i], 
+                self.location
+                )
         
         # return valid vertical and horizontal moves        
         return validMoves
@@ -220,7 +235,7 @@ class Rook(Piece):
 # inheriting from Piece class
 class Bishop(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "B", ID, location, canCastle=False, points=3) 
+        super().__init__(colour, "B", ID, location, canCastle=False, captured=False, points=3) 
          
     def getValidMoves(self):
         validMoves = []
@@ -233,10 +248,11 @@ class Bishop(Piece):
         
         # looping over the four diagonal directions
         for i in range(4):
-            validMoves += getSquaresInStraightDir(self, 
-                                                     indexToOneSquareDiagonalFunctions[i],
-                                                     self.location
-                                                     )
+            validMoves += getSquaresInStraightDir(
+                self, 
+                indexToOneSquareDiagonalFunctions[i],
+                self.location
+                )
         
         # return valid diagonal moves
         return validMoves
@@ -249,7 +265,7 @@ class Bishop(Piece):
 # inheriting from Piece class
 class Knight(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "N", ID, location, canCastle=False, points=3) 
+        super().__init__(colour, "N", ID, location, canCastle=False, captured=False, points=3) 
         
     # gets a list of valid moves for the Knight
     # for a knight to move, it can go in a diagonal direction one 
@@ -308,7 +324,7 @@ class Knight(Piece):
 # inheriting from Piece class
 class Pawn(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "P", ID, location, canCastle=False, points=1) 
+        super().__init__(colour, "P", ID, location, canCastle=False, captured=False, points=1) 
         # a number variable to track the number of turns for en passant capturing
         self.numMoves = 0
 
@@ -452,32 +468,64 @@ colourToPlayer = {
 ## Functions 
 ####################################################
 
-# this function returns the string
+# this function returns the string "Board Cleared" if called and clears the board of all pieces currently on it.
 # MODIFIES: BOARD
 def clearBoard():
-    for i in range(8): 
-        for j in range(8):
+    for i in range(boardLength): 
+        for j in range(boardLength):
             BOARD[i][j] = emptySquare
     
     return "Board Cleared"
 
+
+# this function returns True if the square is valid. False otherwise 
+def isSquareValid(square: tuple[str, int]):
+    # detecting for the right input
+    if not type(square) == tuple:
+        return False
+
+    try:
+        file, rank = square
+    
+    except ValueError: 
+        return False
+
+    # in case if the key is not in the fileIndex dictionary
+    try:
+        fileIndex[file]
+    
+    except KeyError:
+        return False
+
+    # return a bool based on if rank is on or off the board
+    return 1 <= rank <= boardLength
+
+
 # gets the indices of the Board from rank and file 
 def getBoardIndexFromRankAndFile(square: tuple[str, int]):
+    if not isSquareValid(square):
+        return "Invalid"
+
     file, rank = square
-    col = fileIndex[file]
-    row = len(BOARD) - rank
+    col = fileIndex[file]    
+    row = boardLength - rank
+
     return (row, col)
 
 
 # filters the list for squares instead of False
 def filterListForSquares(squareList: list) -> list:
-    return list(filter(lambda x: isinstance(x, tuple), squareList))
+    return list(filter(lambda sqr: isSquareValid(sqr), squareList))
 
 
 # gets the rank and file from indices of the Board
-def getRankAndFileFromBoardIndex(row, col):
+def getRankAndFileFromBoardIndex(row: int, col: int):
+    # checking if row and col are integers between 0 and 7
+    if type(row) != int or type(col) != int or not (0 < row < 7) or not (0 < col < 7): 
+        return "Invalid"
+    
     file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
-    rank = len(BOARD) - row 
+    rank = boardLength - row 
     
     return (file, rank)
 
@@ -486,14 +534,17 @@ def getRankAndFileFromBoardIndex(row, col):
 # or the empty square if there isn't a piece on the square
 def getPieceFromLocation(square: tuple[str, int]) -> Union[Piece, str]:
     r, c = getBoardIndexFromRankAndFile(square)
-    
     return BOARD[r][c]
 
 
 # converts the rank and file tuple to a string
 # returns a capital letter followed by a number 
 def stringifyRankFile(square: tuple[str, int]) -> str:
-    return f"{square[0].upper()}{square[1]}"
+    if not isSquareValid(square):
+        return False
+    
+    else:
+        return f"{square[0].upper()}{square[1]}"
 
 
 # place a piece on the board at its initial square. 
@@ -535,44 +586,51 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     # moving the capturee off the board
                     BOARD[captureeRow][captureeCol] = emptySquare
 
+                    # set captured parameter to True
+                    capturee.captured = True
+
                     # moving the attacking pawn from the current square
                     BOARD[capturerRow][capturerCol] = emptySquare
                     
                     # moving the attacking pawn to the adjacent diagonal square
                     capturerRow, capturerCol = getBoardIndexFromRankAndFile(sqr)
+                    capturer.location = getRankAndFileFromBoardIndex(capturerRow, capturerCol)
                     BOARD[capturerRow][capturerCol] = capturer
 
                     # add points to player
                     colourToPlayer[capturer.colour].points += capturee.points
-                    
-                    return f"{capturee.colour[0]}{capturee.name} captured en passant."
 
-    # non en-passant case
+                    return f"{str(capturee)} captured en passant."
+
+    # non en-passant case:
+    # settting captured Piece parameter to True
+    capturee.captured = True
+    
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     
     # delete capturee from the board
     BOARD[captureeRow][captureeCol] = emptySquare
-    capturer.location = capturee.location
-
+    
     # the capturer gets the capturee's location
+    capturer.location = capturee.location
     BOARD[captureeRow][captureeCol] = capturer
     
     # add points to player
     colourToPlayer[capturer.colour].points += capturee.points
-                    
-    return f"{capturee.colour[0]}{capturee.name} captured."
+                  
+    return f"{str(capturee)} captured."
 
 
 # move piece from current square to new `square`
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
-    if not piece.isMoveValid(newSquare):
+    if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"
     
-    pawnColourToPromotionRank = {"White": 8, 
-                                 "Black": 1
-                                }
-    
+    pawnColourToPromotionRank = {
+        "White": 8, 
+        "Black": 1
+        }    
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
@@ -594,7 +652,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
             else:
                 message = ""
         
-        return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
+        return f"{piece.symbol} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
     # non en-passant case:
     # getting location of move
@@ -618,8 +676,8 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     
     # pawn promotion
     if isinstance(piece, Pawn) and newRank == pawnColourToPromotionRank[piece.colour]:
-        nameOfNewPiece = input("Enter one of [Q, R, N, B] to promote the pawn: ")
-        BOARD[newRow][newCol] = pawnPromotion(piece, nameOfNewPiece)    
+        symbolOfNewPiece = input("Enter one of [Q, R, N, B] to promote the pawn: ")
+        BOARD[newRow][newCol] = pawnPromotion(piece, symbolOfNewPiece)   
 
     BOARD[newRow][newCol] = piece
 
@@ -643,7 +701,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         message = piece.castle()
     
     # print out the move 
-    return f"{piece.name} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
+    return f"{piece.symbol} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
 
 # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
@@ -686,7 +744,7 @@ def getOneSquareRight(piece: Piece, currentSquare: tuple[str, int]) -> Union[boo
 # false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareUp(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
-    if rank == len(BOARD):
+    if rank == boardLength:
         return False
 
     newRank = rank + 1
@@ -866,7 +924,7 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
         if squareDefended(square, piece):
             return True
 
-    return False    
+    return False
 
 # returns True if the king is in checkmate
 def checkmate(king: King):
@@ -900,31 +958,28 @@ def checkmate(king: King):
     return True
 
 
-# replaces the pawn with a piece with pieceName 
-# requires pieceName to be one of Q, B, R, N
-def pawnPromotion(pawn: Pawn, pieceName: str) -> Union[Queen, Rook, Bishop, Knight]:
+# replaces the pawn with a piece with pieceSymbol 
+# requires symbol to be one of Q, B, R, N
+def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Knight]:
     
     # tracks white to 8 (the rank of which the pawn is promoted)
     # and black to 1
-    colourToPromotionRank = {"White": 8, 
-                    "Black": 1
-                    }
+    colourToPromotionRank = {
+        "White": 8,
+        "Black": 1
+        }    
     
-    nameToClass = {
+    symbolToClass = {
         "Q": Queen,
         "N": Knight, 
         "B": Bishop,
         "R": Rook
-    } 
+        }
+     
     # if the pawn is in the most forward rank for promotion,
     # return the new class of piece 
     if pawn.location[1] == colourToPromotionRank[pawn.colour]:
-
-        # attributes of the new piece
-        newColour = pawn.colour 
-        newName = pieceName
-        newLocation = pawn.location
-
-        # get a new instance of the class
-        newPiece = nameToClass[pieceName](newColour, newName, newLocation)
+        # get a new instance of the class at the pawn's location
+        newPiece = symbolToClass[pieceSymbol](pawn.colour, pieceSymbol, pawn.location)
+        
         return newPiece
