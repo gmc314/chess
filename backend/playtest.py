@@ -108,36 +108,37 @@ print(moveFromCurrentSquare(bn5, wp3.location) == "Black Knight E3 to C2. White 
 print(bn5.getValidMoves() == [('e', 1), ('a', 3), ('b', 4), ('a', 1), ('e', 3), ('d', 4)])
 
 
-# #######
-# # KING
-# bk = King("Black", "7", ("e", 6))
-# placePiece(bk)
-# print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
-# clearBoard()
-# ######
-# # EN PASSANT 
-
-# wp = Pawn("White", "F", ("g", 2))
-# placePiece(wp)
-# moveFromCurrentSquare(wp, ("g", 4))
-# moveFromCurrentSquare(wp, ("g", 5))
-
-# bp = Pawn("Black", "W", ("h", 7))
-# placePiece(bp)
-# moveFromCurrentSquare(bp, ("h", 5))
-# #print(("h", 6) in bp.getValidMoves())
-
-# print(moveFromCurrentSquare(wp, ("h", 6)))
+#######
+# KING
+bk = King("Black", "7", ("e", 6))
+placePiece(bk) # placing black king in the center of the board to get all single square moves
+print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
 
 
-# ###### 
-# # CASTLING
-# wk = King("White", "6", ("e", 1))
-# placePiece(wk)
-# wr = Rook("White", "4", ("h", 1))
-# placePiece(wr)
-# wr2 = Rook("White", "3", ("a", 1))
-# placePiece(wr2)
+#######
+# EN PASSANT 
+
+wp = Pawn("White", "F", ("g", 2))
+placePiece(wp)
+moveFromCurrentSquare(wp, ("g", 4))
+moveFromCurrentSquare(wp, ("g", 5))
+
+bp = Pawn("Black", "W", ("h", 7))
+placePiece(bp)
+moveFromCurrentSquare(bp, ("h", 5))
+print(("h", 6) in wp.getValidMoves())
+
+print(moveFromCurrentSquare(wp, ("h", 6)) == "White Pawn G5 to H6. Black Pawn captured en passant.")
+
+
+###### 
+# CASTLING
+wk = King("White", "6", ("e", 1))
+placePiece(wk)
+wr = Rook("White", "4", ("h", 1))
+placePiece(wr)
+wr2 = Rook("White", "3", ("a", 1))
+placePiece(wr2)
 
 
 pprint(BOARD)

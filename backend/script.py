@@ -50,7 +50,10 @@ class King(Piece):
     # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
     def getCastleMoves(self):
         validMoves = []
-        if self.canCastle == False or kingIsInCheck(self):
+        kingStartingSquare = {"Black": ("e", 8),
+                              "White": ("e", 1)}
+
+        if self.canCastle == False or kingIsInCheck(self) or self.location != kingStartingSquare[self.colour]:
             return validMoves
         
         # both sets of squares for the castling conditions are defined  
