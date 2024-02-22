@@ -62,7 +62,7 @@ print(wk.isMoveValid(("b", 5))==True)
 print(wk.isMoveValid(("a", 5))==False)
 
 # moving white king
-print(moveFromCurrentSquare(wk, ("b", 5))=="K C6 to B5. ")
+print(moveFromCurrentSquare(wk, ("b", 5))=="White King C6 to B5. ")
 print(moveFromCurrentSquare(wk, ("d", 7))=="invalid move")
 print(wk.location==("b", 5))
 moveFromCurrentSquare(wk, ("b", 5))
@@ -76,7 +76,7 @@ wq = Queen("White", "123", ("b", 6))
 
 print(getSquaresInStraightDir(wq, getOneSquareUp, wq.location) == [('b', 7), ('b', 8)])
 
-print(moveFromCurrentSquare(wq, bn.location)=='Q B6 to B8. BN captured.')
+print(moveFromCurrentSquare(wq, bn.location) == "White Queen B6 to B8. Black Knight captured.")
 
 
 #########
@@ -104,7 +104,7 @@ placePiece(bn5)
 print(bn5.getValidMoves() == [('g', 2), ('f', 1), ('c', 4), ('d', 5), ('c', 2), ('d', 1), ('g', 4), ('f', 5)])
 
 # capturing the pawn
-print(moveFromCurrentSquare(bn5, wp3.location) == 'N E3 to C2. WP captured.')
+print(moveFromCurrentSquare(bn5, wp3.location) == "Black Knight E3 to C2. White Pawn captured.")
 print(bn5.getValidMoves() == [('e', 1), ('a', 3), ('b', 4), ('a', 1), ('e', 3), ('d', 4)])
 
 

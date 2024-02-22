@@ -521,7 +521,7 @@ def filterListForSquares(squareList: list) -> list:
 # gets the rank and file from indices of the Board
 def getRankAndFileFromBoardIndex(row: int, col: int):
     # checking if row and col are integers between 0 and 7
-    if type(row) != int or type(col) != int or not (0 < row < 7) or not (0 < col < 7): 
+    if type(row) != int or type(col) != int or not (0 <= row <= 7) or not (0 <= col <= 7): 
         return "Invalid"
     
     file = list(fileIndex.keys())[list(fileIndex.values()).index(col)]
@@ -652,7 +652,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
             else:
                 message = ""
         
-        return f"{piece.symbol} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
+        return f"{str(piece)} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
     # non en-passant case:
     # getting location of move
@@ -701,7 +701,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         message = piece.castle()
     
     # print out the move 
-    return f"{piece.symbol} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
+    return f"{str(piece)} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
 
 # the getOneSquareLeft function returns the left adjacent square of the piece. returns 
