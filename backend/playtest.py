@@ -77,7 +77,7 @@ wq = Queen("White", "123", ("b", 6))
 print(getSquaresInStraightDir(wq, getOneSquareUp, wq.location) == [('b', 7), ('b', 8)])
 
 print(moveFromCurrentSquare(wq, bn.location) == "White Queen B6 to B8. Black Knight captured.")
-
+moveFromCurrentSquare(wq, ("h", 2))
 
 #########
 # KNIGHT
@@ -125,18 +125,18 @@ print(moveFromCurrentSquare(wp, ("h", 6)) == "White Pawn G5 to H6. Black Pawn ca
 
 #######
 # KING
-bk = King("Black", "7", ("e", 6))
+bk = King("Black", "7", ("e", 8))
 placePiece(bk) # placing black king in the center of the board to get all single square moves
-print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
-
+#wk = King("White", "6", ("e", 6))
+#placePiece(wk)
+#print(wk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
 
 ###### 
 # CASTLING
-wk = King("White", "6", ("e", 1))
-placePiece(wk)
-wr = Rook("White", "4", ("h", 1))
-placePiece(wr)
-wr2 = Rook("White", "3", ("a", 1))
-placePiece(wr2)
-print(list(filter(lambda m: kingIsInIndirectCheck(wk, m), wk.getValidMoves())))
+
+br = Rook("Black", "4", ("h", 8))
+placePiece(br)
+print(bk.getCastleMoves() == [("g", 8)])
+#print(moveFromCurrentSquare(bk, ("g", 8)))
+
 pprint(BOARD)

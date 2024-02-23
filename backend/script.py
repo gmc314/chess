@@ -627,13 +627,29 @@ def capture(capturer: Piece, capturee: Piece) -> str:
 # move piece from current square to new `square`
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
+    
+    # indirect check squares for king 
+    if isinstance(piece, King):
+        indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
+        if newSquare in indirectCheckMoves:
+            return "invalid move"
+    
+    # if the king doesn't move to a castling square
+    if isinstance(piece, King) and newSquare not in piece.getCastleMoves():
+        piece.canCastle = False
+
+    # if the king moves to a castling square
+    elif isinstance(piece, King) and newSquare in piece.getCastleMoves():
+        print("Got here")
+        message = piece.castle()
+
     if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"
     
     pawnColourToPromotionRank = {
         "White": 8, 
         "Black": 1
-        }    
+        }
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
@@ -695,13 +711,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     if isinstance(piece, Rook):
         piece.canCastle = False
 
-    # if the king doesn't move to a castling square
-    if isinstance(piece, King) and newSquare not in piece.getCastleMoves():
-        piece.canCastle = False
-
-    # if the king moves to a castling square
-    elif isinstance(piece, King) and newSquare in piece.getCastleMoves():
-        message = piece.castle()
+    
     
     # print out the move 
     return f"{str(piece)} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
