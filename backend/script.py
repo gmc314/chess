@@ -601,14 +601,14 @@ def castle(king: King, square: tuple[str, int]) -> str:
     
     # getting locations of rooks 
     kingFileToRookFile = {"g": "h",
-                            "c": "a"}
+                          "c": "a"}
     
     colorToRookRank = {"Black": 8,
                         "White": 1}
     
     # getting the messages for castling
-    kingFileToCastleMessage = {"g": "Kingside castled",
-                                "c": "Queenside castled"}
+    kingFileToCastleMessage = {"g": " kingside castled.",
+                                "c": " queenside castled."}
     
     rook = getPieceFromLocation((kingFileToRookFile[selfFile], colorToRookRank[king.colour]))
     
@@ -622,7 +622,7 @@ def castle(king: King, square: tuple[str, int]) -> str:
 
     BOARD[newRookRow][newRookCol] = rook
     
-    return kingFileToCastleMessage[selfFile]
+    return  str(king) + kingFileToCastleMessage[selfFile]
 
 # move piece from current square to new `square`
 # MODIFIES: BOARD
@@ -641,6 +641,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     # if the king moves to a castling square
     elif isinstance(piece, King) and newSquare in piece.getCastleMoves():
         message = castle(piece, newSquare)
+        return message
 
     if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"
