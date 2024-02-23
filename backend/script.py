@@ -583,7 +583,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     capturer.location = capturee.location
     BOARD[captureeRow][captureeCol] = capturer
     
-    # add points to player
+    # add points to player 
     colourToPlayer[capturer.colour].points += capturee.points
                   
     return f"{str(capturee)} captured."
@@ -596,7 +596,7 @@ def castle(king: King, square: tuple[str, int]) -> str:
     
     # if the king Queenside castles (and is on the c file), the rook moves to the adjacent right square
     # if the king Kingside castles (and is on the g file), the rook moves to the adjacent left square
-    fileToDirection = {"g": getOneSquareLeft, 
+    fileToDirectionForRook = {"g": getOneSquareLeft, 
                         "c": getOneSquareRight}
     
     # getting locations of rooks 
@@ -616,7 +616,7 @@ def castle(king: King, square: tuple[str, int]) -> str:
     currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
     BOARD[currentRookRow][currrentRookCol] = emptySquare
 
-    newRookLocation = fileToDirection[selfFile](king, king.location)
+    newRookLocation = fileToDirectionForRook[selfFile](king, king.location)
     newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
     rook.location = newRookLocation
 
