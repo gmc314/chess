@@ -105,41 +105,6 @@ class King(Piece):
 
         return validMoves
 
-    # assuming the king can castle, this function moves the king and rook to castling position 
-    # MODIFIES: BOARD
-    def castle(self) -> str:
-        selfFile = self.location[0]
-        
-        # if the king Queenside castles (and is on the c file), the rook moves to the adjacent right square
-        # if the king Kingside castles (and is on the g file), the rook moves to the adjacent left square
-        fileToDirection = {"g": getOneSquareLeft, 
-                           "c": getOneSquareRight}
-        
-        # getting locations of rooks 
-        kingFileToRookFile = {"g": "h",
-                              "c": "a"}
-        
-        colorToRookRank = {"Black": 8,
-                           "White": 1}
-        
-        # getting the messages for castling
-        kingFileToCastleMessage = {"g": "Kingside castled",
-                                  "c": "Queenside castled"}
-        
-        rook = getPieceFromLocation((kingFileToRookFile[selfFile], colorToRookRank[self.colour]))
-        
-        # moves the rook to the correct position for castling
-        currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
-        BOARD[currentRookRow][currrentRookCol] = emptySquare
-
-        newRookLocation = fileToDirection[selfFile](self, self.location)
-        newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
-        rook.location = newRookLocation
-
-        BOARD[newRookRow][newRookCol] = rook
-        
-        return kingFileToCastleMessage[selfFile]
-
     # returns one-square moves in all directions
     def getSingleSquareMoves(self):
         validMoves = []
@@ -624,6 +589,41 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     return f"{str(capturee)} captured."
 
 
+# assuming the king can castle, this function moves the king and rook to castling position 
+# MODIFIES: BOARD
+def castle(king: King, square: tuple[str, int]) -> str:
+    selfFile = square[0]
+    
+    # if the king Queenside castles (and is on the c file), the rook moves to the adjacent right square
+    # if the king Kingside castles (and is on the g file), the rook moves to the adjacent left square
+    fileToDirection = {"g": getOneSquareLeft, 
+                        "c": getOneSquareRight}
+    
+    # getting locations of rooks 
+    kingFileToRookFile = {"g": "h",
+                            "c": "a"}
+    
+    colorToRookRank = {"Black": 8,
+                        "White": 1}
+    
+    # getting the messages for castling
+    kingFileToCastleMessage = {"g": "Kingside castled",
+                                "c": "Queenside castled"}
+    
+    rook = getPieceFromLocation((kingFileToRookFile[selfFile], colorToRookRank[king.colour]))
+    
+    # moves the rook to the correct position for castling
+    currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
+    BOARD[currentRookRow][currrentRookCol] = emptySquare
+
+    newRookLocation = fileToDirection[selfFile](king, king.location)
+    newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
+    rook.location = newRookLocation
+
+    BOARD[newRookRow][newRookCol] = rook
+    
+    return kingFileToCastleMessage[selfFile]
+
 # move piece from current square to new `square`
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
@@ -640,8 +640,7 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
 
     # if the king moves to a castling square
     elif isinstance(piece, King) and newSquare in piece.getCastleMoves():
-        print("Got here")
-        message = piece.castle()
+        message = castle(piece, newSquare)
 
     if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"

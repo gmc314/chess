@@ -137,6 +137,6 @@ placePiece(bk) # placing black king in the center of the board to get all single
 br = Rook("Black", "4", ("h", 8))
 placePiece(br)
 print(bk.getCastleMoves() == [("g", 8)])
-#print(moveFromCurrentSquare(bk, ("g", 8)))
+print(moveFromCurrentSquare(bk, ("g", 8)))
 
 pprint(BOARD)
