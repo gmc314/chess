@@ -109,13 +109,6 @@ print(bn5.getValidMoves() == [('e', 1), ('a', 3), ('b', 4), ('a', 1), ('e', 3), 
 
 
 #######
-# KING
-bk = King("Black", "7", ("e", 6))
-placePiece(bk) # placing black king in the center of the board to get all single square moves
-print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
-
-
-#######
 # EN PASSANT 
 
 wp = Pawn("White", "F", ("g", 2))
@@ -130,6 +123,12 @@ print(("h", 6) in wp.getValidMoves())
 
 print(moveFromCurrentSquare(wp, ("h", 6)) == "White Pawn G5 to H6. Black Pawn captured en passant.")
 
+#######
+# KING
+bk = King("Black", "7", ("e", 6))
+placePiece(bk) # placing black king in the center of the board to get all single square moves
+print(bk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
+
 
 ###### 
 # CASTLING
@@ -139,6 +138,5 @@ wr = Rook("White", "4", ("h", 1))
 placePiece(wr)
 wr2 = Rook("White", "3", ("a", 1))
 placePiece(wr2)
-
-
+print(list(filter(lambda m: kingIsInIndirectCheck(wk, m), wk.getValidMoves())))
 pprint(BOARD)

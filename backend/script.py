@@ -164,8 +164,8 @@ class King(Piece):
 
     def getValidMoves(self):
         moves = self.getSingleSquareMoves() + self.getCastleMoves()
-        moves = list(filter(lambda m: not kingIsInIndirectCheck(self, m), moves))
         return moves
+        
     
     def isMoveValid(self, newSquare):
         # returns a Boolean value depending on if the square is valid 
