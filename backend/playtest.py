@@ -126,17 +126,21 @@ print(moveFromCurrentSquare(wp, ("h", 6)) == "White Pawn G5 to H6. Black Pawn ca
 #######
 # KING
 bk = King("Black", "7", ("e", 8))
-placePiece(bk) # placing black king in the center of the board to get all single square moves
-#wk = King("White", "6", ("e", 6))
-#placePiece(wk)
-#print(wk.getValidMoves())
-
+placePiece(bk) 
+wk = King("White", "6", ("e", 6)) # placing white king in the center of the board to get all single square moves
+placePiece(wk) 
+print(wk.getValidMoves()==[('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
 ###### 
 # CASTLING
 
 br = Rook("Black", "4", ("h", 8))
 placePiece(br)
 print(("g", 8) in bk.getValidMoves())
-print(moveFromCurrentSquare(bk, ("g", 8)))
+print(moveFromCurrentSquare(bk, ("g", 8))=="Black King kingside castled.")
+
+###### 
+# CHECK AND CHECKMATE
+print(not kingIsInCheck(wk))
+print(not kingIsInCheck(bk))
 
 pprint(BOARD)

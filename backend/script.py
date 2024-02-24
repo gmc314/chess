@@ -52,8 +52,8 @@ class King(Piece):
         validMoves = []
         kingStartingSquare = {"Black": ("e", 8),
                               "White": ("e", 1)}
-
-        if self.canCastle == False or kingIsInCheck(self) or self.location != kingStartingSquare[self.colour]:
+        
+        if self.location != kingStartingSquare[self.colour] or self.canCastle == False:
             return validMoves
         
         # both sets of squares for the castling conditions are defined  
@@ -636,6 +636,9 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         if newSquare in indirectCheckMoves:
             return "invalid move"
     
+        if kingIsInCheck(piece):
+            piece.canCastle = False
+
     # if the king doesn't move to a castling square
     if isinstance(piece, King) and newSquare not in piece.getCastleMoves():
         piece.canCastle = False
@@ -655,6 +658,8 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
         
         # castle function handles the rook
         message = castle(piece, newSquare)
+        piece.canCastle = False
+
         return message
 
     if not piece.isMoveValid(newSquare) or piece.captured:
