@@ -129,7 +129,7 @@ bk = King("Black", "7", ("e", 8))
 placePiece(bk) # placing black king in the center of the board to get all single square moves
 #wk = King("White", "6", ("e", 6))
 #placePiece(wk)
-#print(wk.getValidMoves() == [('e', 7), ('e', 5), ('d', 6), ('f', 6), ('f', 5), ('d', 7), ('d', 5), ('f', 7)])
+#print(wk.getValidMoves())
 
 ###### 
 # CASTLING
