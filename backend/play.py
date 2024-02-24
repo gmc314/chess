@@ -1,31 +1,75 @@
 from pprint import pprint
+from script import *
 
+def newGame():
+    clearBoard()
+    # get new instances of all pieces
+    bk = King("Black", "1", ('e', 8))
+    placePiece(bk)
+    bq = Queen("Black", "2", ('d', 8))
+    placePiece(bq)
+    bb1 = Bishop("Black", "3", ('c', 8))
+    placePiece(bb1)
+    bb2 = Bishop("Black", "4", ('f', 8))
+    placePiece(bb2)
+    bn1 = Knight("Black", "5", ('b', 8))
+    placePiece(bn1)
+    bn2 = Knight("Black", "6", ('g', 8))
+    placePiece(bn2)
+    br1 = Rook("Black", "7", ('a', 8))
+    placePiece(br1)
+    br2 = Rook("Black", "8", ('h', 8))
+    placePiece(br2)
+    bp1 = Pawn("Black", "9", ('a', 7))
+    placePiece(bp1)
+    bp2 = Pawn("Black", "10", ('b', 7))
+    placePiece(bp2)
+    bp3 = Pawn("Black", "11", ('c', 7))
+    placePiece(bp3)
+    bp4 = Pawn("Black", "12", ('d', 7))
+    placePiece(bp4)
+    bp5 = Pawn("Black", "13", ('e', 7))
+    placePiece(bp5)
+    bp6 = Pawn("Black", "14", ('f', 7))
+    placePiece(bp6)
+    bp7 = Pawn("Black", "15", ('g', 7))
+    placePiece(bp7)
+    bp8 = Pawn("Black", "16", ('h', 7))
+    placePiece(bp8)
 
-##############
+    wk = King("White", "17", ('e', 1))
+    placePiece(wk)
+    wq = Queen("Black", "18", ('d', 1))
+    placePiece(wq)
+    wb1 = Bishop("Black", "19", ('c', 1))
+    placePiece(wb1)
+    wb2 = Bishop("Black", "20", ('f', 1))
+    placePiece(wb2)
+    wn1 = Knight("Black", "21", ('b', 1))
+    placePiece(wn1)
+    wn2 = Knight("Black", "22", ('g', 1))
+    placePiece(wn2)
+    wr1 = Rook("Black", "23", ('a', 1))
+    placePiece(wr1)
+    wr2 = Rook("Black", "24", ('h', 1))
+    placePiece(wr2)
+    wp1 = Pawn("Black", "25", ('a', 2))
+    placePiece(wp1)
+    wp2 = Pawn("Black", "26", ('b', 2))
+    placePiece(wp2)
+    wp3 = Pawn("Black", "27", ('c', 2))
+    placePiece(wp3)
+    wp4 = Pawn("Black", "28", ('d', 2))
+    placePiece(wp4)
+    wp5 = Pawn("Black", "29", ('e', 2))
+    placePiece(wp5)
+    wp6 = Pawn("Black", "30", ('f', 2))
+    placePiece(wp6)
+    wp7 = Pawn("Black", "31", ('g', 2))
+    placePiece(wp7)
+    wp8 = Pawn("Black", "32", ('h', 2))
+    placePiece(wp8)
+    return "Board ready"
 
-# generated 
-# from ChatGPT
-
-##############
-
-chess_board = {
-    'a8': 'r', 'b8': 'n', 'c8': 'b', 'd8': 'q', 'e8': 'k', 'f8': 'b', 'g8': 'n', 'h8': 'r',
-    'a7': 'p', 'b7': 'p', 'c7': 'p', 'd7': 'p', 'e7': 'p', 'f7': 'p', 'g7': 'p', 'h7': 'p',
-    'a6': None, 'b6': None, 'c6': None, 'd6': None, 'e6': None, 'f6': None, 'g6': None, 'h6': None,
-    'a5': None, 'b5': None, 'c5': None, 'd5': None, 'e5': None, 'f5': None, 'g5': None, 'h5': None,
-    'a4': None, 'b4': None, 'c4': None, 'd4': None, 'e4': None, 'f4': None, 'g4': None, 'h4': None,
-    'a3': None, 'b3': None, 'c3': None, 'd3': None, 'e3': None, 'f3': None, 'g3': None, 'h3': None,
-    'a2': 'P', 'b2': 'P', 'c2': 'P', 'd2': 'P', 'e2': 'P', 'f2': 'P', 'g2': 'P', 'h2': 'P',
-    'a1': 'R', 'b1': 'N', 'c1': 'B', 'd1': 'Q', 'e1': 'K', 'f1': 'B', 'g1': 'N', 'h1': 'R'
-}
-
-# Function to convert a key to a tuple of letter and integer
-def key_to_tuple(key):
-    letter = key[0]  # Extract the letter from the key
-    number = int(key[1])  # Extract the number from the key
-    return (letter, number)  # Return a tuple of letter and number
-
-# Filter the resulting list for non-None values in the original dictionary
-filtered_positions = {key: key_to_tuple(key) for key, value in chess_board.items() if value is not None}
-
-pprint(filtered_positions)
+newGame()
+pprint(BOARD)
