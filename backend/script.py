@@ -960,12 +960,11 @@ def checkmate(king: King):
     # checking if every move is threatened 
     validMoves = king.getValidMoves()
     for move in validMoves:
-
         # filter for opponent pieces that defends the square that the king can move to 
         piecesThreateningTheKing = list(filter(lambda piece: squareDefended(move, piece), 
                                                opponentPlayer.pieces))
         
-        # if there are no pieces defending that square
+        # if there are no pieces defending that square the king can move to
         if piecesThreateningTheKing == []:
             return False
         
@@ -973,9 +972,9 @@ def checkmate(king: King):
                                        if piece not in piecesThreateningTheKing]
 
         # if the king can capture a piece that threatens it and that piece is not defended
-        for threatenPiece in piecesThreateningTheKing:
+        for attackingPiece in piecesThreateningTheKing:
             for otherPiece in piecesNotThreateningTheKing:
-                if threatenPiece.location == move and not kingIsInIndirectCheck(king, otherPiece.location):
+                if attackingPiece.location == move and not squareDefended(attackingPiece.location, otherPiece):
                     return False 
 
     return True
