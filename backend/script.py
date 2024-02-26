@@ -126,20 +126,13 @@ class King(Piece):
     # returns one-square moves in all directions
     def getSingleSquareMoves(self):
         validMoves = []
-        indexToOneSquareMoveFunctions = {
-            0: getOneSquareUp,
-            1: getOneSquareDown,
-            2: getOneSquareLeft,
-            3: getOneSquareRight,
-            4: getOneSquareDiagBR,
-            5: getOneSquareDiagTL,
-            6: getOneSquareDiagBL,
-            7: getOneSquareDiagTR
-        }
-
+        oneSquareMoveFunctions = [
+            getOneSquareUp,getOneSquareDown,getOneSquareLeft,getOneSquareRight,
+            getOneSquareDiagBR,getOneSquareDiagTL,getOneSquareDiagBL,getOneSquareDiagTR
+            ]
         # looping to get all single square moves in all directions
-        for i in range(8):
-            validMoves.append(indexToOneSquareMoveFunctions[i](self, self.location))
+        for moveFunction in oneSquareMoveFunctions:
+            validMoves.append(moveFunction(self, self.location))
         
         validMoves = filterListForSquares(validMoves)
     
@@ -162,22 +155,16 @@ class Queen(Piece):
     # getting all valid moves in all directions
     def getValidMoves(self):
         validMoves = []
-        indexToOneSquareMoveFunctions = {
-            0: getOneSquareUp,
-            1: getOneSquareDown,
-            2: getOneSquareLeft,
-            3: getOneSquareRight,
-            4: getOneSquareDiagBR,
-            5: getOneSquareDiagTL,
-            6: getOneSquareDiagBL,
-            7: getOneSquareDiagTR
-        }
+        oneSquareMoveFunctions = [
+            getOneSquareUp,getOneSquareDown,getOneSquareLeft,getOneSquareRight,
+            getOneSquareDiagBR,getOneSquareDiagTL,getOneSquareDiagBL,getOneSquareDiagTR
+            ]
         
-        # looping to get all moves in all directions
-        for i in range(8):
+        # looping to get all single square moves in all directions
+        for moveFunction in oneSquareMoveFunctions:
             validMoves += getSquaresInStraightDir(
                 self, 
-                indexToOneSquareMoveFunctions[i],
+                moveFunction,
                 self.location
                 )
         return validMoves
