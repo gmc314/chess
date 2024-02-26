@@ -951,15 +951,14 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
 
 # returns True if the king is in checkmate
 def checkmate(king: King):
-    oppositeColour = "Black" if king.colour == "White" else "White"
-    opponentPlayer = colourToPlayer[oppositeColour]
-
     if not kingIsInCheck(king):
         return False
     
-    # checking if every move is threatened 
-    validMoves = king.getValidMoves()
-    for move in validMoves:
+    oppositeColour = "Black" if king.colour == "White" else "White"
+    opponentPlayer = colourToPlayer[oppositeColour]
+    
+    # the for loop checks if every move is defended by the opponent 
+    for move in king.getValidMoves():
         # filter for opponent pieces that defends the square that the king can move to 
         piecesThreateningTheKing = list(filter(lambda piece: squareDefended(move, piece), 
                                                opponentPlayer.pieces))
@@ -968,6 +967,7 @@ def checkmate(king: King):
         if piecesThreateningTheKing == []:
             return False
         
+        # getting the opponent pieces that aren't defending the square that the king can move to 
         piecesNotThreateningTheKing = [piece for piece in opponentPlayer.pieces 
                                        if piece not in piecesThreateningTheKing]
 
@@ -975,15 +975,16 @@ def checkmate(king: King):
         for attackingPiece in piecesThreateningTheKing:
             for otherPiece in piecesNotThreateningTheKing:
                 if attackingPiece.location == move and not squareDefended(attackingPiece.location, otherPiece):
-                    return False 
+                    return False
 
+        # if the check can be blocked
+                # TO CODE 
     return True
 
 
 # replaces the pawn with a piece with pieceSymbol 
 # requires symbol to be one of Q, B, R, N
 def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Knight]:
-    
     # tracks white to 8 (the rank of which the pawn is promoted)
     # and black to 1
     colourToPromotionRank = {
