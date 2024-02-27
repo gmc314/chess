@@ -990,9 +990,11 @@ def moveCanBlockCheck(attackingPiece, defendingPiece) -> bool:
 # iniitalze attackingPiece and defendingPiece
 # if kingIsInCheck by attackingPiece:
 #     keep track of defendingPiece's initialLocation
-#     for moves of defendingPiece:
+#     for each square in moves of defendingPiece:
 #         defendingPiece moves to the square
-#         
+#         if not kingIsInCheck():
+#              return True
+# return False
 
 
 

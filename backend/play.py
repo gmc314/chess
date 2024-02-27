@@ -71,5 +71,23 @@ def newGame():
     placePiece(wp8)
     return "Board ready"
 
-newGame()
+
+# plan for the main playGame function
+def playGame():
+    newGame()
+    whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
+    blackKing = [piece for piece in BLACK.pieces if isinstance(piece, King)][0]
+    whiteCheckmate = False
+    blackCheckmate = False
+    while not whiteCheckmate or not blackCheckmate:
+        whitemove = input("White's Move: ")
+        moveFromCurrentSquare(**whitemove)
+        # define a move function where the input is converted to a square and a piece
+        blackCheckmate = checkmate(blackKing)
+
+        blackmove = input("Black's Move: ")
+        moveFromCurrentSquare(**blackmove)
+        # define a move function where the input is converted to a square and a piece
+        whiteCheckmate = checkmate(whiteKing)
+
 pprint(BOARD)
