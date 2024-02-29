@@ -979,8 +979,20 @@ def checkmate(king: King):
 
     return True
 
-def moveCanBlockCheck(attackingPiece, defendingPiece) -> bool:
-    pass
+def moveCanBlockCheck(attackingPiece: Piece, defendingPiece: Piece) -> bool:
+    attackingPieceLocation = attackingPiece.location
+    defendingPieceLocation = defendingPiece.location
+
+    kingColour = defendingPiece.colour
+    defendingPlayer = colourToPlayer[kingColour]
+    king = [piece for piece in defendingPlayer.pieces if isinstance(piece, King)][0]
+
+    if not kingIsInCheck(king):
+        return False
+
+    
+
+
 # if the check can be blocked
 # description:
 # if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
