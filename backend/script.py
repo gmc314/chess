@@ -979,36 +979,27 @@ def checkmate(king: King):
 
     return True
 
-def moveCanBlockCheck(attackingPiece: Piece, defendingPiece: Piece) -> bool:
-    attackingPieceLocation = attackingPiece.location
-    defendingPieceLocation = defendingPiece.location
 
+# if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
+# moving the piece is valid only if the king is no longer in check after this other piece moves 
+# need to check one move ahead.
+def moveCanBlockCheck(attackingPiece: Piece, defendingPiece: Piece) -> bool:
+    if not kingIsInCheck(king):
+        return False
+        
     kingColour = defendingPiece.colour
     defendingPlayer = colourToPlayer[kingColour]
     king = [piece for piece in defendingPlayer.pieces if isinstance(piece, King)][0]
 
-    if not kingIsInCheck(king):
-        return False
+    attackerMoves = attackingPiece.getValidMoves()
 
+    for move in defendingPiece.getValidMoves():
+
+        # check if the move blocks the attacker
+        if move in attackerMoves and king.location in attackerMoves:
+            return True
     
-
-
-# if the check can be blocked
-# description:
-# if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
-# moving the piece is valid only if the king is no longer in check after this other piece moves 
-# need to check one move ahead.
-# pseudo code:
-# iniitalze attackingPiece and defendingPiece
-# if kingIsInCheck by attackingPiece:
-#     keep track of defendingPiece's initialLocation
-#     for each square in moves of defendingPiece:
-#         defendingPiece moves to the square
-#         if not kingIsInCheck():
-#              return True
-# return False
-
-
+    return False
 
 
 # replaces the pawn with a piece with pieceSymbol 
