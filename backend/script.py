@@ -976,6 +976,13 @@ def checkmate(king: King):
             for otherPiece in piecesNotThreateningTheKing:
                 if attackingPiece.location == move and not squareDefended(attackingPiece.location, otherPiece):
                     return False
+                
+    # if there's a move that can be blocked
+    playerPieces = colourToPlayer[king.colour].pieces
+    for piece in playerPieces:
+        for opponPiece in opponentPlayer.pieces:
+            if moveCanBlockCheck(opponPiece, piece):
+                return False
 
     return True
 
