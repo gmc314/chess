@@ -559,6 +559,9 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     # add points to player
                     colourToPlayer[capturer.colour].points += capturee.points
 
+                    # remove piece from player's piece list
+                    colourToPlayer[capturer.colour].pieces.remove(capturee)
+
                     return f"{str(capturee)} captured en passant."
 
     # non en-passant case:
@@ -577,6 +580,9 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     # add points to player 
     colourToPlayer[capturer.colour].points += capturee.points
                   
+    # remove piece from player's piece list
+    colourToPlayer[capturer.colour].pieces.remove(capturee)
+
     return f"{str(capturee)} captured."
 
 
@@ -654,6 +660,12 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     if isinstance(piece, King):
         indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
         if newSquare in indirectCheckMoves:
+            return "invalid move"
+    
+    # for both players
+    for colour in colourToPlayer:
+        # check if the piece is on the board 
+        if piece not in colourToPlayer[colour].pieces:
             return "invalid move"
 
     # if the king doesn't move to a castling square
