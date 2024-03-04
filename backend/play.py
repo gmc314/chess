@@ -101,10 +101,12 @@ def playGame():
     newGame()
     whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
     blackKing = [piece for piece in BLACK.pieces if isinstance(piece, King)][0]
-
+    numRounds = 0
+    
     while True:
         # White turn  
         if checkmate(whiteKing):
+            gameOverMessage = "Black wins"
             break
         whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
         whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
@@ -114,9 +116,11 @@ def playGame():
             whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
             whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
             whiteMove = moveFromCurrentSquare(**whiteMoveInput)
+        pprint(BOARD)
         
         # Black turn 
         if checkmate(blackKing):
+            gameOverMessage = "White wins"
             break
         blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
         blackMoveInput = extractMoveElements(WHITE, blackMoveText)
@@ -126,5 +130,15 @@ def playGame():
             blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
             blackMoveInput = extractMoveElements(WHITE, blackMoveText)
             blackMove = moveFromCurrentSquare(**whiteMoveInput)
+        pprint(BOARD)
         
-pprint(BOARD)
+        numRounds += 1
+
+        # condition for stalemate
+        if numRounds > 100:
+            gameOverMessage = "Stalemate"
+            break
+
+    print(gameOverMessage)
+    return
+        
