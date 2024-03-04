@@ -72,22 +72,59 @@ def newGame():
     return "Board ready"
 
 
+
+# this function converts the 2 character typed move to a tuple 
+def squareToTuple(squareString):
+    file, rank = squareString.split('')
+    return (file, int(rank))
+
+# gets the piece and square from playerInput
+def extractMoveElements(player: Player, playerInput: str):
+    pieceSymbol, currentSquare, destinationSquare = playerInput.split(' ')
+    
+    symbolToClass = {
+        "K": King,
+        "Q": Queen,
+        "N": Knight, 
+        "B": Bishop,
+        "R": Rook,
+        "P": Pawn
+        }
+    
+    piece = [p for p in player.pieces if isinstance(p, symbolToClass[pieceSymbol]) and 
+             p.location == squareToTuple(currentSquare)][0]
+    
+    return (piece, squareToTuple(destinationSquare))
+
 # plan for the main playGame function
 def playGame():
     newGame()
     whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
     blackKing = [piece for piece in BLACK.pieces if isinstance(piece, King)][0]
-    whiteCheckmate = False
-    blackCheckmate = False
-    while not whiteCheckmate or not blackCheckmate:
-        whitemove = input("White's Move: ")
-        moveFromCurrentSquare(**whitemove)
-        # define a move function where the input is converted to a square and a piece
-        blackCheckmate = checkmate(blackKing)
 
-        blackmove = input("Black's Move: ")
-        moveFromCurrentSquare(**blackmove)
-        # define a move function where the input is converted to a square and a piece
-        whiteCheckmate = checkmate(whiteKing)
-
+    while True:
+        # White turn  
+        if checkmate(whiteKing):
+            break
+        whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
+        whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
+        whiteMove = moveFromCurrentSquare(**whiteMoveInput)
+        while whiteMove == "invalid move":
+            print(whiteMove)
+            whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
+            whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
+            whiteMove = moveFromCurrentSquare(**whiteMoveInput)
+        
+        # Black turn 
+        if checkmate(blackKing):
+            break
+        blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
+        blackMoveInput = extractMoveElements(WHITE, blackMoveText)
+        blackMove = moveFromCurrentSquare(**blackMoveInput)
+        while blackMove == "invalid move":
+            print(blackMove)
+            blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
+            blackMoveInput = extractMoveElements(WHITE, blackMoveText)
+            blackMove = moveFromCurrentSquare(**whiteMoveInput)
+        
 pprint(BOARD)

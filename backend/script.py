@@ -590,18 +590,22 @@ def castle(king: King, kingMoveSquare: tuple[str, int]) -> str:
     # if the king Queenside castles (and is on the c file), the rook moves to the adjacent right square
     # if the king Kingside castles (and is on the g file), the rook moves to the adjacent left square
     fileToDirectionForRook = {"g": getOneSquareLeft, 
-                        "c": getOneSquareRight}
+                              "c": getOneSquareRight
+                              }
     
     # getting locations of rooks 
     kingFileToRookFile = {"g": "h",
-                          "c": "a"}
+                          "c": "a"
+                          }
     
     colorToRookRank = {"Black": 8,
-                        "White": 1}
+                       "White": 1
+                       }
     
     # getting the messages for castling
     kingFileToCastleMessage = {"g": " kingside castled.",
-                                "c": " queenside castled."}
+                               "c": " queenside castled."
+                               }
     
     rook = getPieceFromLocation((kingFileToRookFile[moveFile], colorToRookRank[king.colour]))
     
@@ -615,20 +619,42 @@ def castle(king: King, kingMoveSquare: tuple[str, int]) -> str:
 
     BOARD[newRookRow][newRookCol] = rook
     
-    return  str(king) + kingFileToCastleMessage[moveFile]
+    return str(king) + kingFileToCastleMessage[moveFile]
+
+
+# replaces the pawn with a piece with pieceSymbol 
+# requires symbol to be one of Q, B, R, N
+def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Knight]:
+    # tracks white to 8 (the rank of which the pawn is promoted)
+    # and black to 1
+    colourToPromotionRank = {
+        "White": 8,
+        "Black": 1
+        }    
+    
+    symbolToClass = {
+        "Q": Queen,
+        "N": Knight, 
+        "B": Bishop,
+        "R": Rook
+        }
+     
+    # if the pawn is in the most forward rank for promotion,
+    # return the new class of piece 
+    if pawn.location[1] == colourToPromotionRank[pawn.colour]:
+        # get a new instance of the class at the pawn's location
+        newPiece = symbolToClass[pieceSymbol](pawn.colour, pieceSymbol, pawn.location)
+        return newPiece
+    
 
 # move piece from current square to new `square`
 # MODIFIES: BOARD
-def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn], newSquare: tuple[str, int]) -> str:
-    
+def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     # indirect check squares for king 
     if isinstance(piece, King):
         indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
         if newSquare in indirectCheckMoves:
             return "invalid move"
-    
-        if kingIsInCheck(piece):
-            piece.canCastle = False
 
     # if the king doesn't move to a castling square
     if isinstance(piece, King) and newSquare not in piece.getCastleMoves():
@@ -721,8 +747,6 @@ def moveFromCurrentSquare(piece: Union[King, Queen, Rook, Bishop, Knight, Pawn],
     if isinstance(piece, Rook):
         piece.canCastle = False
 
-    
-    
     # print out the move 
     return f"{str(piece)} {stringifyRankFile(currentSquare)} to {stringifyRankFile(newSquare)}. {message}"
 
@@ -925,6 +949,7 @@ def kingIsInCheck(king: King) -> bool:
 
         # if a piece can capture the king, return True
         if king.location in piece.getValidMoves():
+            king.canCastle = False
             return True
     
     return False
@@ -948,6 +973,33 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
             return True
 
     return False
+
+
+# if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
+# moving the piece is valid only if the king is no longer in check after this other piece moves 
+# need to check one move ahead.
+def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> bool:
+    if not kingIsInCheck(king):
+        return False
+        
+    defenderLocation = defendingPiece.location
+        
+    attackerMoves = set(attackingPiece.getValidMoves())
+    defenderMoves = set(defendingPiece.getValidMoves())
+
+    intersectionMoves = attackerMoves.intersection(defenderMoves)
+    
+    for move in intersectionMoves:
+        # moving the defending piece to the square that intersects
+        defendingPiece.location = move
+        
+        if not kingIsInCheck(king):
+            # if the king is no longer in check, return the piece back to its original location
+            defendingPiece.location = defenderLocation
+            return True
+    
+    return False
+
 
 # returns True if the king is in checkmate
 def checkmate(king: King):
@@ -986,54 +1038,3 @@ def checkmate(king: King):
 
     return True
 
-
-# if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
-# moving the piece is valid only if the king is no longer in check after this other piece moves 
-# need to check one move ahead.
-def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> bool:
-    if not kingIsInCheck(king):
-        return False
-        
-    defenderLocation = defendingPiece.location
-        
-    attackerMoves = set(attackingPiece.getValidMoves())
-    defenderMoves = set(defendingPiece.getValidMoves())
-
-    intersectionMoves = attackerMoves.intersection(defenderMoves)
-    
-    for move in intersectionMoves:
-        # moving the defending piece to the square that intersects
-        defendingPiece.location = move
-        
-        if not kingIsInCheck(king):
-            # if the king is no longer in check, return the piece back to its original location
-            defendingPiece.location = defenderLocation
-            return True
-    
-    return False
-
-
-# replaces the pawn with a piece with pieceSymbol 
-# requires symbol to be one of Q, B, R, N
-def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Knight]:
-    # tracks white to 8 (the rank of which the pawn is promoted)
-    # and black to 1
-    colourToPromotionRank = {
-        "White": 8,
-        "Black": 1
-        }    
-    
-    symbolToClass = {
-        "Q": Queen,
-        "N": Knight, 
-        "B": Bishop,
-        "R": Rook
-        }
-     
-    # if the pawn is in the most forward rank for promotion,
-    # return the new class of piece 
-    if pawn.location[1] == colourToPromotionRank[pawn.colour]:
-        # get a new instance of the class at the pawn's location
-        newPiece = symbolToClass[pieceSymbol](pawn.colour, pieceSymbol, pawn.location)
-        
-        return newPiece
