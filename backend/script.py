@@ -161,10 +161,10 @@ class Queen(Piece):
             ]
         
         # looping to get all single square moves in all directions
-        for moveFunction in oneSquareMoveFunctions:
+        for oneSquareFunction in oneSquareMoveFunctions:
             validMoves += getSquaresInStraightDir(
                 self, 
-                moveFunction,
+                oneSquareFunction,
                 self.location
                 )
         return validMoves
@@ -182,18 +182,18 @@ class Rook(Piece):
     # getting the vertical and horizontal moves 
     def getValidMoves(self):
         validMoves = []
-        indexToOneSquareVerticalHorizontalFunctions = {
-            0: getOneSquareUp,
-            1: getOneSquareDown,
-            2: getOneSquareLeft,
-            3: getOneSquareRight
-        }
+        oneSquareVerticalHorizontalFunctions = [
+            getOneSquareUp,
+            getOneSquareDown,
+            getOneSquareLeft,
+            getOneSquareRight
+        ]
         
         # looping over the four vertical and horizontal directions
-        for i in range(4):
+        for oneSquareFunction in oneSquareVerticalHorizontalFunctions:
             validMoves += getSquaresInStraightDir(
                 self, 
-                indexToOneSquareVerticalHorizontalFunctions[i], 
+                oneSquareFunction, 
                 self.location
                 )
         
@@ -212,18 +212,18 @@ class Bishop(Piece):
          
     def getValidMoves(self):
         validMoves = []
-        indexToOneSquareDiagonalFunctions = {
-            0: getOneSquareDiagBR,
-            1: getOneSquareDiagTL,
-            2: getOneSquareDiagBL,
-            3: getOneSquareDiagTR
-        }
+        oneSquareDiagonalFunctions = [
+            getOneSquareDiagBR,
+            getOneSquareDiagTL,
+            getOneSquareDiagBL,
+            getOneSquareDiagTR
+            ]
         
         # looping over the four diagonal directions
-        for i in range(4):
+        for oneSquareFunction in oneSquareDiagonalFunctions:
             validMoves += getSquaresInStraightDir(
                 self, 
-                indexToOneSquareDiagonalFunctions[i],
+                oneSquareFunction,
                 self.location
                 )
         
@@ -250,23 +250,23 @@ class Knight(Piece):
         diagSquares = []
 
         # the four one-square diagonal functions
-        indexToOneSquareDiagonalFunctions = {
-            0: getOneSquareDiagBR,
-            1: getOneSquareDiagTL,
-            2: getOneSquareDiagBL,
-            3: getOneSquareDiagTR
-        }
+        oneSquareDiagonalFunctions = [
+            getOneSquareDiagBR,
+            getOneSquareDiagTL,
+            getOneSquareDiagBL,
+            getOneSquareDiagTR
+        ]
+
         # getting the squares that are adjacent diagonally 
-        for i in range(4):
-            diagSquares.append(indexToOneSquareDiagonalFunctions[i](self, self.location))
+        for oneSquareFunction in oneSquareDiagonalFunctions:
+            diagSquares.append(oneSquareFunction(self, self.location))
         
         # keep track of each diagonal square
         oneSquareD1, oneSquareD2, oneSquareD3, oneSquareD4 = diagSquares
         
         # keep the valid squares (not off the board)
         diagSquares = filterListForSquares(diagSquares)
-        
-        
+                
         # this dictionary maps each diagonal square above to the one square vertical or horizontal 
         # function that follows to get the L-shape
         diagSquaresToKnightMoves = {
