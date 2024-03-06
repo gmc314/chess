@@ -498,7 +498,12 @@ def getRankAndFileFromBoardIndex(row: int, col: int):
 # returns the piece at the specific square,
 # or the empty square if there isn't a piece on the square
 def getPieceFromLocation(square: tuple[str, int]) -> Union[Piece, str]:
-    r, c = getBoardIndexFromRankAndFile(square)
+    try:
+        r, c = getBoardIndexFromRankAndFile(square)
+    
+    except ValueError:
+        return "Invalid"
+    
     return BOARD[r][c]
 
 

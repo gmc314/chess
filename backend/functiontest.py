@@ -65,6 +65,10 @@ class TestGetBoardIndices(unittest.TestCase):
         result = getBoardIndexFromRankAndFile(testCoords)
         self.assertEqual(result, (7, 0))
 
+    def testNone(self):
+        param = None
+        result = getBoardIndexFromRankAndFile(param)
+        self.assertEqual(result, "Invalid")
 
 class TestFilterListForSquares(unittest.TestCase):
     def testEmptyList(self):
@@ -129,5 +133,23 @@ class TestStringifyRankFile(unittest.TestCase):
         param = ("e", 8)
         result = stringifyRankFile(param)
         self.assertEqual(result, "E8")
+
+
+class TestGetPieceFromLocation(unittest.TestCase):
+    def testNone(self):
+        param = None
+        result = getPieceFromLocation(param)
+        self.assertEqual(result, "Invalid")
+    
+    def testList(self):
+        param = []
+        result = getPieceFromLocation(param)
+        self.assertEqual(result, "Invalid")
+    
+    def testValidInputOnEmptyBoard(self):
+        param = ("a", 6)
+        result = getPieceFromLocation(param)
+        self.assertEqual(result, emptySquare)
+
 
 unittest.main()
