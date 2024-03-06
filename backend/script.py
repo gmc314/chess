@@ -474,7 +474,13 @@ def getBoardIndexFromRankAndFile(square: tuple[str, int]):
 
 # filters the list for squares instead of False
 def filterListForSquares(squareList: list) -> list:
-    return list(filter(lambda sqr: isSquareValid(sqr), squareList))
+    try:
+        lst = list(filter(lambda sqr: isSquareValid(sqr), squareList))
+    
+    except TypeError:
+        return []
+    
+    return lst
 
 
 # gets the rank and file from indices of the Board

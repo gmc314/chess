@@ -87,7 +87,22 @@ class TestFilterListForSquares(unittest.TestCase):
         result = filterListForSquares(lst)
         self.assertEqual(result, [("a", 6)])
 
+    def testTuple(self):
+        lst = (5,5)
+        result = filterListForSquares(lst)
+        self.assertEqual(result, [])
 
+    def testNonIterable(self):
+        lst = "1"
+        result = filterListForSquares(lst)
+        self.assertEqual(result, [])
+
+    def testNonIterable2(self):
+        lst = 1
+        result = filterListForSquares(lst)
+        self.assertEqual(result, [])
+
+        
 class TestGetRankAndFileFromBoardIndex(unittest.TestCase):
     def testInvalidInputs(self):
         params = ("a", 9)
@@ -109,5 +124,10 @@ class TestStringifyRankFile(unittest.TestCase):
         param = 5
         result = stringifyRankFile(param)
         self.assertEqual(result, False)
+
+    def testValidInput(self):
+        param = ("e", 8)
+        result = stringifyRankFile(param)
+        self.assertEqual(result, "E8")
 
 unittest.main()
