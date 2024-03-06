@@ -13,6 +13,16 @@ class TestIsSquareValid(unittest.TestCase):
         result = isSquareValid(sqr)
         self.assertEqual(result, False)
     
+    def testNoneInput(self):
+        sqr = None
+        result = isSquareValid(sqr)
+        self.assertEqual(result, False)
+
+    def testWrongTupleLength(self):
+        sqr = (3, 7, 6)
+        result = isSquareValid(sqr)
+        self.assertEqual(result, False)
+    
     def testInvalidFile(self):
         sqr = ("z", 6)
         result = isSquareValid(sqr)
@@ -94,6 +104,10 @@ class TestGetRankAndFileFromBoardIndex(unittest.TestCase):
         result = getRankAndFileFromBoardIndex(*params)
         self.assertEqual(result, ("e", 4))
 
-
+class TestStringifyRankFile(unittest.TestCase):
+    def testInvalidInput(self):
+        param = 5
+        result = stringifyRankFile(param)
+        self.assertEqual(result, False)
 
 unittest.main()
