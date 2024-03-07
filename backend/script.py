@@ -672,12 +672,10 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
         indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
         if newSquare in indirectCheckMoves:
             return "invalid move"
-    
-    # for both players
-    for colour in colourToPlayer:
-        # check if the piece is on the board 
-        if piece not in colourToPlayer[colour].pieces:
-            return "invalid move"
+
+    # check if the piece is on the board 
+    if piece not in colourToPlayer[piece.colour].pieces:
+        return "invalid move"
 
     # if the king doesn't move to a castling square
     if isinstance(piece, King) and newSquare not in piece.getCastleMoves():

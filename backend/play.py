@@ -78,9 +78,9 @@ def newGame():
 
 
 # this function converts the 2 character typed move to a tuple 
-def squareToTuple(squareString):
-    file, rank = squareString.split('')
-    return (file, int(rank))
+def squareToTuple(squareString: str):
+    file, rank = list(squareString)
+    return (file.lower(), int(rank))
 
 # gets the piece and square from playerInput
 def extractMoveElements(player: Player, playerInput: str):
@@ -104,6 +104,7 @@ def extractMoveElements(player: Player, playerInput: str):
 def playGame():
     newGame()
     pprint(BOARD)
+
     whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
     blackKing = [piece for piece in BLACK.pieces if isinstance(piece, King)][0]
     numRounds = 0
@@ -113,14 +114,20 @@ def playGame():
         if checkmate(whiteKing):
             gameOverMessage = "Black wins"
             break
+        
         whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
+        if whiteMoveText == "q":
+            break
+        
         whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
-        whiteMove = moveFromCurrentSquare(**whiteMoveInput)
+        print(whiteMoveInput)
+        whiteMove = moveFromCurrentSquare(*whiteMoveInput)
+        
         while whiteMove == "invalid move":
             print(whiteMove)
             whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
             whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
-            whiteMove = moveFromCurrentSquare(**whiteMoveInput)
+            whiteMove = moveFromCurrentSquare(*whiteMoveInput)
         clear()
         pprint(BOARD)
         
@@ -128,14 +135,19 @@ def playGame():
         if checkmate(blackKing):
             gameOverMessage = "White wins"
             break
+
         blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
-        blackMoveInput = extractMoveElements(WHITE, blackMoveText)
-        blackMove = moveFromCurrentSquare(**blackMoveInput)
+        if blackMoveText == "q":
+            break
+
+        blackMoveInput = extractMoveElements(BLACK, blackMoveText)
+        blackMove = moveFromCurrentSquare(*blackMoveInput)
+        
         while blackMove == "invalid move":
             print(blackMove)
             blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
-            blackMoveInput = extractMoveElements(WHITE, blackMoveText)
-            blackMove = moveFromCurrentSquare(**whiteMoveInput)
+            blackMoveInput = extractMoveElements(BLACK, blackMoveText)
+            blackMove = moveFromCurrentSquare(*blackMoveInput)
         clear()
         pprint(BOARD)
         
@@ -148,5 +160,6 @@ def playGame():
 
     print(gameOverMessage)
     return
+
 
 playGame()
