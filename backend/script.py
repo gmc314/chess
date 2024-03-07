@@ -571,7 +571,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
                     colourToPlayer[capturer.colour].points += capturee.points
 
                     # remove piece from player's piece list
-                    colourToPlayer[capturer.colour].pieces.remove(capturee)
+                    colourToPlayer[capturee.colour].pieces.remove(capturee)
 
                     return f"{str(capturee)} captured en passant."
 
@@ -592,7 +592,7 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     colourToPlayer[capturer.colour].points += capturee.points
                   
     # remove piece from player's piece list
-    colourToPlayer[capturer.colour].pieces.remove(capturee)
+    colourToPlayer[capturee.colour].pieces.remove(capturee)
 
     return f"{str(capturee)} captured."
 
@@ -667,52 +667,57 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
 # move piece from current square to new `square`
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
-    # indirect check squares for king 
-    if isinstance(piece, King):
-        indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
-        if newSquare in indirectCheckMoves:
-            return "invalid move"
-
     # check if the piece is on the board 
     if piece not in colourToPlayer[piece.colour].pieces:
         return "invalid move"
-
-    # if the king doesn't move to a castling square
-    if isinstance(piece, King) and newSquare not in piece.getCastleMoves():
-        piece.canCastle = False
-
-    # if the king moves to a castling square
-    if isinstance(piece, King) and newSquare in piece.getCastleMoves():
-        currentRow, currentCol = getBoardIndexFromRankAndFile(piece.location) 
-        
-        newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
-        newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
-        
-        # move king from the current square
-        BOARD[currentRow][currentCol] = emptySquare
-        # to new square
-        BOARD[newRow][newCol] = piece
-        piece.location = (newRank, newFile)
-        
-        # castle function handles the rook
-        message = castle(piece, newSquare)
-        piece.canCastle = False
-
-        return message
-
+    
     if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"
     
-    pawnColourToPromotionRank = {
-        "White": 8, 
-        "Black": 1
-        }
+    if isinstance(piece, King):
+        # indirect check squares for king 
+        indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
+        
+        # if the move puts the king in check when the king is indirectly threatened
+        if newSquare in indirectCheckMoves:
+            return "invalid move"
+
+        # if the king doesn't move to a castling square
+        if newSquare not in piece.getCastleMoves():
+            piece.canCastle = False
+            
+        # if the king moves to a castling square
+        elif newSquare in piece.getCastleMoves():
+            currentRow, currentCol = getBoardIndexFromRankAndFile(piece.location) 
+            
+            newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
+            newRank, newFile = getRankAndFileFromBoardIndex(newRow, newCol)
+            
+            # move king from the current square
+            BOARD[currentRow][currentCol] = emptySquare
+            # to new square
+            BOARD[newRow][newCol] = piece
+            piece.location = (newRank, newFile)
+            
+            # castle function handles the rook
+            message = castle(piece, newSquare)
+            piece.canCastle = False
+
+            return message
+    
+    # if the king is in check:
+    king = [p for p in colourToPlayer[piece.colour].pieces if isinstance(piece, King)][0]
+    if kingIsInCheck(king):
+        
+        
+        pass    
+    
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
+    # if the pawn can capture en passant
     if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves()[0] != []:
         enPassantMoves = piece.getEnPassantCaptureMoves()[0]
-
         if newSquare not in enPassantMoves:
             return "invalid move"
         
@@ -751,14 +756,18 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     piece.location = (newRank, newFile)
     
     # pawn promotion
+    pawnColourToPromotionRank = {
+        "White": 8, 
+        "Black": 1
+        }
     if isinstance(piece, Pawn) and newRank == pawnColourToPromotionRank[piece.colour]:
-        symbolOfNewPiece = input("Enter one of [Q, R, N, B] to promote the pawn: ")
+        symbolOfNewPiece = input(f"{piece.colour}: Enter one of [Q, R, N, B] to promote the pawn: ")
         BOARD[newRow][newCol] = pawnPromotion(piece, symbolOfNewPiece)   
-
-    BOARD[newRow][newCol] = piece
-
-    # the following lines until the return statement are post-move conditions:
     
+    else:
+        BOARD[newRow][newCol] = piece
+
+    # post-move conditions:
     # condition for en passant and first turn two-square forward move
     if isinstance(piece, Pawn) and piece.numMoves <= 2:
         piece.numMoves += 1
