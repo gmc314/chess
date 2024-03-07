@@ -1,9 +1,8 @@
-# Full Stack Chess
+# Chess
 
 ## Summary
-Local 2-player chess featuring back and front ends
+Local 2-player chess featuring text-based input.
 
-## Back-end:
 ### Pieces and Board 
 The board is an 8x8 matrix.
 
@@ -48,13 +47,6 @@ Pieces are classes with properties:
   5. Points
   6. canCastle
 
-Functions for all pieces:
-  1. `moveFromCurrentSquare(piece, newSquare)`
-  2. `placePiece(piece)`
-
-Class Methods for all pieces: 
-  1. `isMoveValid(self, newSquare)`
-
 #### Coding Details
   - Orientation of the board will be in the usual chess standard. 
   - Rank and file will be standard.
@@ -85,17 +77,4 @@ The rules are standard chess.
     - Check if selected piece can move 
     - Check if targetted square is a valid move
     - Move to targetted square and/or capture
-  - Repeat until checkmate is reached
-
-## Server-side:
-Login authentication tokens 
-Saving game state
-Logging moves
-
-## Front-end:
-Login screen
-Mouse drags pieces
-Board rotates on each player's turn?
-Initial board condition
-Undo button?
-Stalemate button> 
+  - Repeat until checkmate is reached or stalemate.
