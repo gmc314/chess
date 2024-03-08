@@ -714,12 +714,27 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
             piece.movedYet = True
             return message
     
-    # if the piece isn't the king but the king is in check and the piece can't block the check:
-    king = [p for p in colourToPlayer[piece.colour].pieces if isinstance(piece, King)][0]
-    for opponentPiece in opponent.pieces:
-        if kingIsInCheck(king, opponentPiece) and not canBlockCheck(piece, opponentPiece, king):      
-            return invalid
+    # for testing purposes: if there's a king on the board
+    try:
+        # if the piece isn't the king but the king is in check and the piece can't block the check:
+        king = [p for p in colourToPlayer[piece.colour].pieces if isinstance(piece, King)][0]
+        for opponentPiece in opponent.pieces:
+            if kingIsInCheck(king, opponentPiece):
+                blockCheck = canBlockCheck(piece, opponentPiece, king)
     
+                # if the piece can't block the check against the king, return invalid
+                if not blockCheck[0]:      
+                    return invalid
+                
+                # if the check can be blocked, restrict the valid moves 
+                else:
+                    newValidMoves = blockCheck[1]
+                    if newSquare not in newValidMoves:
+                        return invalid
+    
+    except IndexError:
+        pass
+
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
     
@@ -1013,26 +1028,32 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
 # moving the piece is valid only if the king is no longer in check after this other piece moves 
 # need to check one move ahead.
 def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> bool:
-    if not kingIsInCheck(king):
+    if not kingIsInCheck(king, attackingPiece):
         return False
         
-    defenderLocation = defendingPiece.location
+    originalDefenderLocation = defendingPiece.location
         
     attackerMoves = set(attackingPiece.getValidMoves())
     defenderMoves = set(defendingPiece.getValidMoves())
 
     intersectionMoves = attackerMoves.intersection(defenderMoves)
     
+    newValidMoves = []
+
     for move in intersectionMoves:
         # moving the defending piece to the square that intersects
         defendingPiece.location = move
         
-        if not kingIsInCheck(king):
+        if not kingIsInCheck(king, attackingPiece):
+            newValidMoves.append(move)
             # if the king is no longer in check, return the piece back to its original location
-            defendingPiece.location = defenderLocation
-            return True
+            defendingPiece.location = originalDefenderLocation
     
-    return False
+    # return the piece back to its original location
+    defendingPiece.location = originalDefenderLocation
+    canBlock = True if newValidMoves != [] else False 
+    
+    return (canBlock, newValidMoves)
 
 
 # returns True if the king is in checkmate
@@ -1066,7 +1087,7 @@ def checkmate(king: King):
     playerPieces = colourToPlayer[king.colour].pieces
     for piece in playerPieces:
         for opponPiece in opponentPlayer.pieces:
-            if canBlockCheck(piece, opponPiece, king):
+            if canBlockCheck(piece, opponPiece, king)[0]:
                 return False
 
     return True

@@ -137,10 +137,8 @@ print(moveFromCurrentSquare(bk, ("g", 8))=="Black King kingside castled.")
 
 ###### 
 # CHECK AND CHECKMATE
-print(not kingIsInCheck(wk))
-print(not kingIsInCheck(bk))
 # placing the white king in check
 moveFromCurrentSquare(br, ('b', 8))
-print(kingIsInCheck(wk))
+print(kingIsInCheck(wk, br))
 
 pprint(BOARD)
