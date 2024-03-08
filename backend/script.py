@@ -672,12 +672,13 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
 # move piece from current square to new `square`
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
+    invalid = "invalid move"
     # check if the piece is on the board 
     if piece not in colourToPlayer[piece.colour].pieces:
-        return "invalid move"
+        return invalid
     
     if not piece.isMoveValid(newSquare) or piece.captured:
-        return "invalid move"
+        return invalid
     
     opponent = colourToPlayer[oppositeColour(piece.colour)]
     
@@ -687,11 +688,12 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
         
         # if the move puts the king in check when the king is indirectly threatened
         if newSquare in indirectCheckMoves:
-            return "invalid move"
+            return invalid
 
         # if the king doesn't move to a castling square
         if newSquare not in piece.getCastleMoves():
             piece.canCastle = False
+            piece.movedYet = True
             
         # if the king moves to a castling square
         elif newSquare in piece.getCastleMoves():
@@ -709,15 +711,14 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
             # castle function handles the rook
             message = castle(piece, newSquare)
             piece.canCastle = False
-
+            piece.movedYet = True
             return message
     
-    # if the king is in check:
+    # if the piece isn't the king but the king is in check and the piece can't block the check:
     king = [p for p in colourToPlayer[piece.colour].pieces if isinstance(piece, King)][0]
-    if kingIsInCheck(king):
-        for opponentPiece in opponent.pieces:
-            if canBlockCheck(piece, opponentPiece, king):      
-                break    
+    for opponentPiece in opponent.pieces:
+        if kingIsInCheck(king, opponentPiece) and not canBlockCheck(piece, opponentPiece, king):      
+            return invalid
     
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
@@ -726,7 +727,7 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves()[0] != []:
         enPassantMoves = piece.getEnPassantCaptureMoves()[0]
         if newSquare not in enPassantMoves:
-            return "invalid move"
+            return invalid
         
         enPassantCaptureSquares = piece.getEnPassantCaptureMoves()[1]
         
@@ -980,9 +981,6 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
 def kingIsInCheck(king: King, piece: Piece) -> bool:
     if piece.colour == king.colour:
         return False
-
-
-    opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
     
     # if a piece can capture the king, return True
     if king.location in piece.getValidMoves():
