@@ -26,6 +26,10 @@ colourToPlayer = {
     "Black": BLACK
 }
 
+
+def oppositeColour(colour):
+    return "Black" if colour == "White" else "White"
+
 class Piece:
     def __init__(self, colour: str, symbol: str, ID: str, location: tuple, canCastle: bool, captured: bool, points: int) -> None:
         self.colour = colour 
@@ -57,7 +61,7 @@ class King(Piece):
     
     # checks if the squares between rook and king are not defended as per rules of castling
     def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
-        opponentColour = "Black" if self.colour == "White" else "White"
+        opponentColour = oppositeColour(self.colour)
         opponentPlayer = colourToPlayer[opponentColour]
         for sqr in squaresBetweenKingAndRook:
             for piece in opponentPlayer.pieces:
@@ -971,8 +975,7 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
 
 # returns True if the king is in check by a piece
 def kingIsInCheck(king: King) -> bool:
-    oppositeColour = "White" if king.colour == "Black" else "Black"
-    opponentPlayer = colourToPlayer[oppositeColour]
+    opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
     
     # looping over the opponent's pieces
     for piece in opponentPlayer.pieces:
@@ -995,8 +998,7 @@ def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bish
 # this function returns True if the king is in indirect check 
 # (i.e. the king would be in check if moved to that square)
 def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
-    oppositeColour = "Black" if king.colour == "White" else "White"
-    opponentPlayer = colourToPlayer[oppositeColour]
+    opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
     
     for piece in opponentPlayer.pieces:
         if squareDefended(square, piece):
@@ -1036,8 +1038,7 @@ def checkmate(king: King):
     if not kingIsInCheck(king):
         return False
     
-    oppositeColour = "Black" if king.colour == "White" else "White"
-    opponentPlayer = colourToPlayer[oppositeColour]
+    opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
     
     # the for loop checks if every move is defended by the opponent 
     for move in king.getValidMoves():
