@@ -8,7 +8,7 @@ def clear():
 def newGame():
     clearBoard()
     # get new instances of all pieces
-    bk = King("Black", "1", ('e', 8))
+    bk = King("Black", "1", ('e', 8), False)
     placePiece(bk)
     bq = Queen("Black", "2", ('d', 8))
     placePiece(bq)
@@ -41,7 +41,7 @@ def newGame():
     bp8 = Pawn("Black", "16", ('h', 7))
     placePiece(bp8)
 
-    wk = King("White", "17", ('e', 1))
+    wk = King("White", "17", ('e', 1), False)
     placePiece(wk)
     wq = Queen("White", "18", ('d', 1))
     placePiece(wq)

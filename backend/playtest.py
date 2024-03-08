@@ -47,7 +47,7 @@ print(getOneSquareLeft(wb, wb.location)==False)
 print(getOneSquareRight(wp, wp.location)==('e', 4))
 
 # testing king valid move
-wk = King("White", "4", ("c", 6))
+wk = King("White", "4", ("c", 6), False)
 placePiece(wk)
 print(type(BOARD[2][2])==King)
 
@@ -126,7 +126,7 @@ print(moveFromCurrentSquare(wp, ("h", 6)) == "White Pawn G5 to H6. Black Pawn ca
 
 #######
 # KING
-bk = King("Black", "7", ("e", 8))
+bk = King("Black", "7", ("e", 8), False)
 placePiece(bk) 
 # CASTLING
 

@@ -56,9 +56,10 @@ class Piece:
 
 # inheriting from Piece class
 class King(Piece):
-    def __init__(self, colour, ID, location):
+    def __init__(self, colour, ID, location, movedYet: bool):
         super().__init__(colour, "K", ID, location, canCastle=True, captured=False, points=0) 
-    
+        self.movedYet = movedYet
+        
     # checks if the squares between rook and king are not defended as per rules of castling
     def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
         opponentColour = oppositeColour(self.colour)
@@ -678,6 +679,8 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     if not piece.isMoveValid(newSquare) or piece.captured:
         return "invalid move"
     
+    opponent = colourToPlayer[oppositeColour(piece.colour)]
+    
     if isinstance(piece, King):
         # indirect check squares for king 
         indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
@@ -712,9 +715,9 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     # if the king is in check:
     king = [p for p in colourToPlayer[piece.colour].pieces if isinstance(piece, King)][0]
     if kingIsInCheck(king):
-        
-        
-        pass    
+        for opponentPiece in opponent.pieces:
+            if canBlockCheck(piece, opponentPiece, king):      
+                break    
     
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
@@ -974,17 +977,18 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
     return validMoves
 
 # returns True if the king is in check by a piece
-def kingIsInCheck(king: King) -> bool:
+def kingIsInCheck(king: King, piece: Piece) -> bool:
+    if piece.colour == king.colour:
+        return False
+
+
     opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
     
-    # looping over the opponent's pieces
-    for piece in opponentPlayer.pieces:
+    # if a piece can capture the king, return True
+    if king.location in piece.getValidMoves():
+        king.canCastle = False
+        return True
 
-        # if a piece can capture the king, return True
-        if king.location in piece.getValidMoves():
-            king.canCastle = False
-            return True
-    
     return False
 
 
