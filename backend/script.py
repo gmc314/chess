@@ -923,7 +923,7 @@ def getOneSquareDiagTL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
 
 # diagBL means the diagonal from top right to bottom left
-# the getOneSquareDiag3 function returns the diagBL adjacent square of the piece. returns 
+# the function returns the diagBL adjacent square of the piece. returns 
 # false if the square is occupied by the same colour or if the square is off the board
 def getOneSquareDiagBL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bool, tuple[str, int]]:
     file, rank = currentSquare
@@ -1006,6 +1006,11 @@ def kingIsInCheck(king: King, piece: Piece) -> bool:
 
 
 # returns True if the square is defended by a piece
+# PLAN:
+# if the get one square functions don't check for occupants,
+# 1. B, R, Q would have valid moves to the edge of the board irrespective of pieces
+#    to remedy this, the move from current square function would block the move to an 
+#    occupied square of the same colour
 def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bishop, Knight, Pawn]) -> bool: 
     pieceMoves = piece.getValidMoves()
 
