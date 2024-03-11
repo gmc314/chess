@@ -1010,7 +1010,7 @@ def kingIsInCheck(king: King, piece: Piece) -> bool:
 # if the get one square functions don't check for occupants,
 # 1. B, R, Q would have valid moves to the edge of the board irrespective of pieces
 #    to remedy this, the move from current square function would block the move to an 
-#    occupied square of the same colour
+#    occupied square of the same colour when all other in between squares empty
 def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bishop, Knight, Pawn]) -> bool: 
     pieceMoves = piece.getValidMoves()
 
