@@ -1000,9 +1000,17 @@ def squareDefended(square: tuple[str, int], piece: Piece) -> bool:
         return square in pieceMoves
     
     # if a pawn defends the square, it needs to capture it 
-    if isinstance(piece, Pawn) and occupant.colour == piece.colour:
-        occupant.colour = oppositeColour(occupant.colour)
-        pieceMoves = piece.getPawnCaptureMoves()
+    if isinstance(piece, Pawn):
+        if occupant.colour == piece.colour:
+            occupant.colour = oppositeColour(occupant.colour)
+            pieceMoves = piece.getPawnCaptureMoves()
+            result = square in pieceMoves
+            occupant.colour = oppositeColour(occupant.colour)
+            return result
+        
+        else:
+            pieceMoves = piece.getPawnCaptureMoves()
+            return square in pieceMoves 
 
     r, c = getBoardIndexFromRankAndFile(square)
     # removing the occupant from the board
@@ -1010,7 +1018,7 @@ def squareDefended(square: tuple[str, int], piece: Piece) -> bool:
     # check if the square that was occupied is a valid move of the piece 
     pieceMoves = piece.getValidMoves()
     # replace the piece back to the board
-    BOARD[r][c] = occupant  
+    BOARD[r][c] = occupant
 
     return square in pieceMoves
     

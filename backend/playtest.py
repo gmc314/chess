@@ -156,10 +156,5 @@ print(moveFromCurrentSquare(bn2, ('e', 2)))
 
 wr = Rook("White", "%$%", ('g', 7))
 placePiece(wr)
-
-print(wp.getValidMoves())
-
-wr.colour = "Black"
+print(squareDefended(('g', 7), wp))
 pprint(BOARD)
-
-print(wp.getPawnCaptureMoves())
