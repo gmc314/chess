@@ -141,4 +141,25 @@ print(moveFromCurrentSquare(bk, ("g", 8))=="Black King kingside castled.")
 moveFromCurrentSquare(br, ('b', 8))
 print(kingIsInCheck(wk, br))
 
+# captured pieces
+# bn.location = None
+# print(bn.getValidMoves())
+
+print(bn2.getValidMoves())
+bp6 = getPieceFromLocation(('e', 2))
+print(getBoardIndexFromRankAndFile(('e', 2)))
+BOARD[6][4] = emptySquare
+print(getPieceFromLocation(('e', 2))) 
+#print(bn2.getValidMoves())
+print(moveFromCurrentSquare(bn2, ('e', 2)))
+
+
+wr = Rook("White", "%$%", ('g', 7))
+placePiece(wr)
+
+print(wp.getValidMoves())
+
+wr.colour = "Black"
 pprint(BOARD)
+
+print(wp.getPawnCaptureMoves())

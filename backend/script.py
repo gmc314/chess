@@ -674,10 +674,7 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
 def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     invalid = "invalid move"
     # check if the piece is on the board 
-    if piece not in colourToPlayer[piece.colour].pieces:
-        return invalid
-    
-    if not piece.isMoveValid(newSquare) or piece.captured:
+    if piece not in colourToPlayer[piece.colour].pieces or not piece.isMoveValid(newSquare) or piece.captured:
         return invalid
     
     opponent = colourToPlayer[oppositeColour(piece.colour)]
@@ -889,10 +886,7 @@ def getOneSquareDiagBR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
     newSquare = (newFile, newRank)
 
     occupant = getPieceFromLocation(newSquare)
-    if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)):
-            return False
-        
+    if isinstance(occupant, Piece):        
         if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
@@ -913,9 +907,6 @@ def getOneSquareDiagTL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
     occupant = getPieceFromLocation(newSquare)
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)):
-            return False
-        
         if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
@@ -936,9 +927,6 @@ def getOneSquareDiagBL(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
     occupant = getPieceFromLocation(newSquare)
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)):
-            return False
-        
         if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
@@ -959,9 +947,6 @@ def getOneSquareDiagTR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 
     occupant = getPieceFromLocation(newSquare)
     if isinstance(occupant, Piece):
-        if (not isinstance(piece, Knight)):
-            return False
-        
         if occupant.colour == piece.colour and (not isinstance(piece, Knight)):
             return False
     
@@ -1005,17 +990,30 @@ def kingIsInCheck(king: King, piece: Piece) -> bool:
     return False
 
 
-# returns True if the square is defended by a piece
-# PLAN:
-# if the get one square functions don't check for occupants,
-# 1. B, R, Q would have valid moves to the edge of the board irrespective of pieces
-#    to remedy this, the move from current square function would block the move to an 
-#    occupied square of the same colour when all other in between squares empty
-def squareDefended(square: tuple[str, int], piece: Union[King, Queen, Rook, Bishop, Knight, Pawn]) -> bool: 
+# returns True if the square is defended by a piece 
+# delete the piece on the square and see if the piece can go to that square
+def squareDefended(square: tuple[str, int], piece: Piece) -> bool: 
+    occupant = getPieceFromLocation(square)
     pieceMoves = piece.getValidMoves()
+    
+    if occupant == emptySquare:
+        return square in pieceMoves
+    
+    # if a pawn defends the square, it needs to capture it 
+    if isinstance(piece, Pawn) and occupant.colour == piece.colour:
+        occupant.colour = oppositeColour(occupant.colour)
+        pieceMoves = piece.getPawnCaptureMoves()
+
+    r, c = getBoardIndexFromRankAndFile(square)
+    # removing the occupant from the board
+    BOARD[r][c] = emptySquare
+    # check if the square that was occupied is a valid move of the piece 
+    pieceMoves = piece.getValidMoves()
+    # replace the piece back to the board
+    BOARD[r][c] = occupant  
 
     return square in pieceMoves
-
+    
 
 # this function returns True if the king is in indirect check 
 # (i.e. the king would be in check if moved to that square)
