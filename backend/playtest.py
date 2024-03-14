@@ -47,7 +47,7 @@ print(getOneSquareLeft(wb, wb.location)==False)
 print(getOneSquareRight(wp, wp.location)==('e', 4))
 
 # testing king valid move
-wk = King("White", "4", ("c", 6), False)
+wk = King("White", "4", ("c", 6))
 placePiece(wk)
 print(type(BOARD[2][2])==King)
 
@@ -126,7 +126,7 @@ print(moveFromCurrentSquare(wp, ("h", 6)) == "White Pawn G5 to H6. Black Pawn ca
 
 #######
 # KING
-bk = King("Black", "7", ("e", 8), False)
+bk = King("Black", "7", ("e", 8))
 placePiece(bk) 
 # CASTLING
 
@@ -161,7 +161,7 @@ print(squareDefended(('g', 7), wp))
 #######
 # CHECKMATE
 clearBoard()
-wk = King("White", "123", ('c', 1), False)
+wk = King("White", "123", ('c', 1))
 placePiece(wk)
 bq = Queen("Black", "12", ('c', 2))
 placePiece(bq)
@@ -169,3 +169,4 @@ bp = Pawn("Black", "4", ('b', 3))
 placePiece(bp)
 pprint(BOARD)
 print(checkmate(wk))
+print(kingIsInCheck(wk, bq))

@@ -52,11 +52,13 @@ class Piece:
                         "P": "Pawn"}
         
         return f"{self.colour} {symbolToName[self.symbol]}"
-
+    # def __eq__(self, other) -> bool:
+    #     return self.ID == other.ID and self.location == other.location and self.symbol == other.symbol       
+        
 
 # inheriting from Piece class
 class King(Piece):
-    def __init__(self, colour, ID, location, movedYet: bool):
+    def __init__(self, colour, ID, location):
         super().__init__(colour, "K", ID, location, canCastle=True, captured=False, points=0) 
         self.movedYet = False
         
@@ -439,7 +441,10 @@ def clearBoard():
                 piece = BOARD[i][j]
                 del piece # delete the piece from memory
             BOARD[i][j] = emptySquare
-    
+
+    # remove all pieces from both players 
+    for colour in ["White", "Black"]:
+        colourToPlayer[colour].pieces = []
     return "Board Cleared"
 
 
@@ -990,7 +995,18 @@ def kingIsInCheck(king: King, piece: Piece) -> bool:
 
     return False
 
+# if the king is in check by any piece, return True
+def kingIsInCheckGlobal(king: King) -> bool:
+    opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
 
+    # looping over the opponent's pieces
+    for piece in opponentPlayer.pieces:
+
+        # if a piece can capture the king, return True
+        if king.location in piece.getValidMoves():
+            return True
+
+    return False
 # returns True if the square is defended by a piece 
 # delete the piece on the square and see if the piece can go to that square
 def squareDefended(square: tuple[str, int], piece: Piece) -> bool: 
@@ -1040,8 +1056,9 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
 # moving the piece is valid only if the king is no longer in check after this other piece moves 
 # need to check one move ahead.
 def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> tuple[bool, list]:
+    newValidMoves = []
     if not kingIsInCheck(king, attackingPiece):
-        return False
+        return (False, newValidMoves)
         
     originalDefenderLocation = defendingPiece.location
         
@@ -1050,8 +1067,6 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
 
     intersectionMoves = attackerMoves.intersection(defenderMoves)
     
-    newValidMoves = []
-
     for move in intersectionMoves:
         # moving the defending piece to the square that intersects
         defendingPiece.location = move
@@ -1070,26 +1085,25 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
 
 # returns True if the king is in checkmate
 def checkmate(king: King) -> bool:
+    playerPieces = colourToPlayer[king.colour].pieces
     opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
-    check = True
-    for opponentPiece in opponentPlayer.pieces:
-        if not kingIsInCheck(king, opponentPiece):
-            check = False
-    if check == False:
+    opponentPieces = opponentPlayer.pieces
+
+    if not kingIsInCheckGlobal(king):
         return False
     
     # the for loop checks if every move is defended by the opponent 
     for move in king.getValidMoves():
         # filter for opponent pieces that defends the square that the king can move to 
         piecesIndirectlyThreateningTheKing = list(filter(lambda piece: squareDefended(move, piece), 
-                                               opponentPlayer.pieces))
+                                               opponentPieces))
         
         # if there are no pieces defending that square the king can move to
         if piecesIndirectlyThreateningTheKing == []:
             return False
         
         # getting the opponent pieces that aren't defending the square that the king can move to 
-        piecesNotThreateningTheKing = [piece for piece in opponentPlayer.pieces 
+        piecesNotThreateningTheKing = [piece for piece in opponentPieces 
                                        if piece not in piecesIndirectlyThreateningTheKing]
 
         # if the king can capture a piece that threatens it and that piece is not defended
@@ -1099,11 +1113,9 @@ def checkmate(king: King) -> bool:
                     return False
                 
     # if there's a move that can be blocked
-    playerPieces = colourToPlayer[king.colour].pieces
     for piece in playerPieces:
-        for opponPiece in opponentPlayer.pieces:
+        for opponPiece in opponentPieces:
             if canBlockCheck(piece, opponPiece, king)[0]:
                 return False
 
     return True
-
