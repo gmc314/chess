@@ -1068,11 +1068,14 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> b
 
 
 # returns True if the king is in checkmate
-def checkmate(king: King):
-    if not kingIsInCheck(king):
-        return False
-    
+def checkmate(king: King) -> bool:
     opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
+    check = True
+    for opponentPiece in opponentPlayer.pieces:
+        if not kingIsInCheck(king, opponentPiece):
+            check = False
+    if check == False:
+        return False
     
     # the for loop checks if every move is defended by the opponent 
     for move in king.getValidMoves():
