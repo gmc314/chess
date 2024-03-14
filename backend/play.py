@@ -117,7 +117,8 @@ def playGame():
         
         whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
         if whiteMoveText == "q":
-            break
+            print("Game quitted")
+            return
         
         whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
         print(whiteMoveInput)
@@ -138,7 +139,8 @@ def playGame():
 
         blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
         if blackMoveText == "q":
-            break
+            print("Game quitted")
+            return
 
         blackMoveInput = extractMoveElements(BLACK, blackMoveText)
         blackMove = moveFromCurrentSquare(*blackMoveInput)
