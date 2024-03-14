@@ -58,7 +58,7 @@ class Piece:
 class King(Piece):
     def __init__(self, colour, ID, location, movedYet: bool):
         super().__init__(colour, "K", ID, location, canCastle=True, captured=False, points=0) 
-        self.movedYet = movedYet
+        self.movedYet = False
         
     # checks if the squares between rook and king are not defended as per rules of castling
     def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
@@ -435,9 +435,10 @@ class Pawn(Piece):
 def clearBoard():
     for i in range(boardLength): 
         for j in range(boardLength):
-            if BOARD[i][j] != emptySquare:
-                del BOARD[i][j]
-                BOARD[i][j] = emptySquare 
+            if isinstance(BOARD[i][j], Piece):
+                piece = BOARD[i][j]
+                del piece # delete the piece from memory
+            BOARD[i][j] = emptySquare
     
     return "Board Cleared"
 
@@ -1038,7 +1039,7 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
 # if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
 # moving the piece is valid only if the king is no longer in check after this other piece moves 
 # need to check one move ahead.
-def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> bool:
+def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> tuple[bool, list]:
     if not kingIsInCheck(king, attackingPiece):
         return False
         

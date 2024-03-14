@@ -157,4 +157,11 @@ print(moveFromCurrentSquare(bn2, ('e', 2)))
 wr = Rook("White", "%$%", ('g', 7))
 placePiece(wr)
 print(squareDefended(('g', 7), wp))
+
+#######
+# CHECKMATE
+clearBoard()
+wk = King("White", "123", ('c', 1), False)
+placePiece(wk)
+
 pprint(BOARD)
