@@ -52,24 +52,23 @@ class Piece:
                         "P": "Pawn"}
         
         return f"{self.colour} {symbolToName[self.symbol]}"
-    # def __eq__(self, other) -> bool:
-    #     return self.ID == other.ID and self.location == other.location and self.symbol == other.symbol       
-        
+
 
 # inheriting from Piece class
 class King(Piece):
     def __init__(self, colour, ID, location):
-        super().__init__(colour, "K", ID, location, canCastle=True, captured=False, points=0) 
-        self.movedYet = False
+        super().__init__(colour, "K", ID, location, canCastle=True, captured=False, points=0)
         
     # checks if the squares between rook and king are not defended as per rules of castling
     def checkEmptyCastleSquaresForThreatenedSquares(self, squaresBetweenKingAndRook: list[tuple[str, int]]) -> bool:
         opponentColour = oppositeColour(self.colour)
         opponentPlayer = colourToPlayer[opponentColour]
+        
         for sqr in squaresBetweenKingAndRook:
             for piece in opponentPlayer.pieces:
                 if squareDefended(sqr, piece):
                     return True
+                
         return False 
                     
     # self.getCastleMoves() returns the squares which the king can go on if it can castle with a rook    
@@ -589,7 +588,6 @@ def capture(capturer: Piece, capturee: Piece) -> str:
     # non en-passant case:
     # settting captured Piece parameter to True
     capturee.captured = True
-    
     captureeRow, captureeCol = getBoardIndexFromRankAndFile(capturee.location)
     
     # delete capturee from the board
@@ -636,18 +634,18 @@ def castle(king: King, kingMoveSquare: tuple[str, int]) -> str:
                                }
     
     rook = getPieceFromLocation((kingFileToRookFile[moveFile], colorToRookRank[king.colour]))
-    
-    # moves the rook to the correct position for castling
-    currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
-    BOARD[currentRookRow][currrentRookCol] = emptySquare
+    if rook.canCastle:
+        # moves the rook to the correct position for castling
+        currentRookRow, currrentRookCol = getBoardIndexFromRankAndFile(rook.location)
+        BOARD[currentRookRow][currrentRookCol] = emptySquare
 
-    newRookLocation = fileToDirectionForRook[moveFile](king, king.location)
-    newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
-    rook.location = newRookLocation
+        newRookLocation = fileToDirectionForRook[moveFile](king, king.location)
+        newRookRow, newRookCol = getBoardIndexFromRankAndFile(newRookLocation)
+        rook.location = newRookLocation
 
-    BOARD[newRookRow][newRookCol] = rook
-    
-    return str(king) + kingFileToCastleMessage[moveFile]
+        BOARD[newRookRow][newRookCol] = rook
+        rook.canCastle = False
+        return str(king) + kingFileToCastleMessage[moveFile]
 
 
 # replaces the pawn with a piece with pieceSymbol 
@@ -659,14 +657,12 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
         "White": 8,
         "Black": 1
         }    
-    
     symbolToClass = {
         "Q": Queen,
         "N": Knight, 
         "B": Bishop,
         "R": Rook
         }
-     
     # if the pawn is in the most forward rank for promotion,
     # return the new class of piece 
     if pawn.location[1] == colourToPromotionRank[pawn.colour]:
@@ -679,12 +675,12 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     invalid = "invalid move"
+    playerPieces = colourToPlayer[piece.colour].pieces
     # check if the piece is on the board 
-    if piece not in colourToPlayer[piece.colour].pieces or not piece.isMoveValid(newSquare) or piece.captured:
+    if piece not in playerPieces or not piece.isMoveValid(newSquare) or piece.captured:
         return invalid
     
     opponent = colourToPlayer[oppositeColour(piece.colour)]
-    
     if isinstance(piece, King):
         # indirect check squares for king 
         indirectCheckMoves = list(filter(lambda m: kingIsInIndirectCheck(piece, m), piece.getValidMoves()))
@@ -696,7 +692,6 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
         # if the king doesn't move to a castling square
         if newSquare not in piece.getCastleMoves():
             piece.canCastle = False
-            piece.movedYet = True
             
         # if the king moves to a castling square
         elif newSquare in piece.getCastleMoves():
@@ -714,7 +709,6 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
             # castle function handles the rook
             message = castle(piece, newSquare)
             piece.canCastle = False
-            piece.movedYet = True
             return message
     
     # for testing purposes: if there's a king on the board
@@ -967,13 +961,10 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
     
     # while the next square is a valid move for the piece
     while type(nextSquare) == tuple:
-
         # append that square to the valid move list
         validMoves.append(nextSquare)
-
         # see one more square ahead
         oneMoreSquare = getOneSquareDirFunction(piece, nextSquare)
-        
         # if this future square is not a valid move, then break out of the loop
         if type(oneMoreSquare) != tuple:
             break
@@ -1007,6 +998,8 @@ def kingIsInCheckGlobal(king: King) -> bool:
             return True
 
     return False
+
+
 # returns True if the square is defended by a piece 
 # delete the piece on the square and see if the piece can go to that square
 def squareDefended(square: tuple[str, int], piece: Piece) -> bool: 
@@ -1061,10 +1054,8 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
         return (False, newValidMoves)
         
     originalDefenderLocation = defendingPiece.location
-        
     attackerMoves = set(attackingPiece.getValidMoves())
     defenderMoves = set(defendingPiece.getValidMoves())
-
     intersectionMoves = attackerMoves.intersection(defenderMoves)
     
     for move in intersectionMoves:
@@ -1079,7 +1070,6 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
     # return the piece back to its original location
     defendingPiece.location = originalDefenderLocation
     canBlock = True if newValidMoves != [] else False 
-    
     return (canBlock, newValidMoves)
 
 

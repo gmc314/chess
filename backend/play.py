@@ -8,7 +8,7 @@ def clear():
 def newGame():
     clearBoard()
     # get new instances of all pieces
-    bk = King("Black", "1", ('e', 8), False)
+    bk = King("Black", "1", ('e', 8))
     placePiece(bk)
     bq = Queen("Black", "2", ('d', 8))
     placePiece(bq)
@@ -41,7 +41,7 @@ def newGame():
     bp8 = Pawn("Black", "16", ('h', 7))
     placePiece(bp8)
 
-    wk = King("White", "17", ('e', 1), False)
+    wk = King("White", "17", ('e', 1))
     placePiece(wk)
     wq = Queen("White", "18", ('d', 1))
     placePiece(wq)
@@ -117,7 +117,7 @@ def playGame():
         
         whiteMoveText = input("White: Enter [symbol] [currentSquare] [newSquare]: ")
         if whiteMoveText == "q":
-            print("Game quitted")
+            print("Quit")
             return
         
         whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
@@ -139,7 +139,7 @@ def playGame():
 
         blackMoveText = input("Black: Enter [symbol] [currentSquare] [newSquare]: ")
         if blackMoveText == "q":
-            print("Game quitted")
+            print("Quit")
             return
 
         blackMoveInput = extractMoveElements(BLACK, blackMoveText)
