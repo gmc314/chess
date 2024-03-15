@@ -1069,7 +1069,9 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
     
     # return the piece back to its original location
     defendingPiece.location = originalDefenderLocation
-    canBlock = True if newValidMoves != [] else False 
+    
+    canBlock = True if newValidMoves != [] else False
+    print(defendingPiece, "Got here") 
     return (canBlock, newValidMoves)
 
 
@@ -1080,6 +1082,7 @@ def checkmate(king: King) -> bool:
     opponentPieces = opponentPlayer.pieces
 
     if not kingIsInCheckGlobal(king):
+        print("Gothere")
         return False
     
     # the for loop checks if every move is defended by the opponent 
