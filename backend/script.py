@@ -1060,18 +1060,30 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
     
     for move in intersectionMoves:
         # moving the defending piece to the square that intersects
+        currentR, currentC = getBoardIndexFromRankAndFile(originalDefenderLocation)
+        BOARD[currentR][currentC] = emptySquare
         defendingPiece.location = move
-        
+        r, c = getBoardIndexFromRankAndFile(move)
+        BOARD[r][c] = defendingPiece
+
         if not kingIsInCheck(king, attackingPiece):
             newValidMoves.append(move)
             # if the king is no longer in check, return the piece back to its original location
+            newR, newC = getBoardIndexFromRankAndFile(move)
+            BOARD[newR][newC] = emptySquare
             defendingPiece.location = originalDefenderLocation
+            origR, origC = getBoardIndexFromRankAndFile(move)
+            BOARD[origR][origC] = defendingPiece
+            break
     
     # return the piece back to its original location
+    newR, newC = getBoardIndexFromRankAndFile(move)
+    BOARD[newR][newC] = emptySquare
     defendingPiece.location = originalDefenderLocation
-    
+    origR, origC = getBoardIndexFromRankAndFile(move)
+    BOARD[origR][origC] = defendingPiece
     canBlock = True if newValidMoves != [] else False
-    print(defendingPiece, "Got here") 
+    
     return (canBlock, newValidMoves)
 
 
