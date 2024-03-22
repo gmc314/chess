@@ -1044,7 +1044,7 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
 
     return False
 
-
+from pprint import pprint
 # if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
 # moving the piece is valid only if the king is no longer in check after this other piece moves 
 # need to check one move ahead.
@@ -1052,38 +1052,28 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
     newValidMoves = []
     if not kingIsInCheck(king, attackingPiece):
         return (False, newValidMoves)
-        
+
     originalDefenderLocation = defendingPiece.location
     attackerMoves = set(attackingPiece.getValidMoves())
     defenderMoves = set(defendingPiece.getValidMoves())
     intersectionMoves = attackerMoves.intersection(defenderMoves)
+    intersectionMoves = list(filter(lambda m: m in defendingPiece.getValidMoves(), intersectionMoves))
     
     for move in intersectionMoves:
         # moving the defending piece to the square that intersects
-        currentR, currentC = getBoardIndexFromRankAndFile(originalDefenderLocation)
-        BOARD[currentR][currentC] = emptySquare
-        defendingPiece.location = move
-        r, c = getBoardIndexFromRankAndFile(move)
-        BOARD[r][c] = defendingPiece
-
+        moveFromCurrentSquare(defendingPiece, move)
+        pprint(BOARD)
+        print("")
+        print(kingIsInCheck(king, attackingPiece))
+        # issue is that the kingIsInCheck is not registering update moves
         if not kingIsInCheck(king, attackingPiece):
             newValidMoves.append(move)
             # if the king is no longer in check, return the piece back to its original location
-            newR, newC = getBoardIndexFromRankAndFile(move)
-            BOARD[newR][newC] = emptySquare
-            defendingPiece.location = originalDefenderLocation
-            origR, origC = getBoardIndexFromRankAndFile(move)
-            BOARD[origR][origC] = defendingPiece
-            break
-    
+            moveFromCurrentSquare(defendingPiece, originalDefenderLocation)
+
     # return the piece back to its original location
-    newR, newC = getBoardIndexFromRankAndFile(move)
-    BOARD[newR][newC] = emptySquare
-    defendingPiece.location = originalDefenderLocation
-    origR, origC = getBoardIndexFromRankAndFile(move)
-    BOARD[origR][origC] = defendingPiece
     canBlock = True if newValidMoves != [] else False
-    
+    moveFromCurrentSquare(defendingPiece, originalDefenderLocation)
     return (canBlock, newValidMoves)
 
 
