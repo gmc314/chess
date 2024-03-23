@@ -978,9 +978,9 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
 def kingIsInCheck(king: King, piece: Piece) -> bool:
     if piece.colour == king.colour:
         return False
-    
+    validMoves = piece.getValidMoves()
     # if a piece can capture the king, return True
-    if king.location in piece.getValidMoves():
+    if king.location in validMoves:
         king.canCastle = False
         return True
 
@@ -1084,7 +1084,6 @@ def checkmate(king: King) -> bool:
     opponentPieces = opponentPlayer.pieces
 
     if not kingIsInCheckGlobal(king):
-        print("Gothere")
         return False
     
     # the for loop checks if every move is defended by the opponent 
