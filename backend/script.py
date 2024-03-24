@@ -1122,13 +1122,22 @@ def checkmate(king: King) -> bool:
                 if attackingPiece.location == move and not squareDefended(attackingPiece.location, otherPiece):
                     return False
                 
-    # need to check:
-        # if another piece can capture the attacking piece, and then the king is no longer in check 
+    # if another piece can capture the attacking piece, and then the king is no longer in check 
     for piece in playerPieces:
         for opponPiece in piecesThreateningTheKing:
-            if squareDefended(opponPiece.location, piece):
-                pass
-
+            opponentSquare = opponPiece.location
+            if squareDefended(opponentSquare, piece):
+                r, c = getBoardIndexFromRankAndFile(opponentSquare)
+                # remove the attacking piece
+                BOARD[r][c] = emptySquare
+                # see if the king is still in check
+                check = kingIsInCheckGlobal(king)
+                # putting the piece back
+                BOARD[r][c] = opponPiece
+                # if the king is no long in check, we don't have checkmate
+                if check == False:
+                    return False
+                
     # if there's a move that can be blocked
     for piece in playerPieces:
         for opponPiece in opponentPieces:
