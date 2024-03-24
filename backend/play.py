@@ -103,7 +103,14 @@ def extractMoveElements(player: Player, playerInput: str):
 # plan for the main playGame function
 def playGame():
     newGame()
-    print("##### Welcome to Python Chess! #####")
+    print("####################################")
+    print("##                                ##")
+    print("##                                ##")
+    print("##    Welcome to Python Chess!    ##")
+    print("##                                ##")
+    print("##                                ##")
+    print("####################################\n")
+    
     pprint(BOARD)
 
     whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
