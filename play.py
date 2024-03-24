@@ -148,6 +148,7 @@ def playGame():
       whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
       whiteMove = moveFromCurrentSquare(*whiteMoveInput)
     clear()
+    print("\n")
     pprint(BOARD)
 
     # Black turn
@@ -171,6 +172,7 @@ def playGame():
       blackMoveInput = extractMoveElements(BLACK, blackMoveText)
       blackMove = moveFromCurrentSquare(*blackMoveInput)
     clear()
+    print("\n")
     pprint(BOARD)
 
     numRounds += 1
