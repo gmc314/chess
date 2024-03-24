@@ -958,6 +958,14 @@ def getOneSquareDiagTR(piece: Piece, currentSquare: tuple[str, int]) -> Union[bo
 def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple[str, int]) -> list:
     validMoves = []
     nextSquare = getOneSquareDirFunction(piece, square)
+    occupant = getPieceFromLocation(nextSquare)
+
+    if isinstance(occupant, Piece) and occupant.colour != piece.colour:
+        validMoves.append(nextSquare)
+        return validMoves
+    
+    elif isinstance(occupant, Piece) and occupant.colour == piece.colour:
+        return validMoves
     
     # while the next square is a valid move for the piece
     while type(nextSquare) == tuple:
@@ -965,8 +973,17 @@ def getSquaresInStraightDir(piece: Piece, getOneSquareDirFunction, square: tuple
         validMoves.append(nextSquare)
         # see one more square ahead
         oneMoreSquare = getOneSquareDirFunction(piece, nextSquare)
-        # if this future square is not a valid move, then break out of the loop
+        occupant = getPieceFromLocation(oneMoreSquare)
+
+        # if this future square is not a valid move or if the square is occupied, break out of the loop
         if type(oneMoreSquare) != tuple:
+            break 
+
+        elif isinstance(occupant, Piece) and occupant.colour != piece.colour:
+            validMoves.append(oneMoreSquare)
+            break
+        
+        elif isinstance(occupant, Piece) and occupant.colour == piece.colour:
             break
         
         # otherwise, update the looping variable
@@ -1044,7 +1061,7 @@ def kingIsInIndirectCheck(king: King, square: tuple[str, int]) -> bool:
 
     return False
 
-from pprint import pprint
+
 # if the king is in check, the check can be stopped if another piece blocks the path of the attacking piece
 # moving the piece is valid only if the king is no longer in check after this other piece moves 
 # need to check one move ahead.
@@ -1058,22 +1075,20 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
     defenderMoves = set(defendingPiece.getValidMoves())
     intersectionMoves = attackerMoves.intersection(defenderMoves)
     intersectionMoves = list(filter(lambda m: m in defendingPiece.getValidMoves(), intersectionMoves))
-    
+
     for move in intersectionMoves:
         # moving the defending piece to the square that intersects
         moveFromCurrentSquare(defendingPiece, move)
-        pprint(BOARD)
-        print("")
-        print(kingIsInCheck(king, attackingPiece))
-        # issue is that the kingIsInCheck is not registering update moves
-        if not kingIsInCheck(king, attackingPiece):
+        kingInCheck = kingIsInCheck(king, attackingPiece)
+        
+        if not kingInCheck:
             newValidMoves.append(move)
-            # if the king is no longer in check, return the piece back to its original location
-            moveFromCurrentSquare(defendingPiece, originalDefenderLocation)
+
+        moveFromCurrentSquare(defendingPiece, originalDefenderLocation)
 
     # return the piece back to its original location
     canBlock = True if newValidMoves != [] else False
-    moveFromCurrentSquare(defendingPiece, originalDefenderLocation)
+
     return (canBlock, newValidMoves)
 
 
