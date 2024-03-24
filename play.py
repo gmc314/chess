@@ -1,9 +1,14 @@
 from pprint import pprint
 from script import *
 import os
+import platform
 
-def clear():
-    os.system("cls")
+def clear(): 
+    if platform.system() == "Windows":
+        cmd = 'cls'
+    else: 
+        cmd = 'clear'
+    os.system(cmd)
 
 def newGame():
     clearBoard()
@@ -170,6 +175,3 @@ def playGame():
 
     print(gameOverMessage)
     return
-
-
-playGame()
