@@ -182,6 +182,3 @@ def playGame():
 
     print(gameOverMessage)
     return
-
-
-playGame()
