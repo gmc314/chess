@@ -3,9 +3,12 @@ from script import *
 import os
 import platform
 
-
 def clear():
-    os.system("cls")
+    if platform.system() == "Windows":
+        cmd = 'cls'
+    else:
+        cmd = 'clear'
+    os.system(cmd)
 
 def newGame():
   clearBoard()
