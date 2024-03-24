@@ -141,9 +141,9 @@ print(moveFromCurrentSquare(bk, ("g", 8))=="Black King kingside castled.")
 # moveFromCurrentSquare(br, ('b', 8))
 # print(kingIsInCheck(wk, br))
 
-# # captured pieces
-# # bn.location = None
-# # print(bn.getValidMoves())
+# captured pieces
+# bn.location = None
+# print(bn.getValidMoves())
 
 # print(bn2.getValidMoves())
 # bp6 = getPieceFromLocation(('e', 2))

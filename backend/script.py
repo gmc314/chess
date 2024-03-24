@@ -1097,7 +1097,8 @@ def checkmate(king: King) -> bool:
     playerPieces = colourToPlayer[king.colour].pieces
     opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
     opponentPieces = opponentPlayer.pieces
-
+    piecesThreateningTheKing = [piece for piece in opponentPieces if kingIsInCheck(king, piece)]    
+    
     if not kingIsInCheckGlobal(king):
         return False
     
@@ -1120,9 +1121,13 @@ def checkmate(king: King) -> bool:
             for otherPiece in piecesNotThreateningTheKing:
                 if attackingPiece.location == move and not squareDefended(attackingPiece.location, otherPiece):
                     return False
-
+                
     # need to check:
-                # if another piece can capture the attacking piece, and then the king is no longer in check 
+        # if another piece can capture the attacking piece, and then the king is no longer in check 
+    for piece in playerPieces:
+        for opponPiece in piecesThreateningTheKing:
+            if squareDefended(opponPiece.location, piece):
+                pass
 
     # if there's a move that can be blocked
     for piece in playerPieces:
