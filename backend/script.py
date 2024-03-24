@@ -141,7 +141,6 @@ class King(Piece):
             validMoves.append(moveFunction(self, self.location))
         
         validMoves = filterListForSquares(validMoves)
-    
         return validMoves
 
     def getValidMoves(self):
@@ -203,7 +202,7 @@ class Rook(Piece):
                 self.location
                 )
         
-        # return valid vertical and horizontal moves        
+        # return valid vertical and horizontal moves
         return validMoves
     
     def isMoveValid(self, newSquare):
@@ -433,7 +432,7 @@ class Pawn(Piece):
 
 # this function returns the string "Board Cleared" if called and clears the board of all pieces currently on it.
 # MODIFIES: BOARD
-def clearBoard():
+def clearBoard() -> str:
     for i in range(boardLength): 
         for j in range(boardLength):
             if isinstance(BOARD[i][j], Piece):
@@ -448,7 +447,7 @@ def clearBoard():
 
 
 # this function returns True if the square is valid. False otherwise 
-def isSquareValid(square: tuple[str, int]):
+def isSquareValid(square: tuple[str, int]) -> bool:
     # detecting for the right input
     if not type(square) == tuple:
         return False
@@ -471,7 +470,7 @@ def isSquareValid(square: tuple[str, int]):
 
 
 # gets the indices of the Board from rank and file 
-def getBoardIndexFromRankAndFile(square: tuple[str, int]):
+def getBoardIndexFromRankAndFile(square: tuple[str, int]) -> Union[str, tuple[str, int]]:
     if not isSquareValid(square):
         return "Invalid"
 
@@ -494,7 +493,7 @@ def filterListForSquares(squareList: list) -> list:
 
 
 # gets the rank and file from indices of the Board
-def getRankAndFileFromBoardIndex(row: int, col: int):
+def getRankAndFileFromBoardIndex(row: int, col: int) -> Union[str, tuple[int, int]]:
     # checking if row and col are integers between 0 and 7
     if type(row) != int or type(col) != int or not (0 <= row <= 7) or not (0 <= col <= 7): 
         return "Invalid"
@@ -671,7 +670,18 @@ def pawnPromotion(pawn: Pawn, pieceSymbol: str) -> Union[Queen, Rook, Bishop, Kn
         return newPiece
     
 
-# move piece from current square to new `square`
+# a function to move pieces from their current location to newSquare
+# MODIFIES: BOARD
+def simpleMove(piece: Piece, newSquare: tuple[str, int]):
+    currentR, currentC = getBoardIndexFromRankAndFile(piece.location)
+    BOARD[currentR][currentC] = emptySquare
+    newR, newC = getBoardIndexFromRankAndFile(newSquare)
+    BOARD[newR][newC] = piece   
+    piece.location = newSquare
+    return
+
+
+# move piece from current square to newSquare
 # MODIFIES: BOARD
 def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     invalid = "invalid move"
@@ -734,7 +744,7 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
 
     currentSquare = piece.location
     currentRow, currentCol = getBoardIndexFromRankAndFile(currentSquare)
-    
+    newRow, newCol = getBoardIndexFromRankAndFile(newSquare)
     # if the pawn can capture en passant
     if isinstance(piece, Pawn) and piece.getEnPassantCaptureMoves()[0] != []:
         enPassantMoves = piece.getEnPassantCaptureMoves()[0]
@@ -771,8 +781,9 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
     
     # move piece from the current square
     BOARD[currentRow][currentCol] = emptySquare
-
+    
     # to new square
+    BOARD[newRow][newCol] = piece
     piece.location = (newRank, newFile)
     
     # pawn promotion
@@ -782,7 +793,7 @@ def moveFromCurrentSquare(piece: Piece, newSquare: tuple[str, int]) -> str:
         }
     if isinstance(piece, Pawn) and newRank == pawnColourToPromotionRank[piece.colour]:
         symbolOfNewPiece = input(f"{piece.colour}: Enter one of [Q, R, N, B] to promote the pawn: ")
-        BOARD[newRow][newCol] = pawnPromotion(piece, symbolOfNewPiece)   
+        BOARD[newRow][newCol] = pawnPromotion(piece, symbolOfNewPiece)
     
     else:
         BOARD[newRow][newCol] = piece
@@ -1019,6 +1030,7 @@ def kingIsInCheckGlobal(king: King) -> bool:
 
 # returns True if the square is defended by a piece 
 # delete the piece on the square and see if the piece can go to that square
+# MODIFIES: BOARD
 def squareDefended(square: tuple[str, int], piece: Piece) -> bool: 
     occupant = getPieceFromLocation(square)
     pieceMoves = piece.getValidMoves()
@@ -1078,13 +1090,14 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
 
     for move in intersectionMoves:
         # moving the defending piece to the square that intersects
-        moveFromCurrentSquare(defendingPiece, move)
+        simpleMove(defendingPiece, move)
         kingInCheck = kingIsInCheck(king, attackingPiece)
         
         if not kingInCheck:
             newValidMoves.append(move)
 
-        moveFromCurrentSquare(defendingPiece, originalDefenderLocation)
+        # move the defending piece back to its original location
+        simpleMove(defendingPiece, originalDefenderLocation)
 
     # return the piece back to its original location
     canBlock = True if newValidMoves != [] else False
@@ -1093,6 +1106,7 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
 
 
 # returns True if the king is in checkmate
+# MODIFIES: BOARD
 def checkmate(king: King) -> bool:
     playerPieces = colourToPlayer[king.colour].pieces
     opponentPlayer = colourToPlayer[oppositeColour(king.colour)]
@@ -1102,6 +1116,28 @@ def checkmate(king: King) -> bool:
     if not kingIsInCheckGlobal(king):
         return False
     
+    # if another piece can capture the attacking piece, and then the king is no longer in check 
+    for piece in playerPieces:
+        for opponPiece in piecesThreateningTheKing:
+            opponentSquare = opponPiece.location
+            if squareDefended(opponentSquare, piece):
+                r, c = getBoardIndexFromRankAndFile(opponentSquare)
+                # remove the attacking piece
+                BOARD[r][c] = emptySquare
+                # see if the king is still in check
+                check = kingIsInCheckGlobal(king)
+                # putting the piece back
+                BOARD[r][c] = opponPiece
+                # if the king is no long in check, we don't have checkmate
+                if check == False:
+                    return False
+
+    # if there's a move that can be blocked
+    for piece in playerPieces:
+        for opponPiece in opponentPieces:
+            if canBlockCheck(piece, opponPiece, king)[0]:
+                return False
+
     # the for loop checks if every move is defended by the opponent 
     for move in king.getValidMoves():
         # filter for opponent pieces that defends the square that the king can move to 
@@ -1122,26 +1158,4 @@ def checkmate(king: King) -> bool:
                 if attackingPiece.location == move and not squareDefended(attackingPiece.location, otherPiece):
                     return False
                 
-    # if another piece can capture the attacking piece, and then the king is no longer in check 
-    for piece in playerPieces:
-        for opponPiece in piecesThreateningTheKing:
-            opponentSquare = opponPiece.location
-            if squareDefended(opponentSquare, piece):
-                r, c = getBoardIndexFromRankAndFile(opponentSquare)
-                # remove the attacking piece
-                BOARD[r][c] = emptySquare
-                # see if the king is still in check
-                check = kingIsInCheckGlobal(king)
-                # putting the piece back
-                BOARD[r][c] = opponPiece
-                # if the king is no long in check, we don't have checkmate
-                if check == False:
-                    return False
-                
-    # if there's a move that can be blocked
-    for piece in playerPieces:
-        for opponPiece in opponentPieces:
-            if canBlockCheck(piece, opponPiece, king)[0]:
-                return False
-
     return True
