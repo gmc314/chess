@@ -3,7 +3,7 @@ from script import *
 import os
 import platform
 
-def clear():
+def clearConsole():
     if platform.system() == "Windows":
         cmd = 'cls'
     
@@ -103,7 +103,7 @@ def extractMoveElements(player: Player, playerInput: str):
       "P": Pawn
     }
 
-    piece = [p for p in player.pieces if isinstance(p, symbolToClass[pieceSymbol]) and 
+    piece = [p for p in player.pieces if isinstance(p, symbolToClass[pieceSymbol.upper()]) and 
              p.location == squareToTuple(currentSquare)][0]
 
     return (piece, squareToTuple(destinationSquare))
@@ -111,7 +111,7 @@ def extractMoveElements(player: Player, playerInput: str):
 
 # plan for the main playGame function
 def playGame():
-    invalid = "Invalid move, try again."
+    invalid = "invalid move"
     newGame()
     print("####################################")
     print("##                                ##")
@@ -120,8 +120,7 @@ def playGame():
     print("##                                ##")
     print("##                                ##")
     print("####################################\n")
-    print("Symbols: ")
-    print('"K": King,\n"Q": Queen,\n"N": Knight,\n"B": Bishop,\n"R": Rook,\n"P": Pawn\n')
+    print('Symbols: \n"K": King,\n"Q": Queen,\n"N": Knight,\n"B": Bishop,\n"R": Rook,\n"P": Pawn\n')
 
     pprint(BOARD)
 
@@ -169,7 +168,7 @@ def playGame():
             except (IndexError, ValueError, KeyError):
                 whiteMove = invalid
         
-        clear()
+        clearConsole()
         print("\n")
         pprint(BOARD)
 
@@ -212,7 +211,7 @@ def playGame():
             except (IndexError, ValueError, KeyError):
                 blackMove = invalid
 
-        clear()
+        clearConsole()
         print("\n")
         pprint(BOARD)
 
