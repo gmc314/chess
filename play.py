@@ -121,7 +121,7 @@ def playGame():
     print("##                                ##")
     print("####################################\n")
     print('Symbols: \n"K": King,\n"Q": Queen,\n"N": Knight,\n"B": Bishop,\n"R": Rook,\n"P": Pawn\n')
-
+    print("For example: the move 'pawn on E2 to E4' would be inputted as: P E2 E4")
     pprint(BOARD)
 
     whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
