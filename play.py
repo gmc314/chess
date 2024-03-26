@@ -6,9 +6,12 @@ import platform
 def clear():
     if platform.system() == "Windows":
         cmd = 'cls'
+    
     else:
         cmd = 'clear'
+    
     os.system(cmd)
+
 
 def newGame():
     clearBoard()
@@ -108,6 +111,7 @@ def extractMoveElements(player: Player, playerInput: str):
 
 # plan for the main playGame function
 def playGame():
+    invalid = "invalid move"
     newGame()
     print("####################################")
     print("##                                ##")
@@ -116,6 +120,8 @@ def playGame():
     print("##                                ##")
     print("##                                ##")
     print("####################################\n")
+    print("Symbols: ")
+    print('"K": King,\n"Q": Queen,\n"N": Knight,\n"B": Bishop,\n"R": Rook,\n"P": Pawn\n')
 
     pprint(BOARD)
 
@@ -135,16 +141,28 @@ def playGame():
             print("Quit")
             return
 
-        whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
-        print(whiteMoveInput)
-        whiteMove = moveFromCurrentSquare(*whiteMoveInput)
-
-        while whiteMove == "invalid move":
-            print(whiteMove)
-            whiteMoveText = input(
-                "White: Enter [symbol] [currentSquare] [newSquare]: ")
+        try:
             whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
             whiteMove = moveFromCurrentSquare(*whiteMoveInput)
+        
+        except (IndexError, ValueError):
+            whiteMove = invalid
+        
+        while whiteMove == invalid:
+            print(invalid)
+            whiteMoveText = input(
+                "White: Enter [symbol] [currentSquare] [newSquare]: ")
+            
+            if whiteMoveText == "q":
+                print("Quit")
+                return
+            
+            try:
+                whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
+                whiteMove = moveFromCurrentSquare(*whiteMoveInput)
+        
+            except (IndexError, ValueError):
+                whiteMove = invalid
         clear()
         print("\n")
         pprint(BOARD)
@@ -159,16 +177,30 @@ def playGame():
         if blackMoveText == "q":
             print("Quit")
             return
-
-        blackMoveInput = extractMoveElements(BLACK, blackMoveText)
-        blackMove = moveFromCurrentSquare(*blackMoveInput)
-
-        while blackMove == "invalid move":
-            print(blackMove)
-            blackMoveText = input(
-                "Black: Enter [symbol] [currentSquare] [newSquare]: ")
+        
+        try:
             blackMoveInput = extractMoveElements(BLACK, blackMoveText)
             blackMove = moveFromCurrentSquare(*blackMoveInput)
+        
+        except (IndexError, ValueError):
+            blackMove = invalid
+
+        while blackMove == invalid:
+            print(invalid)
+            blackMoveText = input(
+                "Black: Enter [symbol] [currentSquare] [newSquare]: ")
+            
+            if blackMoveText == "q":
+                print("Quit")
+                return
+            
+            try:
+                blackMoveInput = extractMoveElements(BLACK, blackMoveText)
+                blackMove = moveFromCurrentSquare(*blackMoveInput)
+            
+            except (IndexError, ValueError):
+                blackMove = invalid
+
         clear()
         print("\n")
         pprint(BOARD)
