@@ -111,7 +111,7 @@ def extractMoveElements(player: Player, playerInput: str):
 
 # plan for the main playGame function
 def playGame():
-    invalid = "invalid move"
+    invalid = "Invalid move, try again."
     newGame()
     print("####################################")
     print("##                                ##")
@@ -130,24 +130,29 @@ def playGame():
     numRounds = 0
 
     while True:
-    # White turn
+        # White turn
+        # if black checkmates the white king
         if checkmate(whiteKing):
             gameOverMessage = "Black wins"
             break
-
+        
+        # White moves
         whiteMoveText = input(
             "White: Enter [symbol] [currentSquare] [newSquare]: ")
+        
         if whiteMoveText == "q":
             print("Quit")
             return
 
+        # catch potential errors of functions
         try:
             whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
             whiteMove = moveFromCurrentSquare(*whiteMoveInput)
         
-        except (IndexError, ValueError):
+        except (IndexError, ValueError, KeyError):
             whiteMove = invalid
-        
+
+        # keep repeating white move until the move is valid        
         while whiteMove == invalid:
             print(invalid)
             whiteMoveText = input(
@@ -161,30 +166,36 @@ def playGame():
                 whiteMoveInput = extractMoveElements(WHITE, whiteMoveText)
                 whiteMove = moveFromCurrentSquare(*whiteMoveInput)
         
-            except (IndexError, ValueError):
+            except (IndexError, ValueError, KeyError):
                 whiteMove = invalid
+        
         clear()
         print("\n")
         pprint(BOARD)
 
         # Black turn
+        # if white checkmates the black king
         if checkmate(blackKing):
             gameOverMessage = "White wins"
             break
 
+        # black moves
         blackMoveText = input(
             "Black: Enter [symbol] [currentSquare] [newSquare]: ")
+        
         if blackMoveText == "q":
             print("Quit")
             return
         
+        # catch potential errors of functions       
         try:
             blackMoveInput = extractMoveElements(BLACK, blackMoveText)
             blackMove = moveFromCurrentSquare(*blackMoveInput)
         
-        except (IndexError, ValueError):
+        except (IndexError, ValueError, KeyError):
             blackMove = invalid
 
+        # keep repeating black move until the move is valid        
         while blackMove == invalid:
             print(invalid)
             blackMoveText = input(
@@ -198,7 +209,7 @@ def playGame():
                 blackMoveInput = extractMoveElements(BLACK, blackMoveText)
                 blackMove = moveFromCurrentSquare(*blackMoveInput)
             
-            except (IndexError, ValueError):
+            except (IndexError, ValueError, KeyError):
                 blackMove = invalid
 
         clear()
@@ -212,5 +223,5 @@ def playGame():
             gameOverMessage = "Stalemate"
             break
 
-        print(gameOverMessage)
-        return
+    print(gameOverMessage)
+    return
