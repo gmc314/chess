@@ -1085,15 +1085,18 @@ def canBlockCheck(defendingPiece: Piece, attackingPiece: Piece, king: King) -> t
     originalDefenderLocation = defendingPiece.location
     attackerMoves = set(attackingPiece.getValidMoves())
     defenderMoves = set(defendingPiece.getValidMoves())
+
+    # if the attacking an ddefending pieces have the same movess
     intersectionMoves = attackerMoves.intersection(defenderMoves)
     intersectionMoves = list(filter(lambda m: m in defendingPiece.getValidMoves(), intersectionMoves))
 
     for move in intersectionMoves:
-        # moving the defending piece to the square that intersects
+        # moving the defending piece to the square 
         simpleMove(defendingPiece, move)
-        kingInCheck = kingIsInCheck(king, attackingPiece)
         
-        if not kingInCheck:
+        # if the king isn't in check from the attacking piece, 
+        # add a valid move to the list
+        if not kingIsInCheck(king, attackingPiece):
             newValidMoves.append(move)
 
         # move the defending piece back to its original location
@@ -1128,7 +1131,7 @@ def checkmate(king: King) -> bool:
                 check = kingIsInCheckGlobal(king)
                 # putting the piece back
                 BOARD[r][c] = opponPiece
-                # if the king is no long in check, we don't have checkmate
+                # if the king is no longer in check, we don't have checkmate
                 if check == False:
                     return False
 

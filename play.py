@@ -1,18 +1,21 @@
 from pprint import pprint
 from script import *
-import os
 import platform
+import os
 
+
+# clears the console display to make the screen more user-friendly
 def clearConsole():
     if platform.system() == "Windows":
         cmd = 'cls'
     
-    else:
+    else: # if this is running on Mac or Linux
         cmd = 'clear'
     
     os.system(cmd)
 
 
+# sets up a new game according to standard rules
 def newGame():
     clearBoard()
     # get new instances of all pieces
@@ -90,7 +93,7 @@ def squareToTuple(squareString: str):
     return (file.lower(), int(rank))
 
 
-# gets the piece and square from playerInput
+# gets the piece and square from playerInput for the moveFromCurrentSquare function
 def extractMoveElements(player: Player, playerInput: str):
     pieceSymbol, currentSquare, destinationSquare = playerInput.split(' ')
 
@@ -121,7 +124,7 @@ def playGame():
     print("##                                ##")
     print("####################################\n")
     print('Symbols: \n"K": King,\n"Q": Queen,\n"N": Knight,\n"B": Bishop,\n"R": Rook,\n"P": Pawn\n')
-    print("For example: the move 'pawn on E2 to E4' would be inputted as: P E2 E4")
+    print("How to play: the move 'pawn on E2 to E4' would be inputted as: P E2 E4")
     pprint(BOARD)
 
     whiteKing = [piece for piece in WHITE.pieces if isinstance(piece, King)][0]
